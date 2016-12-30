@@ -1,0 +1,52 @@
+#!/bin/sh
+//bin/true; exec java -cp /usr/share/java/bsh.jar:jguifier.jar bsh.Interpreter "$0" "$@"
+
+import uk.co.nickthecoder.jguifier.*;
+
+message = new StringParameter( "message", "Message", "How are you?" );
+
+greeting = new ChoiceParameter( "greeting", "Greeting" )
+	.choice( "Hello" )
+	.choice( "Hi" ).value( "Hi" )
+	.choice( "Dear Sir/Madam," );
+
+output = new MapChoiceParameter( "output", "Output" )
+	.choice( "stdout", System.out, "Normal" )
+	.choice( "stderr", System.err, "Error" );
+
+bye = new BooleanParameter( "bye", "Say Goodbye?" );
+
+file = new FileParameter( "file", "File" )
+	.extensions( "Text", new String[] {"txt"} );
+
+new Task() {
+
+	public void run()
+	{
+		output.getMappedValue().println( greeting.getValue() );
+		output.getMappedValue().println( message.getValue() );
+		
+		if ( bye.getValue() ) {
+			output.getMappedValue().println( "Goodbye" );
+		}
+		
+		/*
+		ls = Exec.create( "ls", "-l" );
+		sort = Exec.create( "sort" ).stdout();
+
+		ls.stdout( new Pipe( sort ) ).run();
+		
+		print( sort.getStdout() );
+		
+		print( Exec.create( "bash", "-c", "export" ).clearEnv().var( "HELLO", "World" ).stdout().run().getStdout() );
+		*/
+	}
+	
+}.name( "Example" )
+	.parameter( greeting )
+	.parameter( message )
+	.parameter( bye )
+	.parameter( output )
+	.parameter( file )
+	.runFromMain( bsh.args );
+
