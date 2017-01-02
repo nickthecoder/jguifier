@@ -14,6 +14,23 @@ From the example command (uk.co.nickthecoder.jguifier.Example) :
     "greeting", "Greeting").choices(new String[] { "Hello", "Hi", "Watcha" });
 
 
+Auto Complete
+=============
+
+To enable tab-completion, add the following to ~/.bash_completion :
+
+    _JGuifierComplete ()
+    {
+      COMPREPLY=( $(${COMP_WORDS[0]} --autocomplete "${COMP_CWORD}" "${COMP_WORDS[@]}" ) )
+    
+      return 0
+    }
+
+    JGUIFIER_SCRIPTS=`cd ~/bin;echo *.bsh *.groovy`
+
+    complete -F _JGuifierComplete -o filenames ${JGUIFIER_SCRIPTS}
+
+
 Compile
 =======
 

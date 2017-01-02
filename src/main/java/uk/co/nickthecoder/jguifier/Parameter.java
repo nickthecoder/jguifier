@@ -165,7 +165,10 @@ public abstract class Parameter
     }
 
     /**
-     * Prints to System.out a list of valid values (one per line).
+     * Called by {@link Task#autocomplete(String[])} when a parameter's value is being tab-completed.
+     * Outputs the possible values to stdout, or does nothing if no tab completions.
+     * For choice parameters, this will list the set of possible choices.
+     * For {@link FileParameter}s, it will list the set of possible filenames. 
      * 
      * @param cur
      *            What the user has typed in so far, and should be used to filter the values.
