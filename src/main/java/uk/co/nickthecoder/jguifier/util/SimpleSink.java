@@ -11,11 +11,13 @@ public class SimpleSink implements Sink
 
     InputStreamReader _reader;
 
+    @Override
     public void setStream(InputStream in)
     {
         _reader = new InputStreamReader(in);
     }
 
+    @Override
     public void run()
     {
         try {

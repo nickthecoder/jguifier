@@ -64,7 +64,8 @@ public class Exec
 	 * @deprecated
 	 * A bodge because Beanshell currently doesn't support varargs
 	 */
-	public static Exec create( String program )
+	@Deprecated
+    public static Exec create( String program )
 	{
 		return new Exec( new String[] { program } );
 	}
@@ -73,7 +74,8 @@ public class Exec
 	 * @deprecated
 	 * A bodge because Beanshell currently doesn't support varargs
 	 */
-	public static Exec create( String program, String arg1 )
+	@Deprecated
+    public static Exec create( String program, String arg1 )
 	{
 		return new Exec( new String[] { program, arg1 } );
 	}
@@ -81,7 +83,8 @@ public class Exec
 	 * @deprecated
 	 * A bodge because Beanshell currently doesn't support varargs
 	 */
-	public static Exec create( String program, String arg1, String arg2 )
+	@Deprecated
+    public static Exec create( String program, String arg1, String arg2 )
 	{
 		return new Exec( new String[] { program, arg1, arg2 } );
 	}
@@ -89,7 +92,8 @@ public class Exec
 	 * @deprecated
 	 * A bodge because Beanshell currently doesn't support varargs
 	 */
-	public static Exec create( String program, String arg1, String arg2, String arg3 )
+	@Deprecated
+    public static Exec create( String program, String arg1, String arg2, String arg3 )
 	{
 		return new Exec( new String[] { program, arg1, arg2, arg3 } );
 	}
@@ -97,7 +101,8 @@ public class Exec
 	 * @deprecated
 	 * A bodge because Beanshell currently doesn't support varargs
 	 */
-	public static Exec create( String program, String arg1, String arg2, String arg3, String arg4 )
+	@Deprecated
+    public static Exec create( String program, String arg1, String arg2, String arg3, String arg4 )
 	{
 		return new Exec( new String[] { program, arg1, arg2, arg3, arg4 } );
 	}
@@ -105,7 +110,8 @@ public class Exec
 	 * @deprecated
 	 * A bodge because Beanshell currently doesn't support varargs
 	 */
-	public static Exec create( String program, String arg1, String arg2, String arg3, String arg4, String arg5)
+	@Deprecated
+    public static Exec create( String program, String arg1, String arg2, String arg3, String arg4, String arg5)
 	{
 		return new Exec( new String[] { program, arg1, arg2, arg3, arg4, arg5 } );
 	}
@@ -113,7 +119,8 @@ public class Exec
 	 * @deprecated
 	 * A bodge because Beanshell currently doesn't support varargs
 	 */
-	public static Exec create( String program, String arg1, String arg2, String arg3, String arg4, String arg5, String arg6 )
+	@Deprecated
+    public static Exec create( String program, String arg1, String arg2, String arg3, String arg4, String arg5, String arg6 )
 	{
 		return new Exec( new String[] { program, arg1, arg2, arg3, arg4, arg5, arg6 } );
 	}
@@ -121,7 +128,8 @@ public class Exec
 	 * @deprecated
 	 * A bodge because Beanshell currently doesn't support varargs
 	 */
-	public static Exec create( String program, String arg1, String arg2, String arg3, String arg4, String arg5, String arg6, String arg7 )
+	@Deprecated
+    public static Exec create( String program, String arg1, String arg2, String arg3, String arg4, String arg5, String arg6, String arg7 )
 	{
 		return new Exec( new String[] { program, arg1, arg2, arg3, arg4, arg5, arg6, arg7 } );
 	}
@@ -129,7 +137,8 @@ public class Exec
 	 * @deprecated
 	 * A bodge because Beanshell currently doesn't support varargs
 	 */
-	public static Exec create( String program, String arg1, String arg2, String arg3, String arg4, String arg5, String arg6, String arg7, String arg8 )
+	@Deprecated
+    public static Exec create( String program, String arg1, String arg2, String arg3, String arg4, String arg5, String arg6, String arg7, String arg8 )
 	{
 		return new Exec( new String[] { program, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8 } );
 	}
@@ -137,7 +146,8 @@ public class Exec
 	 * @deprecated
 	 * A bodge because Beanshell currently doesn't support varargs
 	 */
-	public static Exec create( String program, String arg1, String arg2, String arg3, String arg4, String arg5, String arg6, String arg7, String arg8, String arg9 )
+	@Deprecated
+    public static Exec create( String program, String arg1, String arg2, String arg3, String arg4, String arg5, String arg6, String arg7, String arg8, String arg9 )
 	{
 		return new Exec( new String[] { program, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 } );
 	}
@@ -169,8 +179,8 @@ public class Exec
 	public Exec( String... cmdArray )
 	{
 		_commandArray = new ArrayList<String>( cmdArray.length );
-		for ( int i = 0; i < cmdArray.length; i ++ ) {
-			_commandArray.add( cmdArray[ i ] );
+		for (String element : cmdArray) {
+			_commandArray.add( element );
 		}
 	}
 	
@@ -245,7 +255,8 @@ public class Exec
 	public Exec stdin( final String input )
 	{
 		_inSource = new PrintSource() {
-			public void run()
+			@Override
+            public void run()
 			{
 				_out.print( input );
 				_out.close();
@@ -344,7 +355,7 @@ public class Exec
 	
 	/**
 	 * Pipes the output stream from the command to an existing output stream.
-	 * A common paramater is System.out, which will cause the command's output to be
+	 * A common parameter is System.out, which will cause the command's output to be
 	 * streamed to the running java process's stdout.
 	 * @param out
 	 * @return this
@@ -503,7 +514,8 @@ public class Exec
 			if ( _timeoutMillis > 0 ) {
 
 				new Thread() {
-					public void run()
+					@Override
+                    public void run()
 					{
 						try {
 							Thread.sleep( _timeoutMillis );
@@ -569,7 +581,8 @@ public class Exec
 		return _state;
 	}
 	
-	public String toString()
+	@Override
+    public String toString()
 	{
 		List<String> env = (getEnvironment() == null) ? null : Arrays.asList( getEnvironment() );
 		return "Exec" +

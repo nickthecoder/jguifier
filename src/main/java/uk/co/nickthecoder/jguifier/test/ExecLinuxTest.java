@@ -1,15 +1,19 @@
 package uk.co.nickthecoder.jguifier.test;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.Assert.*;
-
-import org.junit.*;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import uk.co.nickthecoder.jguifier.util.Exec;
-import uk.co.nickthecoder.jguifier.util.Pipe;
 import uk.co.nickthecoder.jguifier.util.ExecException;
+import uk.co.nickthecoder.jguifier.util.Pipe;
 
 public class ExecLinuxTest
 {

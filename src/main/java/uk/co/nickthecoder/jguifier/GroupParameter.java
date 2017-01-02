@@ -1,11 +1,11 @@
 package uk.co.nickthecoder.jguifier;
 
+import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
 
-import java.awt.Component;
-import javax.swing.JPanel;
 import javax.swing.BorderFactory;
+import javax.swing.JPanel;
 
 public class GroupParameter
     extends Parameter
@@ -18,15 +18,18 @@ public class GroupParameter
         super( name, label );
     }
     
+    @Override
     public void setStringValue( String value )
     {
     }
     
+    @Override
     public String getStringValue()
     {
         return null;
     }
 
+    @Override
     public void check()
         throws ParameterException
     {
@@ -59,6 +62,7 @@ public class GroupParameter
         return this;
     }
     
+    @Override
     public Component createComponent( final TaskPrompter taskPrompter )
     {
         JPanel panel = new JPanel();
@@ -70,6 +74,7 @@ public class GroupParameter
         return panel;
     }
     
+    @Override
     public String toString()
     {
         return "Group : " + super.toString();

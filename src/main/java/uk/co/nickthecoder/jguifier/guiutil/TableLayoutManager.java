@@ -1,13 +1,12 @@
 package uk.co.nickthecoder.jguifier.guiutil;
 
-import java.util.List;
-import java.util.ArrayList;
-
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.LayoutManager;
-import java.awt.Container;
-import java.awt.Component;
-import java.awt.Dimension;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
 */
@@ -67,6 +66,7 @@ public class TableLayoutManager
         return _columnSpacing;
     }
 
+    @Override
     public void addLayoutComponent(String name, Component child)
     {
     }
@@ -79,6 +79,7 @@ public class TableLayoutManager
         _columns.get(columnIndex).cells.add(child);
     }
 
+    @Override
     public void layoutContainer(Container parent)
     {
         Insets insets = parent.getInsets();
@@ -97,6 +98,7 @@ public class TableLayoutManager
 
     }
 
+    @Override
     public Dimension minimumLayoutSize(Container parent)
     {
         Insets insets = parent.getInsets();
@@ -124,6 +126,7 @@ public class TableLayoutManager
         return new Dimension(width, height);
     }
 
+    @Override
     public Dimension preferredLayoutSize(Container parent)
     {
         return minimumLayoutSize(parent);
@@ -133,6 +136,7 @@ public class TableLayoutManager
      * Not currently implemented. As a work around, add a Container, and then add/remove children
      * to/from that container.
      */
+    @Override
     public void removeLayoutComponent(Component comp)
     {
     }

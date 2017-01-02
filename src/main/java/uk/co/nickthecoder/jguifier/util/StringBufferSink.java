@@ -16,7 +16,8 @@ public class StringBufferSink extends SimpleSink
 		_stringBuffer = stringBuffer;
 	}
 	
-	protected void sink( char[] buffer, int len )
+	@Override
+    protected void sink( char[] buffer, int len )
 	{
 		_stringBuffer.append( buffer, 0, len );
 	}
@@ -32,7 +33,8 @@ public class StringBufferSink extends SimpleSink
 	/**
 	 * @return The contents of the StringBuffer
 	 */
-	public String toString()
+	@Override
+    public String toString()
 	{
 	    return _stringBuffer.toString();
 	}

@@ -9,7 +9,7 @@ import java.io.OutputStream;
  * into the input to another.
  * To use a Pipe, create the two commands, and then :
  * <code><pre>
- * command1.stdout( new Pipe( command2 ) ).run();
+ *     command1.stdout( new Pipe( command2 ) ).run();
  * </pre></code>
  * This will run command1, and pipe its output to command2. There is no need to call run on
  * command2, this is done automatically by the Pipe.

@@ -1,11 +1,10 @@
 package uk.co.nickthecoder.jguifier;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JComboBox;
 
@@ -101,7 +100,8 @@ public abstract class AbstractChoiceParameter<T> extends Parameter
 		
 		combo.addActionListener (new ActionListener () {
 			
-		    public void actionPerformed(ActionEvent event) {
+		    @Override
+            public void actionPerformed(ActionEvent event) {
                 try {
                 	int index = combo.getSelectedIndex();
                     setValue( _keys.get( index ) );
@@ -133,7 +133,8 @@ public abstract class AbstractChoiceParameter<T> extends Parameter
 		return combo;
 	}
 
-	public void setStringValue( String string )
+	@Override
+    public void setStringValue( String string )
 			throws ParameterException
 	{
 		int index = _keysAsString.indexOf( string );
@@ -146,6 +147,7 @@ public abstract class AbstractChoiceParameter<T> extends Parameter
 	}
 	
 
+    @Override
     public void autocomplete( String cur )
     {
     	for ( String possible : _keysAsString ) {

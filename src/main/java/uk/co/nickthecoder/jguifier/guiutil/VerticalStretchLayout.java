@@ -1,13 +1,12 @@
 package uk.co.nickthecoder.jguifier.guiutil;
 
-import java.util.Map;
-import java.util.HashMap;
-
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.LayoutManager;
-import java.awt.Container;
-import java.awt.Component;
-import java.awt.Dimension;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Lays out child components vertically, allows some components to stretch to fit the container's size.
@@ -30,6 +29,7 @@ public class VerticalStretchLayout
         _totalStretch += stretch;
     }
 
+    @Override
     public void layoutContainer(Container parent)
     {
         Insets insets = parent.getInsets();
@@ -51,11 +51,13 @@ public class VerticalStretchLayout
         }
     }
 
+    @Override
     public Dimension minimumLayoutSize(Container parent)
     {
         return preferredLayoutSize(parent);
     }
 
+    @Override
     public Dimension preferredLayoutSize(Container parent)
     {
         Insets insets = parent.getInsets();
@@ -73,10 +75,12 @@ public class VerticalStretchLayout
         return new Dimension(width + insets.left + insets.right, height + insets.top + insets.bottom);
     }
 
+    @Override
     public void addLayoutComponent(String blah, Component component)
     {
     }
 
+    @Override
     public void removeLayoutComponent(Component comp)
     {
         if (_stretches.containsKey(comp)) {

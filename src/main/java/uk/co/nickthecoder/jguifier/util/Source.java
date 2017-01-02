@@ -7,6 +7,7 @@ public interface Source extends Runnable
 	
     public abstract void setStream( OutputStream os );
 
+    @Override
     public abstract void run();
     
 }

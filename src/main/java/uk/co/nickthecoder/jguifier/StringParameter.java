@@ -3,8 +3,8 @@ package uk.co.nickthecoder.jguifier;
 import java.awt.Component;
 
 import javax.swing.JTextField;
-import javax.swing.event.DocumentListener;
 import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import uk.co.nickthecoder.jguifier.util.Util;
 
@@ -45,12 +45,14 @@ public class StringParameter
         _stretchy = value;
     }
 
+    @Override
     public void setStringValue(String value)
         throws ParameterException
     {
         setValue(value);
     }
 
+    @Override
     public String getStringValue()
     {
         return _value;
@@ -95,6 +97,7 @@ public class StringParameter
         return _columns;
     }
 
+    @Override
     public void check()
         throws ParameterException
     {
@@ -103,6 +106,7 @@ public class StringParameter
         }
     }
 
+    @Override
     public Component createComponent(final TaskPrompter taskPrompter)
     {
         final JTextField component = new JTextField(_value == null ? "" : _value);
@@ -110,16 +114,19 @@ public class StringParameter
 
         component.getDocument().addDocumentListener(new DocumentListener()
         {
+            @Override
             public void changedUpdate(DocumentEvent e)
             {
                 checkValue();
             }
 
+            @Override
             public void removeUpdate(DocumentEvent e)
             {
                 checkValue();
             }
 
+            @Override
             public void insertUpdate(DocumentEvent e)
             {
                 checkValue();
@@ -139,6 +146,7 @@ public class StringParameter
         return component;
     }
 
+    @Override
     public String toString()
     {
         return super.toString() + " = " + _value;

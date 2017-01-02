@@ -1,8 +1,8 @@
 package uk.co.nickthecoder.jguifier;
 
-import java.util.List;
-import java.util.LinkedList;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 import uk.co.nickthecoder.jguifier.util.Util;
 

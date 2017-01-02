@@ -1,29 +1,30 @@
 package uk.co.nickthecoder.jguifier;
 
-import java.util.Map;
-import java.util.HashMap;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
 import java.awt.GraphicsEnvironment;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.AbstractAction;
-import javax.swing.JComponent;
-import javax.swing.Icon;
-import javax.swing.UIManager;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.KeyStroke;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.UIManager;
+import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
 import uk.co.nickthecoder.jguifier.guiutil.MaxJScrollPane;
@@ -55,7 +56,7 @@ public class TaskPrompter
     public void prompt()
     {
         Util.defaultLookAndFeel();
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
         Container contentPane = this.getContentPane();
         contentPane.setLayout(new BorderLayout());
@@ -73,8 +74,8 @@ public class TaskPrompter
         // Scroll
         MaxJScrollPane tableScroll = new MaxJScrollPane(
             table,
-            JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-            JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+            ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+            ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         tableScroll.setMaxHeight(MAX_TABLE_HEIGHT);
         tableScroll.setMinimumSize(new Dimension(0, 0));
         tableScroll.setViewportBorder(BorderFactory.createEmptyBorder());
@@ -107,6 +108,7 @@ public class TaskPrompter
         buttonPane.add(okButton);
         okButton.addActionListener(new ActionListener()
         {
+            @Override
             public void actionPerformed(ActionEvent event)
             {
                 onOk();
@@ -119,6 +121,7 @@ public class TaskPrompter
         buttonPane.add(cancelButton);
         cancelButton.addActionListener(new ActionListener()
         {
+            @Override
             public void actionPerformed(ActionEvent event)
             {
                 onCancel();
@@ -131,6 +134,7 @@ public class TaskPrompter
         getRootPane().getActionMap().put("Cancel", new AbstractAction() { //$NON-NLS-1$
                 private static final long serialVersionUID = 1;
 
+                @Override
                 public void actionPerformed(ActionEvent e)
                 {
                     onCancel();

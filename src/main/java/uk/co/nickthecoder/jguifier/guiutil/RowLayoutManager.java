@@ -1,10 +1,10 @@
 package uk.co.nickthecoder.jguifier.guiutil;
 
-import java.util.List;
-import java.awt.LayoutManager;
-import java.awt.Container;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.LayoutManager;
+import java.util.List;
 
 /**
  * Lays out components horizontally, such that they line up with components
@@ -47,6 +47,7 @@ public class RowLayoutManager
         return this._stretchy;
     }
 
+    @Override
     public void addLayoutComponent(String name, Component child)
     {
         add(child);
@@ -59,6 +60,7 @@ public class RowLayoutManager
         _nextColumn++;
     }
 
+    @Override
     public void layoutContainer(Container parent)
     {
         Component[] children = parent.getComponents();
@@ -95,6 +97,7 @@ public class RowLayoutManager
         }
     }
 
+    @Override
     public Dimension minimumLayoutSize(Container parent)
     {
         List<Column> columns = _tableLayoutManager.getColumns();
@@ -115,6 +118,7 @@ public class RowLayoutManager
         return new Dimension(width, height);
     }
 
+    @Override
     public Dimension preferredLayoutSize(Container parent)
     {
         return minimumLayoutSize(parent);
@@ -124,6 +128,7 @@ public class RowLayoutManager
      * Not currently implemented. As a work around, add a Container, and then add/remove children
      * to/from that container.
      */
+    @Override
     public void removeLayoutComponent(Component comp)
     {
     }

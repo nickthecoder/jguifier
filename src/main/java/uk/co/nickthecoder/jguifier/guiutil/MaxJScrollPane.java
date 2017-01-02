@@ -1,8 +1,9 @@
 package uk.co.nickthecoder.jguifier.guiutil;
 
 import java.awt.Component;
-import javax.swing.JScrollPane;
 import java.awt.Dimension;
+
+import javax.swing.JScrollPane;
 
 public class MaxJScrollPane
     extends JScrollPane
@@ -46,6 +47,7 @@ public class MaxJScrollPane
         _maxHeight = height;
     }
     
+    @Override
     public Dimension getPreferredSize()
     {
         Dimension parent = super.getPreferredSize();

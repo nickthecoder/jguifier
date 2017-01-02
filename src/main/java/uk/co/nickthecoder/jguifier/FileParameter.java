@@ -1,16 +1,16 @@
 package uk.co.nickthecoder.jguifier;
 
-import java.io.File;
-import java.util.Arrays;
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.Arrays;
 
-import javax.swing.JPanel;
 import javax.swing.JButton;
-import javax.swing.JTextField;
 import javax.swing.JFileChooser;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import uk.co.nickthecoder.jguifier.util.Util;
@@ -130,6 +130,7 @@ public class FileParameter
         _filterExtensions = extensions;
     }
 
+    @Override
     public void check()
         throws ParameterException
     {
@@ -194,6 +195,7 @@ public class FileParameter
         }
     }
 
+    @Override
     public Component createComponent(final TaskPrompter taskPrompter)
     {
         final JTextField textField = (JTextField) super.createComponent(taskPrompter);
@@ -201,6 +203,7 @@ public class FileParameter
         JButton pickButton = new JButton("...");
         pickButton.addActionListener(new ActionListener()
         {
+            @Override
             public void actionPerformed(ActionEvent e)
             {
                 onFileChooser(taskPrompter, textField);
@@ -250,6 +253,7 @@ public class FileParameter
         }
     }
 
+    @Override
     public String getDescription()
     {
         return super.getDescription() + "\n" +
@@ -262,6 +266,7 @@ public class FileParameter
 
     }
 
+    @Override
     public void autocomplete(String cur)
     {
         File file = new File(cur);

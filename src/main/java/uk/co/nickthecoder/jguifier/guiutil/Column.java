@@ -1,9 +1,8 @@
 package uk.co.nickthecoder.jguifier.guiutil;
 
-import java.util.List;
-import java.util.ArrayList;
-
 import java.awt.Component;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Column
 {

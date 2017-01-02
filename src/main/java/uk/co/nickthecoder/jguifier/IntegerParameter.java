@@ -1,9 +1,10 @@
 package uk.co.nickthecoder.jguifier;
 
 import java.awt.Component;
+
 import javax.swing.JTextField;
-import javax.swing.event.DocumentListener;
 import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import uk.co.nickthecoder.jguifier.util.Util;
 
@@ -65,6 +66,7 @@ public class IntegerParameter
         _value = value;
     }
 
+    @Override
     public void setStringValue(String string)
         throws ParameterException
     {
@@ -97,6 +99,7 @@ public class IntegerParameter
         return _value;
     }
 
+    @Override
     public String getStringValue()
     {
         if (_value == null) {
@@ -105,6 +108,7 @@ public class IntegerParameter
         return _value.toString();
     }
 
+    @Override
     public void check()
         throws ParameterException
     {
@@ -125,6 +129,7 @@ public class IntegerParameter
         }
     }
 
+    @Override
     public Component createComponent(final TaskPrompter taskPrompter)
     {
         final JTextField component = new JTextField(_value == null ? "" : _value.toString());
@@ -132,16 +137,19 @@ public class IntegerParameter
 
         component.getDocument().addDocumentListener(new DocumentListener()
         {
+            @Override
             public void changedUpdate(DocumentEvent e)
             {
                 checkValue();
             }
 
+            @Override
             public void removeUpdate(DocumentEvent e)
             {
                 checkValue();
             }
 
+            @Override
             public void insertUpdate(DocumentEvent e)
             {
                 checkValue();
@@ -161,6 +169,7 @@ public class IntegerParameter
         return component;
     }
 
+    @Override
     public String toString()
     {
         return super.toString() + " = " + _value;

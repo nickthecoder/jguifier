@@ -26,7 +26,8 @@ public class ExecException extends RuntimeException
 		return _exec;
 	}
 	
-	public String getMessage()
+	@Override
+    public String getMessage()
 	{
 		return super.getMessage() + " " + Arrays.asList( _exec.getCommandArray() );
 	}
