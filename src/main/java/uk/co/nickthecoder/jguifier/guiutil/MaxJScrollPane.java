@@ -20,6 +20,7 @@ public class MaxJScrollPane
     {
         super(view);
     }
+
     public MaxJScrollPane(Component view, int vsbPolicy, int hsbPolicy)
     {
         super( view, vsbPolicy, hsbPolicy );

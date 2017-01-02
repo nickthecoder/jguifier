@@ -1,12 +1,17 @@
 package uk.co.nickthecoder.jguifier.util;
 
-import uk.co.nickthecoder.jguifier.ReaderSink;
 
-public class StringBufferSink extends ReaderSink
+public class StringBufferSink extends SimpleSink
 {
-	StringBuffer _stringBuffer;
+	private StringBuffer _stringBuffer;
 	
-	public StringBufferSink( StringBuffer stringBuffer )
+
+    public StringBufferSink()
+    {
+        this(new StringBuffer());
+    }
+    
+    public StringBufferSink( StringBuffer stringBuffer )
 	{
 		_stringBuffer = stringBuffer;
 	}
@@ -14,5 +19,21 @@ public class StringBufferSink extends ReaderSink
 	protected void sink( char[] buffer, int len )
 	{
 		_stringBuffer.append( buffer, 0, len );
+	}
+	
+	/**
+	 * @return The StringBuffer used to store the text being sinked.
+	 */
+	public StringBuffer getStringBuffer()
+	{
+	    return _stringBuffer;
+	}
+	
+	/**
+	 * @return The contents of the StringBuffer
+	 */
+	public String toString()
+	{
+	    return _stringBuffer.toString();
 	}
 }

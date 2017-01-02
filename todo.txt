@@ -1,5 +1,9 @@
 Add bash autocomplete functionality
 
+Move unit tests out of gradle "main" and into "test".
+
+Filename (and strings), should stretch the fields, when the window resizes.
+
 Later
 =====
 

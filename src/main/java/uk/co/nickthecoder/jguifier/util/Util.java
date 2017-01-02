@@ -21,7 +21,6 @@ public class Util
     {
         try {
             for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                //System.out.println( "Found L&F : " + info.getName() );
                 if ( DEFAULT_LOOK_AND_FEEL.equals(info.getName())) {
                     UIManager.setLookAndFeel(info.getClassName());
                     break;

@@ -10,30 +10,25 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import uk.co.nickthecoder.jguifier.ReaderSink;
-
 /**
  * Runs an operating system command. This is a high level abstraction around Runtime.exec.
- * It handle the input and output stream of the process, in a simple way for the client.
+ * It handles the input and output stream of the process, in a simple way for the client.
  * 
- * In a typical use case, you will set up the command, run the command and then so something
+ * In a typical use case, you will set up the command, run the command and then do something
  * with the output, or exit status of the command.
- * Exec's methods return "this", which makes chaining method calls easy. 
+ * Exec's methods return "this", which makes chaining method calls easy (Fluent API). 
  * 
  * By default, stdout and stderr are thrown away. If you want the results of stdout/stderr you
- * have a few options. The quick and dirty option is to call stdout().run().getOutput().
- * This buffers both stdout while the command is running and returns it at the end.
- * If the command can produce large amounts of output, then buffering is unacceptable (it will take
- * up too much memory). In this case you need to create your own subclass of SteamSink and pass it to
- * stdout( StreamSink ) and stderr( StreamSink ). 
- *
- * Alternatively you can send the command's output to an output stream of your choice, or to a file
- * using stdout( OutputStream ) or stdout( File ).
+ * call {@link #stdout()} and/or {@link #stderr()} with a {@link Sink}.
+ * The simplest is to use {@link StringBufferSink}, but this is not practical for large amounts of output.
+ * Alternatively you can send the command's output to a file using {@link FileSink}.
+ * Finally, you could subclass {@link SimpleSink} and process the output on the fly.
+ * If you want to pipe the output of one command into the input of another, use {@link Pipe}.
  * 
  * Example code to list a directory and redirect the output to a file, throwing an exception if the command fails.
  * <pre><code>
  * 	new Exec( "ls", "/home" )
- * 		.stdout( new File( "/tmp/myoutput.txt" ) )
+ * 		.stdout( new FileSink( "/tmp/myoutput.txt" ) )
  * 		.throwOnError()
  * 		.run()
  * </code></pre>
@@ -42,13 +37,10 @@ public class Exec
 {
 
 	/**
-	 * The state that of an Exec, initial value is CREATED, then once the run method is called
+	 * The state of an Exec, initial value is CREATED, then once the run method is called
 	 * it progresses to RUNNING, then through to TIMED_OUT or COMPLETED. 
 	 */
 	public enum State { CREATED, RUNNING, TIMED_OUT, COMPLETED };
-
-	
-	public static final int EXCEPTION_EXIT_STATUS = Integer.MAX_VALUE;
 
 	/**
 	 * Uses bash's -c option to run a bash command.
@@ -57,7 +49,7 @@ public class Exec
 	 * 
 	 * Note this does NOT run the command, to run it :
 	 * <pre><code>
-	 * Exec.bash( "ls | sort" ).bufferOutput().run().getOutput();
+	 * Exec.bash( "ls | sort" ).run();
 	 * </code></pre>
 	 * 
 	 * @param commandString
@@ -163,8 +155,8 @@ public class Exec
 
 	private Source _inSource = new PrintSource();
 	
-	private Sink _outSink = new ReaderSink();            
-	private Sink _errSink = new ReaderSink();  
+	private Sink _outSink = new SimpleSink();            
+	private Sink _errSink = new SimpleSink();  
 
 	private StringBuffer _outBuffer;
 	private StringBuffer _errBuffer;
@@ -495,7 +487,8 @@ public class Exec
 	
 	/**
 	 * Runs the command. This method will block until the process is complete, so if the process
-	 * hangs, so will this method call.
+	 * hangs, so will this method call. However, if you set a timeout using {@link #timeout(long)}, then
+	 * a hung process will not hand this method call.
 	 * 
 	 * @return this
 	 */

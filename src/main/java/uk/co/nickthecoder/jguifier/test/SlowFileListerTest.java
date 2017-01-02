@@ -102,7 +102,7 @@ public class SlowFileListerTest {
 	public void sortByDate()
 		throws IOException
 	{
-		List<File> list = new FileLister().order( FileLister.DATE_ORDER ).listFiles( baseDir );
+		List<File> list = new FileLister().order( FileLister.LAST_MODIFIED_ORDER ).listFiles( baseDir );
 		assertSameFiles( list, earliest, early, foo, bar, late );
 	}
 	

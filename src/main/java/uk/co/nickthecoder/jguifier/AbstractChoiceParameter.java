@@ -18,7 +18,7 @@ import javax.swing.JComboBox;
  * To do this use addChoice( "m", "Male" ) and addChoice( "f", "Female" ). You can also use the
  * ChoiceParameter's convenience methods :
  * <pre><code>
- * myParameter.add( "m", "Male" ).add( "f", "Female" )
+ * myParameter.choice( "m", "Male" ).choice( "f", "Female" )
  * </code></pre>
  */
 public abstract class AbstractChoiceParameter<T> extends Parameter

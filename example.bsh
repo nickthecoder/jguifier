@@ -29,17 +29,6 @@ new Task() {
 		if ( bye.getValue() ) {
 			output.getMappedValue().println( "Goodbye" );
 		}
-		
-		/*
-		ls = Exec.create( "ls", "-l" );
-		sort = Exec.create( "sort" ).stdout();
-
-		ls.stdout( new Pipe( sort ) ).run();
-		
-		print( sort.getStdout() );
-		
-		print( Exec.create( "bash", "-c", "export" ).clearEnv().var( "HELLO", "World" ).stdout().run().getStdout() );
-		*/
 	}
 	
 }.name( "Example" )

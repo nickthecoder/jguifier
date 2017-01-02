@@ -10,6 +10,19 @@ public class FileSink extends CopySink
 {
 	private OutputStream _out;
 	
+
+    public FileSink( String filename )
+        throws IOException
+    {
+        this( new File( filename ) );
+    }
+    
+    public FileSink( String filename, boolean append )
+        throws IOException
+    {
+        this( new File( filename ), append );
+    }
+    
 	public FileSink( File file )
 		throws IOException
 	{
