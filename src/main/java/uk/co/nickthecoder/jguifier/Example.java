@@ -3,8 +3,8 @@ package uk.co.nickthecoder.jguifier;
 import java.io.PrintStream;
 
 /**
- * An example Task, which doens't do anything useful. See the source code to get a feel for how to create
- * {@link Parameter}s, use them withing {@link Task}s.
+ * An example Task, which doesn't do anything useful. See the source code to get a feel for how to create
+ * {@link Parameter}s, use them within {@link Task}s.
  * 
  * @priority 5
  */
@@ -13,14 +13,14 @@ public class Example extends Task
     private IntegerParameter _number = new IntegerParameter("number", "Very Long Label")
         .range(1, 10);
 
-    private ChoiceParameter<String> _greeting = new ChoiceParameter<String>(
-        "greeting", "Greeting").choices(new String[] { "Hello", "Hi", "Watcha" });
+    private StringChoiceParameter _greeting = new StringChoiceParameter("greeting", "Greeting")
+        .choices("Hello", "Hi", "Watcha");
 
-    private StringParameter _message = new StringParameter("message",
-        "Message", "Nice to meet you.").stretch();
+    private StringParameter _message = new StringParameter("message", "Message")
+        .stretch();
 
-    private MapChoiceParameter<String, PrintStream> _output = new MapChoiceParameter<String, PrintStream>(
-        "output", "Output").choice("stdout", System.out, "Normal")
+    private ChoiceParameter<PrintStream> _output = new ChoiceParameter<PrintStream>("output", "Output")
+        .choice("stdout", System.out, "Normal")
         .choice("stderr", System.err, "Error").value(System.err);
 
     private FileParameter _file = new FileParameter("file", "File");
@@ -33,7 +33,7 @@ public class Example extends Task
 
     private PrintStream getStream()
     {
-        return _output.getMappedValue();
+        return _output.getValue();
     }
 
     @Override

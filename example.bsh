@@ -5,12 +5,10 @@ import uk.co.nickthecoder.jguifier.*;
 
 message = new StringParameter( "message", "Message", "How are you?" );
 
-greeting = new ChoiceParameter( "greeting", "Greeting" )
-	.choice( "Hello" )
-	.choice( "Hi" ).value( "Hi" )
-	.choice( "Dear Sir/Madam," );
+greeting = new StringChoiceParameter( "greeting", "Greeting" )
+	.choices( "Hello", "Hi", "Dear Sir/Madam," );
 
-output = new MapChoiceParameter( "output", "Output" )
+output = new ChoiceParameter( "output", "Output" )
 	.choice( "stdout", System.out, "Normal" )
 	.choice( "stderr", System.err, "Error" );
 
@@ -23,11 +21,11 @@ new Task() {
 
 	public void run()
 	{
-		output.getMappedValue().println( greeting.getValue() );
-		output.getMappedValue().println( message.getValue() );
+		output.getValue().println( greeting.getValue() );
+		output.getValue().println( message.getValue() );
 		
 		if ( bye.getValue() ) {
-			output.getMappedValue().println( "Goodbye" );
+			output.getValue().println( "Goodbye" );
 		}
 	}
 	
