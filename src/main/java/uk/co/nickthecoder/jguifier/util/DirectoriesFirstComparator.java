@@ -8,6 +8,8 @@ import java.util.Comparator;
  * Note, the directories and files will then be ordered according to the Comparator passed
  * to the constructor. If no Comparator is given, then the files and directories will be ordered
  * alphabetically.
+ * 
+ * @priority 4
  */
 public class DirectoriesFirstComparator implements Comparator<File>
 {

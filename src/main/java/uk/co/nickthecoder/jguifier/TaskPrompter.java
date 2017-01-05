@@ -33,6 +33,11 @@ import uk.co.nickthecoder.jguifier.guiutil.TableLayoutManager;
 import uk.co.nickthecoder.jguifier.guiutil.VerticalStretchLayout;
 import uk.co.nickthecoder.jguifier.util.Util;
 
+/**
+ * A JFrame (a window), containing the set of {@link Task}'s parameters.
+ *
+ * @priority 4
+ */
 public class TaskPrompter
     extends JFrame
 {

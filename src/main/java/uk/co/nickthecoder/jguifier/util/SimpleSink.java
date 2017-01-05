@@ -4,6 +4,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import uk.co.nickthecoder.jguifier.Task;
+
+/**
+ * Throws the output away. This is the default sink for a {@link Task}'s stdout and stderr.
+ * 
+ * @priority 5
+ */
 public class SimpleSink implements Sink
 {
 

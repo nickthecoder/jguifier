@@ -9,6 +9,11 @@ import javax.swing.JCheckBox;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+/**
+ * A parameter holding values true, false and null.
+ * From the command line a BooleanParameter can be given using the text "true", "1", "yes", and "false", "0", "no".
+ * I have no intension of allowing non-english translations of any of these - sorry.
+ */
 public class BooleanParameter
     extends uk.co.nickthecoder.jguifier.Parameter
 {

@@ -9,6 +9,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * Lists the contents of a directory. Does much more than {@link File#list()}!
+ *
+ */
 public class FileLister
     implements FileFilter
 {
@@ -64,6 +68,8 @@ public class FileLister
     /**
      * Ways of sorting a recursive tree, either unsorted, each directory sorted individually, or all files sorted
      * together.
+     * 
+     * @priority 5
      */
     public enum Sort
     {
@@ -257,7 +263,7 @@ public class FileLister
      * A fluent version of {@link #setDepth(int)}.
      * 
      * @param value
-     * @return
+     * @return this
      */
     public FileLister depth(int value)
     {
@@ -391,7 +397,7 @@ public class FileLister
      * Files will be excluded and directories will be included in the results.
      * Fluent API version of {@link #setIncludeFiles(boolean)} and {@link #setIncludeDirectories(boolean)}.
      * 
-     * @return
+     * @return this
      */
     public FileLister onlyDirectories()
     {
@@ -501,7 +507,7 @@ public class FileLister
      * The same as extensions( String... ), but here just for beanshell which doesn't support varargs yet.
      * 
      * @param fileExtensions
-     * @return
+     * @return this
      */
     public FileLister extensionArray(String[] fileExtensions)
     {
@@ -544,7 +550,7 @@ public class FileLister
      * may change this behaviour, so do NOT call this twice!
      * 
      * @param filter
-     * @return
+     * @return this
      */
     public FileLister filter(FileFilter filter)
     {

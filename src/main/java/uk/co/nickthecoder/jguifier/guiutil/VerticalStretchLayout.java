@@ -14,6 +14,8 @@ import java.util.Map;
  * depending on the amount of stretch specified, and the amount of additional space available.
  *
  * Also ignores borders/insets. If you want these, add an extra JPanel around your container.
+ * 
+ * @priority 5
  **/
 
 public class VerticalStretchLayout

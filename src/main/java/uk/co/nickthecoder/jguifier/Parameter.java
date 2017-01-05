@@ -6,6 +6,7 @@ import java.awt.Component;
  * The base class for parameters. A parameter stores both the metadata
  * (such as a label, is the parameter is required etc) as well as the parameter's value.
  *
+ * @priority 3
  */
 public abstract class Parameter
 {
@@ -150,14 +151,14 @@ public abstract class Parameter
      * Creates an AWT Component object when a Task is displayed using the GUI.
      * 
      * @param taskPrompter
-     * @return
+     * @return The GUI component
      */
     public abstract Component createComponent(TaskPrompter taskPrompter);
 
     /**
      * Should the component be stretched to the maximum width of the container?
      * 
-     * @return
+     * @return true iff the component should fill all the available width
      */
     public boolean isStretchy()
     {

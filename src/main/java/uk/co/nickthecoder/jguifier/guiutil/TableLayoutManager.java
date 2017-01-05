@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
-*/
-
+ * @priority 5
+ */
 public class TableLayoutManager
     implements LayoutManager
 {

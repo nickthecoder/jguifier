@@ -4,6 +4,11 @@ import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A column used by {@link TableLayoutManager}.
+ * 
+ * @priority 5
+ */
 public class Column
 {
     List<Component> cells;

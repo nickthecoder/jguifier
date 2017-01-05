@@ -2,11 +2,17 @@ package uk.co.nickthecoder.jguifier;
 
 import java.io.PrintStream;
 
+/**
+ * An example Task, which doens't do anything useful. See the source code to get a feel for how to create
+ * {@link Parameter}s, use them withing {@link Task}s.
+ * 
+ * @priority 5
+ */
 public class Example extends Task
 {
     private IntegerParameter _number = new IntegerParameter("number", "Very Long Label")
         .range(1, 10);
-    
+
     private ChoiceParameter<String> _greeting = new ChoiceParameter<String>(
         "greeting", "Greeting").choices(new String[] { "Hello", "Hi", "Watcha" });
 
@@ -17,8 +23,8 @@ public class Example extends Task
         "output", "Output").choice("stdout", System.out, "Normal")
         .choice("stderr", System.err, "Error").value(System.err);
 
-    private FileParameter _file = new FileParameter( "file", "File" );
-    
+    private FileParameter _file = new FileParameter("file", "File");
+
     public Example()
     {
         super("Example");

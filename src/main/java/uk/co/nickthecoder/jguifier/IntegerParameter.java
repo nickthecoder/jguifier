@@ -8,6 +8,10 @@ import javax.swing.event.DocumentListener;
 
 import uk.co.nickthecoder.jguifier.util.Util;
 
+/**
+ * A {@link Parameter}, which must be an integer value, or may be null.
+ *
+ */
 public class IntegerParameter
     extends Parameter
 {

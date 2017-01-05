@@ -1,4 +1,5 @@
 version = '0.1'
+group = 'uk.co.nickthecoder'
 
 repositories {
     mavenCentral()
@@ -17,5 +18,22 @@ targetCompatibility = 1.7
 
 dependencies {
     compile 'junit:junit:4.12'
+    compile 'uk.co.nickthecoder:prioritydoc:0.1'
 }
 
+
+javadoc {
+    source = sourceSets.main.allJava
+    classpath = configurations.compile
+    
+    options.doclet = "uk.co.nickthecoder.prioritydoc.PriorityDoc"
+    options.addStringOption( "mainpackage", "uk.co.nickthecoder.jguifier" )
+    options.addStringOption( "overwriteresources" )
+    options.addStringOption( "usecookies" )
+    options.addStringOption( "title", "JGuifier" )
+    options.addStringOption( "link", "http://docs.oracle.com/javase/7/docs/api/")
+    //options.addStringOption( "diagrams", "src/docs/collisionStrategyDiagram.xml;src/docs/classDiagram.xml" )
+    
+    options.docletpath = configurations.compile.files.asType(List)
+    verbose = false
+}

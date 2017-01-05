@@ -2,6 +2,13 @@ package uk.co.nickthecoder.jguifier.util;
 
 import java.util.Comparator;
 
+/**
+ * Reverses the normal ordering of a comparator.
+ *
+ * @param <T>
+ * 
+ * @priority 4
+ */
 public class ReverseComparator<T>
     implements Comparator<T>
 {

@@ -1,19 +1,21 @@
 package uk.co.nickthecoder.jguifier;
 
-
+/**
+ * 
+ * @priority 4
+ */
 public class ParameterException
     extends TaskException
 {
-	private static final long serialVersionUID = 1;
-	
+    private static final long serialVersionUID = 1;
+
     public static final String REQUIRED_MESSAGE = "Required";
 
-
     private Parameter _parameter;
-    
-    public ParameterException( Parameter parameter, String message )
+
+    public ParameterException(Parameter parameter, String message)
     {
-        super( message );
+        super(message);
         this._parameter = parameter;
     }
 
@@ -21,11 +23,10 @@ public class ParameterException
     {
         return _parameter;
     }
-    
+
     @Override
     public String toString()
     {
         return "Parameter " + _parameter.getName() + " (" + _parameter.getLabel() + ") : " + getMessage();
     }
 }
-

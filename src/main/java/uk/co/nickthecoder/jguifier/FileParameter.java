@@ -15,17 +15,26 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import uk.co.nickthecoder.jguifier.util.Util;
 
+/**
+ * A {@link Parameter} for a filename or directory.
+ * 
+ * The {@link TaskPrompter} will show as a text field, with a "..." button on the right, which will launch an
+ * "Open File" dialog box.
+ *
+ * By default, a FileParameter expects a regular file, change this using {@link #directory()}.
+ * 
+ * By default the file can, but does not have to exist; change this using {@link #exists(boolean)}.
+ * 
+ * By default, if the file exists, it does not have to be writable. If you plan to write to the file, then use
+ * {@link #writable(boolean)}.
+ * 
+ */
 public class FileParameter
     extends StringParameter
 {
-    public enum TrueFalseMaybe
-    {
-        TRUE, FALSE, MAYBE
-    }
+    private TriState _exists;
 
-    private TrueFalseMaybe _exists;
-
-    private TrueFalseMaybe _isDirectory;
+    private TriState _isDirectory;
 
     private boolean _writable;
 
@@ -42,8 +51,8 @@ public class FileParameter
     {
         super(name, label, defaultValue);
 
-        _exists = TrueFalseMaybe.MAYBE;
-        _isDirectory = TrueFalseMaybe.MAYBE;
+        _exists = TriState.MAYBE;
+        _isDirectory = TriState.MAYBE;
         _writable = false;
         _stretchy = true;
     }
@@ -54,7 +63,7 @@ public class FileParameter
         return this;
     }
 
-    public FileParameter exists(TrueFalseMaybe value)
+    public FileParameter exists(TriState value)
     {
         setExists(value);
         return this;
@@ -62,15 +71,15 @@ public class FileParameter
 
     public void setExists(boolean value)
     {
-        setExists(value ? TrueFalseMaybe.TRUE : TrueFalseMaybe.FALSE);
+        setExists(value ? TriState.TRUE : TriState.FALSE);
     }
 
-    public void setExists(TrueFalseMaybe value)
+    public void setExists(TriState value)
     {
         _exists = value;
     }
 
-    public TrueFalseMaybe getExists()
+    public TriState getExists()
     {
         return _exists;
     }
@@ -83,15 +92,21 @@ public class FileParameter
 
     public void setIsDirectory(boolean value)
     {
-        setIsDirectory(value ? TrueFalseMaybe.TRUE : TrueFalseMaybe.FALSE);
+        setIsDirectory(value ? TriState.TRUE : TriState.FALSE);
     }
 
-    public void setIsDirectory(TrueFalseMaybe value)
+    public void setIsDirectory(TriState value)
     {
         _isDirectory = value;
     }
 
-    public TrueFalseMaybe getIsDirectory()
+    public FileParameter directory()
+    {
+        setIsDirectory(true);
+        return this;
+    }
+
+    public TriState getIsDirectory()
     {
         return _isDirectory;
     }
@@ -147,8 +162,8 @@ public class FileParameter
                 file = file.getAbsoluteFile();
             }
 
-            if (_exists != TrueFalseMaybe.MAYBE) {
-                if (_exists == TrueFalseMaybe.TRUE) {
+            if (_exists != TriState.MAYBE) {
+                if (_exists == TriState.TRUE) {
                     if (!file.exists()) {
                         throw new ParameterException(this, "File does not exist");
                     }
@@ -164,14 +179,14 @@ public class FileParameter
                 }
             }
 
-            if (_isDirectory != TrueFalseMaybe.MAYBE) {
+            if (_isDirectory != TriState.MAYBE) {
                 if (file.exists()) {
                     if (file.isDirectory()) {
-                        if (_isDirectory == TrueFalseMaybe.FALSE) {
+                        if (_isDirectory == TriState.FALSE) {
                             throw new ParameterException(this, "Is a directory");
                         }
                     } else {
-                        if (_isDirectory == TrueFalseMaybe.TRUE) {
+                        if (_isDirectory == TriState.TRUE) {
                             throw new ParameterException(this, "Is not a directory");
                         }
                     }
@@ -225,10 +240,10 @@ public class FileParameter
         int fsm = JFileChooser.FILES_AND_DIRECTORIES;
         String title = "Select a file or directory";
 
-        if (_isDirectory == TrueFalseMaybe.TRUE) {
+        if (_isDirectory == TriState.TRUE) {
             fsm = JFileChooser.DIRECTORIES_ONLY;
             title = "Select a directory";
-        } else if (_isDirectory == TrueFalseMaybe.FALSE) {
+        } else if (_isDirectory == TriState.FALSE) {
             fsm = JFileChooser.FILES_ONLY;
             title = "Select a file";
         }

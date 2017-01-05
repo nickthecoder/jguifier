@@ -11,6 +11,8 @@ import java.util.List;
  * in OTHER containers.
  * You will typically have a set of rows containers, each with its own RowLayoutManager,
  * but sharing a single Columns object.
+ * 
+ * @priority 5
  */
 
 public class RowLayoutManager

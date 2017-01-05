@@ -8,6 +8,10 @@ import javax.swing.event.DocumentListener;
 
 import uk.co.nickthecoder.jguifier.util.Util;
 
+/**
+ * The simplest type of {@link Parameter}, which can be any text.
+ * 
+ */
 public class StringParameter
     extends Parameter
 {

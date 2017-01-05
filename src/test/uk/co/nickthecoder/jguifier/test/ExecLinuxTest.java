@@ -43,7 +43,7 @@ public class ExecLinuxTest
 	@Test
     public void simpleExec()
     {
-    	String ls = new Exec( "ls", baseDir ).stdout().run().getStdout();
+    	String ls = new Exec( "ls", baseDir ).stdout().run().getStdout().toString();
     	assertEquals( lsResults, ls );
     }
     
@@ -51,11 +51,11 @@ public class ExecLinuxTest
 	public void input()
 		throws IOException
 	{
-		String head = new Exec( "head", "-n", "1" ).stdin( "Foo\nBar\n" ).stdout().run().getStdout();
+		String head = new Exec( "head", "-n", "1" ).stdin( "Foo\nBar\n" ).stdout().run().getStdout().toString();
 		assertEquals( "Foo\n", head );
 		
 		new Exec( "cat" ).stdin( "Hello World" ).stdout( new File( tmpResults ) ).run();
-		String hello = new Exec( "cat", tmpResults ).stdout().run().getStdout();
+		String hello = new Exec( "cat", tmpResults ).stdout().run().getStdout().toString();
 		assertEquals( "Hello World", hello );
 		
 	}
@@ -65,7 +65,7 @@ public class ExecLinuxTest
     	throws IOException
 	{
     	new Exec( "ls", baseDir ).stdout( new File(tmpResults) ).run();
-    	String ls2 = new Exec( "cat", tmpResults ).stdout().run().getStdout();
+    	String ls2 = new Exec( "cat", tmpResults ).stdout().run().getStdout().toString();
     	assertEquals( lsResults, ls2 );
     }
     
@@ -104,10 +104,10 @@ public class ExecLinuxTest
 	@Test
 	public void setDir()
 	{
-		String tmp = new Exec( "pwd" ).dir( new File( "/tmp" ) ).stdout().run().getStdout();
+		String tmp = new Exec( "pwd" ).dir( new File( "/tmp" ) ).stdout().run().getStdout().toString();
 		assertEquals( "/tmp\n", tmp );
 		
-		String root = new Exec( "pwd" ).dir( new File( baseDir ) ).stdout().run().getStdout();
+		String root = new Exec( "pwd" ).dir( new File( baseDir ) ).stdout().run().getStdout().toString();
 		assertEquals( baseDir + "\n", root );
 		
 	}

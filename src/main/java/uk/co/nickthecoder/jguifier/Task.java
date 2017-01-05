@@ -34,6 +34,7 @@ import uk.co.nickthecoder.jguifier.util.Util;
  *    }
  *    </code>
  * </pre>
+ * 
  */
 public abstract class Task
 {

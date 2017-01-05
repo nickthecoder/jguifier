@@ -13,6 +13,7 @@ import java.io.InputStream;
  * <li>{@link FileSink} - Writes the output to a file</li>
  * <li>{@link Pipe} - Sends the output to the input of another command, in a similar manner to command line pipes |</li>
  * </ul>
+ * @priority 4
  */
 public interface Sink extends Runnable
 {
