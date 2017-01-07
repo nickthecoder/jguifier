@@ -87,6 +87,7 @@ public class ChoiceParameter<T> extends Parameter
      * 
      * @param key
      */
+    @Override
     public void setStringValue(String key)
         throws ParameterException
     {
@@ -97,6 +98,7 @@ public class ChoiceParameter<T> extends Parameter
         }
     }
 
+    @Override
     public String getStringValue()
     {
         for (String key : _mapping.keySet()) {

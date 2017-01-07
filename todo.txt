@@ -1,23 +1,5 @@
-Add bash autocomplete functionality
-
-Move unit tests out of gradle "main" and into "test".
-
-Filename (and strings), should stretch the fields, when the window resizes.
-
-Later
-=====
 
 Use a spinner for the int & double parameter
 
-Make the scrollbar vanish, but extra room still allocated for it by tweeking preferred size.
+Hide the scrollbar when it is not needed, but extra room still allocated for it by tweaking preferred size.
 
-Use my own error icon 
-
-
-Scripts
-=======
-
-ScalePrint
-
-	Add a pulldown for standard page sizes, including "custom", which changes the other params.
-    	Make it work from the command line without prompting.
