@@ -2,7 +2,9 @@ package uk.co.nickthecoder.jguifier;
 
 import java.awt.Component;
 
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -28,6 +30,16 @@ public class DoubleParameter
     public DoubleParameter(String name, String label, Double defaultValue)
     {
         super(name, label, defaultValue);
+    }
+
+    public double getMinimumValue()
+    {
+        return _minimum;
+    }
+
+    public double getMaximumValue()
+    {
+        return _maximum;
     }
 
     public DoubleParameter range(Double min, Double max)
@@ -92,10 +104,26 @@ public class DoubleParameter
     @Override
     public Component createComponent(final TaskPrompter taskPrompter)
     {
-        final JTextField component = new JTextField(getValue() == null ? "" : getValue().toString());
-        component.setColumns(10);
+        Double value = getValue();
+        if (value == null) {
+            value = 0.0;
+        }
+        if (value < getMinimumValue()) {
+            value = getMinimumValue();
+        }
+        if (value > getMaximumValue()) {
+            value = getMaximumValue();
+        }
 
-        component.getDocument().addDocumentListener(new DocumentListener()
+        final SpinnerNumberModel model = new SpinnerNumberModel(value, (Double) getMinimumValue(),
+            (Double) getMaximumValue(), (Double) 1.0);
+        final JSpinner component = new JSpinner(model);
+        final JSpinner.DefaultEditor editor = (JSpinner.DefaultEditor) component.getEditor();
+        final JTextField textField = editor.getTextField();
+        
+        textField.setColumns(6);
+        
+        textField.getDocument().addDocumentListener(new DocumentListener()
         {
             @Override
             public void changedUpdate(DocumentEvent e)
@@ -118,17 +146,16 @@ public class DoubleParameter
             public void checkValue()
             {
                 try {
-                    setStringValue(component.getText());
-                    check();
+                    setStringValue(textField.getText());
                     taskPrompter.clearError(DoubleParameter.this);
-                } catch (NumberFormatException e) {
-                    taskPrompter.setError(DoubleParameter.this, "Not an integer");
                 } catch (Exception e) {
                     taskPrompter.setError(DoubleParameter.this, e.getMessage());
                 }
             }
         });
 
+        
         return component;
     }
 }
+

@@ -1,5 +1,7 @@
 
 Use a spinner for the int & double parameter
 
+Make a clever File input, can use a pull-down for auto-completion (equivalent of tab completion in linux shells).
+
 Hide the scrollbar when it is not needed, but extra room still allocated for it by tweaking preferred size.
 

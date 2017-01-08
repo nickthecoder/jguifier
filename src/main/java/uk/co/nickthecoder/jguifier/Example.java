@@ -58,8 +58,11 @@ public class Example extends Task
 
 public class Example extends Task
 {
-    private IntegerParameter _number = new IntegerParameter("number", "Very Long Label")
+    private IntegerParameter _integer = new IntegerParameter("integer", "Integer")
         .range(1, 10);
+
+    private DoubleParameter _double = new DoubleParameter("double", "Double")
+        .range(1.0, 10.0);
 
     private StringChoiceParameter _greeting = new StringChoiceParameter("greeting", "Greeting")
         .choices("Hello", "Hi", "Watcha");
@@ -76,7 +79,7 @@ public class Example extends Task
     public Example()
     {
         super();
-        addParameters(_number, _greeting, _message, _output, _file);
+        addParameters(_integer, _double, _greeting, _message, _output, _file);
     }
 
     private PrintStream getStream()

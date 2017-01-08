@@ -2,7 +2,9 @@ package uk.co.nickthecoder.jguifier;
 
 import java.awt.Component;
 
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -114,10 +116,26 @@ public class IntegerParameter
     @Override
     public Component createComponent(final TaskPrompter taskPrompter)
     {
-        final JTextField component = new JTextField(getValue() == null ? "" : getValue().toString());
-        component.setColumns(6);
+        Integer value = getValue();
+        if (value == null) {
+            value = 0;
+        }
+        if (value < getMinimumValue()) {
+            value = getMinimumValue();
+        }
+        if ( value > getMaximumValue()) {
+            value = getMaximumValue();
+        }
+        
+        final SpinnerNumberModel model = new SpinnerNumberModel( value, (Integer) getMinimumValue(), (Integer) getMaximumValue(), (Integer) 1 );
+        final JSpinner component = new JSpinner(model);
 
-        component.getDocument().addDocumentListener(new DocumentListener()
+        final JSpinner.DefaultEditor editor = (JSpinner.DefaultEditor) component.getEditor();
+        final JTextField textField = editor.getTextField();
+        
+        textField.setColumns(6);
+        
+        textField.getDocument().addDocumentListener(new DocumentListener()
         {
             @Override
             public void changedUpdate(DocumentEvent e)
@@ -140,13 +158,14 @@ public class IntegerParameter
             public void checkValue()
             {
                 try {
-                    setStringValue(component.getText());
+                    setStringValue(textField.getText());
                     taskPrompter.clearError(IntegerParameter.this);
                 } catch (Exception e) {
                     taskPrompter.setError(IntegerParameter.this, e.getMessage());
                 }
             }
         });
+
 
         return component;
     }
