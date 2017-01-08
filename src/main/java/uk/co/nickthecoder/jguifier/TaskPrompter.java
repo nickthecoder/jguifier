@@ -1,8 +1,6 @@
 package uk.co.nickthecoder.jguifier;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -10,12 +8,9 @@ import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
-import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -23,13 +18,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
 import uk.co.nickthecoder.jguifier.guiutil.MaxJScrollPane;
-import uk.co.nickthecoder.jguifier.guiutil.RowLayoutManager;
-import uk.co.nickthecoder.jguifier.guiutil.TableLayoutManager;
 import uk.co.nickthecoder.jguifier.guiutil.VerticalStretchLayout;
 import uk.co.nickthecoder.jguifier.util.Util;
 
@@ -47,15 +39,13 @@ public class TaskPrompter
         GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().height / 2;
 
     private Task _task;
-
-    private Map<String, JLabel> _parameterErrorLabels;
+    
+    private ParametersPanel _parametersPanel;
 
     public TaskPrompter(Task task)
     {
         super("Prompt");
         _task = task;
-        _parameterErrorLabels = new HashMap<String, JLabel>();
-
     }
 
     public void prompt()
@@ -66,19 +56,12 @@ public class TaskPrompter
         Container contentPane = this.getContentPane();
         contentPane.setLayout(new BorderLayout());
 
-        // A table of all of the task's parameters
-        JPanel table = new JPanel();
-        TableLayoutManager tlm = new TableLayoutManager(table, 2);
-        tlm.getColumn(1).stretchFactor = 1;
-        table.setLayout(tlm);
-        table.setBorder(new EmptyBorder(10, 10, 40, 10));
-
-        GroupParameter root = _task.getRootParameter();
-        createParameters(root, table, tlm);
-
+        _parametersPanel = new ParametersPanel();
+        _parametersPanel.addParameters( _task.getRootParameter() );
+        
         // Scroll
         MaxJScrollPane tableScroll = new MaxJScrollPane(
-            table,
+            _parametersPanel,
             ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
             ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         tableScroll.setMaxHeight(MAX_TABLE_HEIGHT);
@@ -156,78 +139,11 @@ public class TaskPrompter
 
     }
 
-    private void createParameters(GroupParameter group, Container container, TableLayoutManager tlm)
-    {
-        for (Parameter parameter : group.getChildren()) {
-
-            JLabel parameterErrorLabel = createErrorLabel();
-            _parameterErrorLabels.put(parameter.getName(), parameterErrorLabel);
-            parameterErrorLabel.setVisible(false);
-
-            if (parameter instanceof GroupParameter) {
-                GroupParameter subGroup = (GroupParameter) parameter;
-
-                Container subContainer = (Container) subGroup.createComponent(this);
-                subContainer.setLayout(tlm);
-                container.add(subContainer);
-
-                createParameters(subGroup, subContainer, tlm);
-
-            } else {
-
-                JPanel row = new JPanel();
-                RowLayoutManager rlm = new RowLayoutManager(row, tlm);
-                row.setLayout(rlm);
-
-                JLabel label = new JLabel(parameter.getLabel());
-                rlm.add(label);
-                label.setBackground(Color.BLUE);
-
-                Component component = parameter.createComponent(this);
-                rlm.add(component);
-                rlm.setStretchy(parameter.isStretchy());
-
-                container.add(row);
-                container.add(parameterErrorLabel);
-            }
-
-        }
-
-    }
-
-    private JLabel createErrorLabel()
-    {
-        Icon icon = UIManager.getIcon("OptionPane.errorIcon");
-        JLabel result = new JLabel(icon);
-        result.setForeground(Color.RED);
-
-        return result;
-    }
-
-    public void setError(Parameter parameter, String message)
-    {
-        if (message == null) {
-            clearError(parameter);
-        }
-
-        JLabel label = _parameterErrorLabels.get(parameter.getName());
-        label.setText(message);
-        label.setVisible(true);
-        // pack();
-    }
-
-    public void clearError(Parameter parameter)
-    {
-        JLabel label = _parameterErrorLabels.get(parameter.getName());
-        label.setText("");
-        label.setVisible(false);
-        // pack();
-    }
 
     public void onOk()
     {
         for (Parameter parameter : _task.getParameters()) {
-            JLabel errorLabel = _parameterErrorLabels.get(parameter.getName());
+            JLabel errorLabel = _parametersPanel.getErrorLabel(parameter);
             if (errorLabel.isVisible()) {
                 return;
             }
@@ -238,7 +154,7 @@ public class TaskPrompter
             try {
                 parameter.check();
             } catch (ParameterException e) {
-                setError(parameter, e.getMessage());
+                _parametersPanel.setError(parameter, e.getMessage());
                 errors = true;
             }
         }
@@ -249,7 +165,7 @@ public class TaskPrompter
         try {
             _task.check();
         } catch (ParameterException e) {
-            setError(e.getParameter(), e.getMessage());
+            _parametersPanel.setError(e.getParameter(), e.getMessage());
             return;
         }
 

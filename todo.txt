@@ -1,23 +1,22 @@
 Current Task
 ============
 
-DoubleParameter says "required" when the default value is not in the range, and is corrected by createComponent, but the value
-is not set.
+Make more reusable by
+	allowing FileParameter to be used without a TaskPrompter
+		create a ParameterContainer class. TaskPrompter uses one or extends it.
 
 
 BUGS
 ====
 
-Make a clever File input, can use a pull-down for auto-completion (equivalent of tab completion in linux shells).
-
-Make more reusable by
-	allowing FileParameter to be used without a TaskPrompter
-		create a ParameterContainer class. TaskPrompter uses one or extends it.
-
-	allowing parameters to be embedded in a JPanel, rather than a JFrame.
-
-
 Error message to be left aligned.
+
+New Features
+============
+
+Make a clever FileParameter: can use a pull-down for auto-completion (equivalent of tab completion in linux shells).
+
+FileParameter to display message, when the wrong type of file is chosen (e.g. file vs directory, hidden, wrong extension).
 
 Hide the scrollbar when it is not needed, but extra room still allocated for it by tweaking preferred size.
 

@@ -139,7 +139,7 @@ public class ChoiceParameter<T> extends ValueParameter<T>
     }
 
     @Override
-    public Component createComponent(final TaskPrompter taskPrompter)
+    public Component createComponent(final ParametersPanel parametersPanel)
     {
         _comboBox = new JComboBox<String>();
         updateComboBox();
@@ -152,10 +152,10 @@ public class ChoiceParameter<T> extends ValueParameter<T>
                 try {
                     int index = _comboBox.getSelectedIndex();
                     setStringValue(_keys.get(index));
-                    taskPrompter.clearError(ChoiceParameter.this);
+                    parametersPanel.clearError(ChoiceParameter.this);
 
                 } catch (Exception e) {
-                    taskPrompter.setError(ChoiceParameter.this, e.getMessage());
+                    parametersPanel.setError(ChoiceParameter.this, e.getMessage());
                 }
 
             }

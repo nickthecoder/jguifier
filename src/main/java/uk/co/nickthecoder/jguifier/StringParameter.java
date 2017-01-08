@@ -64,10 +64,10 @@ public class StringParameter
     }
 
     @Override
-    public Component createComponent(final TaskPrompter taskPrompter)
+    public Component createComponent(final ParametersPanel parametersPanel)
     {
         final JTextField component = new JTextField(getValue() == null ? "" : getValue());
-        textField( component, taskPrompter );
+        textField( component, parametersPanel );
         
         return component;
     }

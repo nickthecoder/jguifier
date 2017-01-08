@@ -47,7 +47,7 @@ public abstract class TextParameter<T> extends ValueParameter<T>
         _stretchy = value;
     }
 
-    protected void textField(final JTextField textField, final TaskPrompter taskPrompter)
+    protected void textField(final JTextField textField, final ParametersPanel parametersPanel)
     {
         textField.setColumns(_columns);
 
@@ -75,9 +75,9 @@ public abstract class TextParameter<T> extends ValueParameter<T>
             {
                 try {
                     setStringValue(textField.getText());
-                    taskPrompter.clearError(TextParameter.this);
+                    parametersPanel.clearError(TextParameter.this);
                 } catch (Exception e) {
-                    taskPrompter.setError(TextParameter.this, e.getMessage());
+                    parametersPanel.setError(TextParameter.this, e.getMessage());
                 }
             }
         });

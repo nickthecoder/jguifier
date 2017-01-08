@@ -76,7 +76,7 @@ public abstract class Parameter
      * @param taskPrompter
      * @return The GUI component
      */
-    public abstract Component createComponent(TaskPrompter taskPrompter);
+    public abstract Component createComponent(ParametersPanel panel);
 
     /**
      * Should the component be stretched to the maximum width of the container?

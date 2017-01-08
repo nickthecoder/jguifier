@@ -29,7 +29,7 @@ public class BooleanParameter
 
     public BooleanParameter(String name, String label, Boolean defaultValue)
     {
-        super(name, label,defaultValue);
+        super(name, label, defaultValue);
     }
 
     public BooleanParameter oppositeName(String name)
@@ -64,7 +64,7 @@ public class BooleanParameter
     }
 
     @Override
-    public Component createComponent(final TaskPrompter taskPrompter)
+    public Component createComponent(final ParametersPanel parametersPanel)
     {
         final JCheckBox component = new JCheckBox();
         if (Boolean.TRUE == getValue()) {
@@ -82,9 +82,9 @@ public class BooleanParameter
             {
                 try {
                     setValue(component.getModel().isSelected());
-                    taskPrompter.clearError(BooleanParameter.this);
+                    parametersPanel.clearError(BooleanParameter.this);
                 } catch (Exception e) {
-                    taskPrompter.setError(BooleanParameter.this, e.getMessage());
+                    parametersPanel.setError(BooleanParameter.this, e.getMessage());
                 }
             }
         });

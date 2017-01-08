@@ -278,10 +278,10 @@ public class FileParameter
     }
 
     @Override
-    public Component createComponent(final TaskPrompter taskPrompter)
+    public Component createComponent(final ParametersPanel parametersPanel)
     {
         final JTextField textField = new JTextField(getValue() == null ? "" : getValue().getPath());
-        textField(textField, taskPrompter);
+        textField(textField, parametersPanel);
 
         JButton pickButton = new JButton("...");
         pickButton.addActionListener(new ActionListener()
@@ -289,7 +289,7 @@ public class FileParameter
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                onFileChooser(taskPrompter, textField);
+                onFileChooser(parametersPanel, textField);
             }
         });
 
@@ -301,7 +301,7 @@ public class FileParameter
         return panel;
     }
 
-    private void onFileChooser(final TaskPrompter taskPrompter, JTextField textField)
+    private void onFileChooser(final ParametersPanel parametersPanel, JTextField textField)
     {
         JFileChooser fileChooser = new JFileChooser(textField.getText());
 
@@ -323,15 +323,15 @@ public class FileParameter
             fileChooser.setFileFilter(new FileNameExtensionFilter(_filterDescription, _filterExtensions));
         }
 
-        int result = fileChooser.showOpenDialog(taskPrompter);
+        int result = fileChooser.showOpenDialog(parametersPanel);
         if (result == JFileChooser.APPROVE_OPTION) {
 
             textField.setText(fileChooser.getSelectedFile().getPath());
             try {
                 setStringValue(textField.getText());
-                taskPrompter.clearError(this);
+                parametersPanel.clearError(this);
             } catch (Exception e) {
-                taskPrompter.setError(this, e.getMessage());
+                parametersPanel.setError(this, e.getMessage());
             }
         }
     }

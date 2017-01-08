@@ -60,7 +60,7 @@ public class GroupParameter
     }
 
     @Override
-    public Component createComponent(final TaskPrompter taskPrompter)
+    public Component createComponent(final ParametersPanel parametersPanel)
     {
         JPanel panel = new JPanel();
         panel.setBorder(BorderFactory.createCompoundBorder(

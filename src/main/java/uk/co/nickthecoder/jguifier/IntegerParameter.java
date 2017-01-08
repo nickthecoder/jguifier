@@ -114,7 +114,7 @@ public class IntegerParameter
     }
 
     @Override
-    public Component createComponent(final TaskPrompter taskPrompter)
+    public Component createComponent(final ParametersPanel parametersPanel)
     {
         Integer value = getValue();
         if (value == null) {
@@ -137,7 +137,7 @@ public class IntegerParameter
         final JSpinner.DefaultEditor editor = (JSpinner.DefaultEditor) component.getEditor();
         final JTextField textField = editor.getTextField();
 
-        textField(textField, taskPrompter);
+        textField(textField, parametersPanel);
 
         return component;
     }
