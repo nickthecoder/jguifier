@@ -5,8 +5,6 @@ import java.awt.Component;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
 import uk.co.nickthecoder.jguifier.util.Util;
 
@@ -16,7 +14,7 @@ import uk.co.nickthecoder.jguifier.util.Util;
  * 
  */
 public class DoubleParameter
-    extends ValueParameter<Double>
+    extends TextParameter<Double>
 {
     private double _minimum = Double.MIN_VALUE;
 
@@ -25,11 +23,13 @@ public class DoubleParameter
     public DoubleParameter(String name, String label)
     {
         super(name, label);
+        _columns = 8;
     }
 
     public DoubleParameter(String name, String label, Double defaultValue)
     {
         super(name, label, defaultValue);
+        _columns = 8;
     }
 
     public double getMinimumValue()
@@ -120,42 +120,9 @@ public class DoubleParameter
         final JSpinner component = new JSpinner(model);
         final JSpinner.DefaultEditor editor = (JSpinner.DefaultEditor) component.getEditor();
         final JTextField textField = editor.getTextField();
-        
-        textField.setColumns(6);
-        
-        textField.getDocument().addDocumentListener(new DocumentListener()
-        {
-            @Override
-            public void changedUpdate(DocumentEvent e)
-            {
-                checkValue();
-            }
 
-            @Override
-            public void removeUpdate(DocumentEvent e)
-            {
-                checkValue();
-            }
+        textField(textField, taskPrompter);
 
-            @Override
-            public void insertUpdate(DocumentEvent e)
-            {
-                checkValue();
-            }
-
-            public void checkValue()
-            {
-                try {
-                    setStringValue(textField.getText());
-                    taskPrompter.clearError(DoubleParameter.this);
-                } catch (Exception e) {
-                    taskPrompter.setError(DoubleParameter.this, e.getMessage());
-                }
-            }
-        });
-
-        
         return component;
     }
 }
-

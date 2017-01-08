@@ -13,8 +13,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import uk.co.nickthecoder.jguifier.util.Util;
-
 /**
  * A {@link Parameter} for a filename or directory.
  * 
@@ -30,7 +28,7 @@ import uk.co.nickthecoder.jguifier.util.Util;
  * 
  */
 public class FileParameter
-    extends StringParameter
+    extends TextParameter<File>
 {
     private TriState _exists;
 
@@ -47,7 +45,7 @@ public class FileParameter
         this(name, label, null);
     }
 
-    public FileParameter(String name, String label, String defaultValue)
+    public FileParameter(String name, String label, File defaultValue)
     {
         super(name, label, defaultValue);
 
@@ -55,6 +53,15 @@ public class FileParameter
         _isDirectory = TriState.MAYBE;
         _writable = false;
         _stretchy = true;
+    }
+
+    public void setStringValue(String value)
+    {
+        if (value == null) {
+            setValue(null);
+        } else {
+            setValue(new File(value));
+        }
     }
 
     public FileParameter exists(boolean value)
@@ -151,13 +158,9 @@ public class FileParameter
     {
         super.check();
 
-        if (Util.empty(getValue())) {
-            return;
-        }
-
         try {
 
-            File file = new File(getValue());
+            File file = getValue();
             if (!file.isAbsolute()) {
                 file = file.getAbsoluteFile();
             }
@@ -207,77 +210,6 @@ public class FileParameter
             throw e;
         } catch (Exception e) {
             throw new ParameterException(this, e.getMessage());
-        }
-    }
-
-    /**
-     * Gets the value as a File, rather than a String (which is what {@link #getValue()} returns).
-     * 
-     * @return A File representation of the value, which may be null.
-     */
-    public File getFile()
-    {
-        if (getValue() == null) {
-            return null;
-        }
-        return new File(getValue());
-    }
-
-    @Override
-    public Component createComponent(final TaskPrompter taskPrompter)
-    {
-        final JTextField textField = (JTextField) super.createComponent(taskPrompter);
-
-        JButton pickButton = new JButton("...");
-        pickButton.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                onFileChooser(taskPrompter, textField);
-            }
-        });
-
-        JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
-        panel.add(textField, BorderLayout.CENTER);
-        panel.add(pickButton, BorderLayout.EAST);
-
-        return panel;
-    }
-
-    private void onFileChooser(final TaskPrompter taskPrompter, JTextField textField)
-    {
-        JFileChooser fileChooser = new JFileChooser(textField.getText());
-
-        int fsm = JFileChooser.FILES_AND_DIRECTORIES;
-        String title = "Select a file or directory";
-
-        if (_isDirectory == TriState.TRUE) {
-            fsm = JFileChooser.DIRECTORIES_ONLY;
-            title = "Select a directory";
-        } else if (_isDirectory == TriState.FALSE) {
-            fsm = JFileChooser.FILES_ONLY;
-            title = "Select a file";
-        }
-
-        fileChooser.setFileSelectionMode(fsm);
-        fileChooser.setDialogTitle(title);
-        fileChooser.setApproveButtonText("Select");
-        if (_filterExtensions != null) {
-            fileChooser.setFileFilter(new FileNameExtensionFilter(_filterDescription, _filterExtensions));
-        }
-
-        int result = fileChooser.showOpenDialog(taskPrompter);
-        if (result == JFileChooser.APPROVE_OPTION) {
-
-            textField.setText(fileChooser.getSelectedFile().getPath());
-            try {
-                setStringValue(textField.getText());
-                taskPrompter.clearError(this);
-            } catch (Exception e) {
-                taskPrompter.setError(this, e.getMessage());
-            }
         }
     }
 
@@ -344,4 +276,64 @@ public class FileParameter
         }
         return false;
     }
+
+    @Override
+    public Component createComponent(final TaskPrompter taskPrompter)
+    {
+        final JTextField textField = new JTextField(getValue() == null ? "" : getValue().getPath());
+        textField(textField, taskPrompter);
+
+        JButton pickButton = new JButton("...");
+        pickButton.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                onFileChooser(taskPrompter, textField);
+            }
+        });
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        panel.add(textField, BorderLayout.CENTER);
+        panel.add(pickButton, BorderLayout.EAST);
+
+        return panel;
+    }
+
+    private void onFileChooser(final TaskPrompter taskPrompter, JTextField textField)
+    {
+        JFileChooser fileChooser = new JFileChooser(textField.getText());
+
+        int fsm = JFileChooser.FILES_AND_DIRECTORIES;
+        String title = "Select a file or directory";
+
+        if (_isDirectory == TriState.TRUE) {
+            fsm = JFileChooser.DIRECTORIES_ONLY;
+            title = "Select a directory";
+        } else if (_isDirectory == TriState.FALSE) {
+            fsm = JFileChooser.FILES_ONLY;
+            title = "Select a file";
+        }
+
+        fileChooser.setFileSelectionMode(fsm);
+        fileChooser.setDialogTitle(title);
+        fileChooser.setApproveButtonText("Select");
+        if (_filterExtensions != null) {
+            fileChooser.setFileFilter(new FileNameExtensionFilter(_filterDescription, _filterExtensions));
+        }
+
+        int result = fileChooser.showOpenDialog(taskPrompter);
+        if (result == JFileChooser.APPROVE_OPTION) {
+
+            textField.setText(fileChooser.getSelectedFile().getPath());
+            try {
+                setStringValue(textField.getText());
+                taskPrompter.clearError(this);
+            } catch (Exception e) {
+                taskPrompter.setError(this, e.getMessage());
+            }
+        }
+    }
+
 }

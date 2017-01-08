@@ -5,8 +5,6 @@ import java.awt.Component;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
 import uk.co.nickthecoder.jguifier.util.Util;
 
@@ -15,7 +13,7 @@ import uk.co.nickthecoder.jguifier.util.Util;
  *
  */
 public class IntegerParameter
-    extends ValueParameter<Integer>
+    extends TextParameter<Integer>
 {
     private int _minimum = Integer.MIN_VALUE;
 
@@ -24,11 +22,13 @@ public class IntegerParameter
     public IntegerParameter(String name, String label)
     {
         super(name, label);
+        _columns = 6;
     }
 
     public IntegerParameter(String name, String label, Integer defaultValue)
     {
         super(name, label, defaultValue);
+        _columns = 6;
     }
 
     public IntegerParameter range(Integer min, Integer max)
@@ -123,49 +123,18 @@ public class IntegerParameter
         if (value < getMinimumValue()) {
             value = getMinimumValue();
         }
-        if ( value > getMaximumValue()) {
+        if (value > getMaximumValue()) {
             value = getMaximumValue();
         }
-        
-        final SpinnerNumberModel model = new SpinnerNumberModel( value, (Integer) getMinimumValue(), (Integer) getMaximumValue(), (Integer) 1 );
+
+        final SpinnerNumberModel model = new SpinnerNumberModel(value, (Integer) getMinimumValue(),
+            (Integer) getMaximumValue(), (Integer) 1);
         final JSpinner component = new JSpinner(model);
 
         final JSpinner.DefaultEditor editor = (JSpinner.DefaultEditor) component.getEditor();
         final JTextField textField = editor.getTextField();
-        
-        textField.setColumns(6);
-        
-        textField.getDocument().addDocumentListener(new DocumentListener()
-        {
-            @Override
-            public void changedUpdate(DocumentEvent e)
-            {
-                checkValue();
-            }
 
-            @Override
-            public void removeUpdate(DocumentEvent e)
-            {
-                checkValue();
-            }
-
-            @Override
-            public void insertUpdate(DocumentEvent e)
-            {
-                checkValue();
-            }
-
-            public void checkValue()
-            {
-                try {
-                    setStringValue(textField.getText());
-                    taskPrompter.clearError(IntegerParameter.this);
-                } catch (Exception e) {
-                    taskPrompter.setError(IntegerParameter.this, e.getMessage());
-                }
-            }
-        });
-
+        textField(textField, taskPrompter);
 
         return component;
     }
