@@ -1,13 +1,12 @@
 Current Task
 ============
 
-Refactor, introduce TextParameter
+DoubleParameter says "required" when the default value is not in the range, and is corrected by createComponent, but the value
+is not set.
+
 
 BUGS
 ====
-
-DoubleParameter says "required" when the default value is not in the range, and is corrected by createComponent, but the value
-is not set.
 
 Make a clever File input, can use a pull-down for auto-completion (equivalent of tab completion in linux shells).
 

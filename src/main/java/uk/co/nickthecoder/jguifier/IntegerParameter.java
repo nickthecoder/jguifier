@@ -126,7 +126,10 @@ public class IntegerParameter
         if (value > getMaximumValue()) {
             value = getMaximumValue();
         }
-
+        // If value has been changed, then update the parameter's, to prevent "Required" error message,
+        // when the default was not set.
+        setValue(value);
+        
         final SpinnerNumberModel model = new SpinnerNumberModel(value, (Integer) getMinimumValue(),
             (Integer) getMaximumValue(), (Integer) 1);
         final JSpinner component = new JSpinner(model);

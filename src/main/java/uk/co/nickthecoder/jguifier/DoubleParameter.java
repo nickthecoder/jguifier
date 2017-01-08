@@ -114,7 +114,10 @@ public class DoubleParameter
         if (value > getMaximumValue()) {
             value = getMaximumValue();
         }
-
+        // If value has been changed, then update the parameter's, to prevent "Required" error message,
+        // when the default was not set.
+        setValue( value );
+        
         final SpinnerNumberModel model = new SpinnerNumberModel(value, (Double) getMinimumValue(),
             (Double) getMaximumValue(), (Double) 1.0);
         final JSpinner component = new JSpinner(model);
