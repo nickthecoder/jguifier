@@ -13,10 +13,8 @@ import uk.co.nickthecoder.jguifier.util.Util;
  *
  */
 public class IntegerParameter
-    extends Parameter
+    extends ValueParameter<Integer>
 {
-    private Integer _value = null;
-
     private int _minimum = Integer.MIN_VALUE;
 
     private int _maximum = Integer.MAX_VALUE;
@@ -28,8 +26,7 @@ public class IntegerParameter
 
     public IntegerParameter(String name, String label, Integer defaultValue)
     {
-        super(name, label);
-        _value = defaultValue;
+        super(name, label, defaultValue);
     }
 
     public IntegerParameter range(Integer min, Integer max)
@@ -65,24 +62,19 @@ public class IntegerParameter
         return _maximum;
     }
 
-    public void setValue(Integer value)
-    {
-        _value = value;
-    }
-
     @Override
     public void setStringValue(String string)
         throws ParameterException
     {
         if (Util.empty(string)) {
-            _value = null;
+            setValue(null);
 
         } else {
 
             try {
 
                 int value = Integer.parseInt(string);
-                _value = value;
+                setValue(value);
 
             } catch (Exception e) {
                 try {
@@ -96,20 +88,6 @@ public class IntegerParameter
         }
 
         check();
-    }
-
-    public Integer getValue()
-    {
-        return _value;
-    }
-
-    @Override
-    public String getStringValue()
-    {
-        if (_value == null) {
-            return null;
-        }
-        return _value.toString();
     }
 
     @Override
@@ -136,7 +114,7 @@ public class IntegerParameter
     @Override
     public Component createComponent(final TaskPrompter taskPrompter)
     {
-        final JTextField component = new JTextField(_value == null ? "" : _value.toString());
+        final JTextField component = new JTextField(getValue() == null ? "" : getValue().toString());
         component.setColumns(6);
 
         component.getDocument().addDocumentListener(new DocumentListener()
@@ -172,11 +150,4 @@ public class IntegerParameter
 
         return component;
     }
-
-    @Override
-    public String toString()
-    {
-        return super.toString() + " = " + _value;
-    }
-
 }

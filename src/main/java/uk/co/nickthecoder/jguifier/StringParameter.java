@@ -13,10 +13,8 @@ import uk.co.nickthecoder.jguifier.util.Util;
  * 
  */
 public class StringParameter
-    extends Parameter
+    extends ValueParameter<String>
 {
-    private String _value = null;
-
     private int _columns = 30;
 
     protected boolean _stretchy = false;
@@ -28,8 +26,7 @@ public class StringParameter
 
     public StringParameter(String name, String label, String defaultValue)
     {
-        super(name, label);
-        _value = defaultValue;
+        super(name, label, defaultValue);
     }
 
     public StringParameter stretch()
@@ -54,24 +51,6 @@ public class StringParameter
         throws ParameterException
     {
         setValue(value);
-    }
-
-    @Override
-    public String getStringValue()
-    {
-        return _value;
-    }
-
-    public String getValue()
-    {
-        return _value;
-    }
-
-    public void setValue(String value)
-        throws ParameterException
-    {
-        _value = value;
-        check();
     }
 
     public StringParameter value(String value)
@@ -102,18 +81,18 @@ public class StringParameter
     }
 
     @Override
-    public void check()
-        throws ParameterException
+    public String valid( String value )
     {
-        if (isRequired() && (Util.empty(getValue()))) {
-            throw new ParameterException(this, ParameterException.REQUIRED_MESSAGE);
+        if (isRequired() && (Util.empty(value))) {
+            return super.valid(null);
         }
+        return null;
     }
 
     @Override
     public Component createComponent(final TaskPrompter taskPrompter)
     {
-        final JTextField component = new JTextField(_value == null ? "" : _value);
+        final JTextField component = new JTextField(getValue() == null ? "" : getValue());
         component.setColumns(_columns);
 
         component.getDocument().addDocumentListener(new DocumentListener()
@@ -148,12 +127,6 @@ public class StringParameter
         });
 
         return component;
-    }
-
-    @Override
-    public String toString()
-    {
-        return super.toString() + " = " + _value;
     }
 
 }

@@ -6,12 +6,12 @@ package uk.co.nickthecoder.jguifier;
  * @priority 4
  */
 public class TaskException
-    extends Exception
+    extends RuntimeException
 {
-	private static final long serialVersionUID = 1;
-	
-    public TaskException( String message )
+    private static final long serialVersionUID = 1;
+
+    public TaskException(String message)
     {
-        super( message );
+        super(message);
     }
 }

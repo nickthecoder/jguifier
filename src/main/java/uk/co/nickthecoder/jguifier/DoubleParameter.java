@@ -14,10 +14,8 @@ import uk.co.nickthecoder.jguifier.util.Util;
  * 
  */
 public class DoubleParameter
-    extends Parameter
+    extends ValueParameter<Double>
 {
-    private Double _value = null;
-
     private double _minimum = Double.MIN_VALUE;
 
     private double _maximum = Double.MAX_VALUE;
@@ -29,8 +27,7 @@ public class DoubleParameter
 
     public DoubleParameter(String name, String label, Double defaultValue)
     {
-        super(name, label);
-        _value = defaultValue;
+        super(name, label, defaultValue);
     }
 
     public DoubleParameter range(Double min, Double max)
@@ -54,25 +51,17 @@ public class DoubleParameter
         }
     }
 
-    public DoubleParameter setValue(Double value)
-        throws ParameterException
-    {
-        _value = value;
-        check();
-        return this;
-    }
-
     @Override
     public void setStringValue(String string)
         throws ParameterException
     {
 
         if (Util.empty(string)) {
-            _value = null;
+            setValue(null);
         } else {
             try {
                 double value = Double.parseDouble(string);
-                _value = value;
+                setValue(value);
 
             } catch (Exception e) {
                 throw new ParameterException(this, "Not a number");
@@ -82,46 +71,28 @@ public class DoubleParameter
 
     }
 
-    public Double getValue()
-    {
-        return _value;
-    }
-
     @Override
-    public String getStringValue()
-    {
-        if (_value == null) {
-            return null;
-        }
-        return _value.toString();
-    }
-
-    @Override
-    public void check()
+    public String valid(Double value)
         throws ParameterException
     {
-        if (getValue() == null) {
-            if (isRequired()) {
-                throw new ParameterException(this, ParameterException.REQUIRED_MESSAGE);
-            }
-            return;
+        if (value == null) {
+            return super.valid(value);
         }
-
-        double value = getValue();
 
         if (value < _minimum) {
-            throw new ParameterException(this, "Minimum value is " + _minimum);
+            return "Minimum value is " + _minimum;
         }
         if (value > _maximum) {
-            throw new ParameterException(this, "Maximum value is " + _maximum);
+            return "Maximum value is " + _maximum;
         }
 
+        return null;
     }
 
     @Override
     public Component createComponent(final TaskPrompter taskPrompter)
     {
-        final JTextField component = new JTextField(_value == null ? "" : _value.toString());
+        final JTextField component = new JTextField(getValue() == null ? "" : getValue().toString());
         component.setColumns(10);
 
         component.getDocument().addDocumentListener(new DocumentListener()
@@ -160,11 +131,4 @@ public class DoubleParameter
 
         return component;
     }
-
-    @Override
-    public String toString()
-    {
-        return super.toString() + " = " + _value;
-    }
-
 }

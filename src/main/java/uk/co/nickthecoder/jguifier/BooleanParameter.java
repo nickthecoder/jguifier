@@ -15,12 +15,10 @@ import javax.swing.event.ChangeListener;
  * I have no intension of allowing non-english translations of any of these - sorry.
  */
 public class BooleanParameter
-    extends uk.co.nickthecoder.jguifier.Parameter
+    extends ValueParameter<Boolean>
 {
     private static Set<String> TRUE_VALUES = new HashSet<String>(Arrays.asList("true", "1", "yes"));
     private static Set<String> FALSE_VALUES = new HashSet<String>(Arrays.asList("false", "0", "no"));
-
-    private Boolean _value = null;
 
     private String _oppositeName = null;
 
@@ -31,8 +29,7 @@ public class BooleanParameter
 
     public BooleanParameter(String name, String label, Boolean defaultValue)
     {
-        super(name, label);
-        _value = defaultValue;
+        super(name, label,defaultValue);
     }
 
     public BooleanParameter oppositeName(String name)
@@ -52,58 +49,30 @@ public class BooleanParameter
         return _oppositeName;
     }
 
-    public void setValue(Boolean value)
-    {
-        _value = value;
-    }
-
     @Override
     public void setStringValue(String value)
     {
         value = value.toLowerCase();
         if (TRUE_VALUES.contains(value)) {
-            _value = true;
+            setValue(true);
         } else if (FALSE_VALUES.contains(value)) {
-            _value = false;
+            setValue(false);
         } else {
             throw new NumberFormatException("Parameter " + this.getName() + " must be false/true (or 0/1)");
         }
 
     }
 
-    public Boolean getValue()
-    {
-        return _value;
-    }
-
-    @Override
-    public String getStringValue()
-    {
-        if (_value == null) {
-            return null;
-        }
-        return _value.toString();
-    }
-
-    @Override
-    public void check()
-        throws ParameterException
-    {
-        if (getRequired() && (getValue() == null)) {
-            throw new ParameterException(this, ParameterException.REQUIRED_MESSAGE);
-        }
-    }
-
     @Override
     public Component createComponent(final TaskPrompter taskPrompter)
     {
         final JCheckBox component = new JCheckBox();
-        if (Boolean.TRUE == _value) {
+        if (Boolean.TRUE == getValue()) {
             component.setSelected(true);
-        } else if (_value == null) {
+        } else if (getValue() == null) {
             // We can't distinguish between an null value and a false value using a GUI,
             // so nulls must become false.
-            _value = false;
+            setValue(false);
         }
 
         component.addChangeListener(new ChangeListener()
@@ -121,12 +90,6 @@ public class BooleanParameter
         });
 
         return component;
-    }
-
-    @Override
-    public String toString()
-    {
-        return super.toString() + " = " + _value;
     }
 
     @Override

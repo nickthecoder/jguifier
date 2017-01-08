@@ -210,6 +210,19 @@ public class FileParameter
         }
     }
 
+    /**
+     * Gets the value as a File, rather than a String (which is what {@link #getValue()} returns).
+     * 
+     * @return A File representation of the value, which may be null.
+     */
+    public File getFile()
+    {
+        if (getValue() == null) {
+            return null;
+        }
+        return new File(getValue());
+    }
+
     @Override
     public Component createComponent(final TaskPrompter taskPrompter)
     {

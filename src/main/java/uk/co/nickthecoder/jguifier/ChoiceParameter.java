@@ -21,7 +21,7 @@ import javax.swing.JComboBox;
  * key is used as the label.
  * 
  */
-public class ChoiceParameter<T> extends Parameter
+public class ChoiceParameter<T> extends ValueParameter<T>
 {
     private Map<String, T> _mapping = new HashMap<String, T>();
 
@@ -29,7 +29,7 @@ public class ChoiceParameter<T> extends Parameter
 
     private List<String> _keys;
 
-    private T _value;
+    private JComboBox<String> _comboBox;
 
     /**
      * 
@@ -44,6 +44,7 @@ public class ChoiceParameter<T> extends Parameter
         _mapping = new HashMap<String, T>();
         _labelMapping = new HashMap<String, String>();
         _keys = new ArrayList<String>();
+        _comboBox = null;
     }
 
     public void addChoice(String key, T value, String label)
@@ -55,6 +56,16 @@ public class ChoiceParameter<T> extends Parameter
         } else {
             _labelMapping.put(key, key);
         }
+
+        updateComboBox();
+    }
+
+    public void clearChoices()
+    {
+        _keys.clear();
+        _labelMapping.clear();
+        _mapping.clear();
+        updateComboBox();
     }
 
     public void addChoice(String key, T value)
@@ -74,12 +85,12 @@ public class ChoiceParameter<T> extends Parameter
         return this;
     }
 
-    @Override
-    public void check() throws ParameterException
+    public String valid(T value)
     {
-        if (isRequired() && (_value == null)) {
-            throw new ParameterException(this, ParameterException.REQUIRED_MESSAGE);
+        if (!_mapping.values().contains(value)) {
+            return "Not a valid choice";
         }
+        return super.valid(value);
     }
 
     /**
@@ -92,7 +103,7 @@ public class ChoiceParameter<T> extends Parameter
         throws ParameterException
     {
         if (_mapping.containsKey(key)) {
-            _value = _mapping.get(key);
+            setValue(_mapping.get(key));
         } else {
             throw new ParameterException(this, "Key not found : " + key);
         }
@@ -102,27 +113,11 @@ public class ChoiceParameter<T> extends Parameter
     public String getStringValue()
     {
         for (String key : _mapping.keySet()) {
-            if (_mapping.get(key).equals(_value)) {
+            if (_mapping.get(key).equals(getValue())) {
                 return key;
             }
         }
         return null;
-    }
-
-    /**
-     * Sets the value, this must be one of the allowable values, or null.
-     * 
-     * @param value
-     * @throws ParameterException
-     */
-    public void setValue(T value)
-        throws ParameterException
-    {
-        if ((value != null) || (_mapping.values().contains(value))) {
-            _value = value;
-        } else {
-            throw new ParameterException(this, "Not a valid value");
-        }
     }
 
     /**
@@ -143,29 +138,22 @@ public class ChoiceParameter<T> extends Parameter
         return this;
     }
 
-    public T getValue()
-    {
-        return _value;
-    }
-
     @Override
     public Component createComponent(final TaskPrompter taskPrompter)
     {
-        final JComboBox<String> combo = new JComboBox<String>();
-        for (String key : _keys) {
-            String label = _labelMapping.get(key);
-            combo.addItem(label);
-        }
+        _comboBox = new JComboBox<String>();
+        updateComboBox();
 
-        combo.addActionListener(new ActionListener()
+        _comboBox.addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent event)
             {
                 try {
-                    int index = combo.getSelectedIndex();
+                    int index = _comboBox.getSelectedIndex();
                     setStringValue(_keys.get(index));
                     taskPrompter.clearError(ChoiceParameter.this);
+
                 } catch (Exception e) {
                     taskPrompter.setError(ChoiceParameter.this, e.getMessage());
                 }
@@ -173,10 +161,26 @@ public class ChoiceParameter<T> extends Parameter
             }
         });
 
+        return _comboBox;
+    }
+
+    private void updateComboBox()
+    {
+        if (_comboBox == null) {
+            return;
+        }
+
+        _comboBox.removeAllItems();
+
+        for (String key : _keys) {
+            String label = _labelMapping.get(key);
+            _comboBox.addItem(label);
+        }
+
         // Select the correct item from the combobox.
-        int index = _keys.indexOf(_value);
+        int index = _keys.indexOf(getValue());
         if (index >= 0) {
-            combo.setSelectedIndex(index);
+            _comboBox.setSelectedIndex(index);
         }
 
         /*
@@ -184,7 +188,7 @@ public class ChoiceParameter<T> extends Parameter
          * (I don't want to have a JComboBox with text entry), then I guess we need to update
          * the parameter's value based on what the user will see.
          */
-        if (_value == null) {
+        if (getValue() == null) {
             if (_keys.size() > 0) {
                 try {
                     setStringValue(_keys.get(0));
@@ -193,8 +197,6 @@ public class ChoiceParameter<T> extends Parameter
                 }
             }
         }
-
-        return combo;
     }
 
     @Override

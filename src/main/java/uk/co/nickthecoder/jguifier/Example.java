@@ -48,6 +48,7 @@ public class Example extends Task
     public static void main(String[] argv)
     {
         Example example = new Example();
+        example.lookupDefaults();
         example.runFromMain(argv);
     }
 }
@@ -74,7 +75,7 @@ public class Example extends Task
 
     public Example()
     {
-        super("Example");
+        super();
         addParameters(_number, _greeting, _message, _output, _file);
     }
 
@@ -96,6 +97,7 @@ public class Example extends Task
     public static void main(String[] argv)
     {
         Example example = new Example();
+        example.lookupDefaults();
         example.runFromMain(argv);
     }
 }

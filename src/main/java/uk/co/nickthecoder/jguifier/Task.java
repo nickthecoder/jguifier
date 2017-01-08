@@ -1,5 +1,9 @@
 package uk.co.nickthecoder.jguifier;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,8 +42,6 @@ import uk.co.nickthecoder.jguifier.util.Util;
  */
 public abstract class Task
 {
-    private String _name;
-
     private String _description = "";
 
     /**
@@ -86,20 +88,8 @@ public abstract class Task
 
     public Task()
     {
-        this("Unamed Task");
-    }
-
-    public Task(String name)
-    {
-        _name = name;
         _parameters = new LinkedList<Parameter>();
         _parametersMap = new HashMap<String, Parameter>();
-    }
-
-    public Task name(String name)
-    {
-        _name = name;
-        return this;
     }
 
     public GroupParameter getRootParameter()
@@ -139,6 +129,75 @@ public abstract class Task
             if (bp.getOppositeName() != null) {
                 assert !this._parametersMap.containsKey(bp.getOppositeName()) : "Duplicate parameter opposite name";
                 this._parametersMap.put(bp.getOppositeName(), parameter);
+            }
+        }
+    }
+
+    /**
+     * Looks up the defaultValues in the default location. For linux this is ~/.local/jguifier/CLASSNAME.defaults
+     * Currently, this is also the location that is tried for other operating systems too, which probably won't work!
+     * 
+     * @return this
+     */
+    public Task lookupDefaults()
+    {
+        File defaultsFile = Util.createFile(
+            new File(System.getProperty("user.home")), ".local", "jguifier", getName() + ".defaults");
+
+        return lookupDefaults(defaultsFile);
+    }
+
+    /**
+     * 
+     * @return The name of this Task, the default implementation returns the classname with the package name removed.
+     *         i.e. The {@link Example} task will return just "Example".
+     */
+    public String getName()
+    {
+        return this.getClass().getName().replaceAll(".*\\.", "");
+    }
+
+    public Task lookupDefaults(File file)
+    {
+        try {
+            FileInputStream fis = new FileInputStream(file);
+
+            // Construct BufferedReader from InputStreamReader
+            BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+
+            String line = null;
+            while ((line = br.readLine()) != null) {
+                parseDefault(line);
+            }
+
+            br.close();
+        } catch (Exception e) {
+            // Do nothing
+        }
+        return this;
+    }
+
+    private void parseDefault(String line)
+    {
+        line = line.trim();
+        if ((line.startsWith("//")) || (line.startsWith("#"))) {
+            // Do nothing - a comment
+        } else {
+            int eq = line.indexOf("=");
+            if (eq > 0) {
+                String name = line.substring(0, eq).trim();
+                String value = line.substring(eq + 1).trim();
+
+                value = Util.unescapeDoubleQuotes(value);
+
+                Parameter parameter = this.findParameter(name);
+                if (parameter instanceof ValueParameter<?>) {
+                    try {
+                        ((ValueParameter<?>) parameter).setStringValue(value);
+                    } catch (ParameterException e) {
+                        // Do nothing - illegal values are just ignored.
+                    }
+                }
             }
         }
     }
@@ -187,7 +246,7 @@ public abstract class Task
     public void taskHelp()
     {
         System.out.println();
-        System.out.println(_name);
+        System.out.println(getName());
         System.out.println();
 
         if (!Util.empty(_description)) {
@@ -276,7 +335,11 @@ public abstract class Task
                     if (parameter == null) {
                         throw new TaskException("Unknown parameter : " + name);
                     }
-                    parameter.setStringValue(value);
+                    if (parameter instanceof ValueParameter) {
+                        ((ValueParameter<?>) parameter).setStringValue(value);
+                    } else {
+                        throw new TaskException("Parameter cannot hold a value : " + name);
+                    }
 
                 } else {
                     name = nameValue;
@@ -318,7 +381,11 @@ public abstract class Task
                         }
                         value = argv[i + 1];
                         i++;
-                        parameter.setStringValue(value);
+                        if (parameter instanceof ValueParameter<?>) {
+                            ((ValueParameter<?>) parameter).setStringValue(value);
+                        } else {
+                            throw new ParameterException(parameter, "Parameter cannot hold a value : " + name);
+                        }
                     }
                 }
 

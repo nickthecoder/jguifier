@@ -9,7 +9,7 @@ import javax.swing.JPanel;
 
 /**
  * Groups a set of {@link Parameter}s. The {@link TaskPrompter} will show the parameters in a box.
- * For example, you may create a GroupParameter with a lable of "Margins", and it's children will
+ * For example, you may create a GroupParameter with a label of "Margins", and it's children will
  * be {@link IntegerParameter}s called top, right, bottom, left.
  * 
  * @priority 3
@@ -22,17 +22,6 @@ public class GroupParameter
     public GroupParameter(String name, String label)
     {
         super(name, label);
-    }
-
-    @Override
-    public void setStringValue(String value)
-    {
-    }
-
-    @Override
-    public String getStringValue()
-    {
-        return null;
     }
 
     @Override

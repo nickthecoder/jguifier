@@ -23,8 +23,14 @@ public class StringChoiceParameter extends ChoiceParameter<String>
     public StringChoiceParameter choices(String... keys)
     {
         for (String key : keys) {
-            choice(key, key);
+            addChoice(key, key);
         }
+        return this;
+    }
+
+    public StringChoiceParameter choice(String key)
+    {
+        addChoice(key, key);
         return this;
     }
 }

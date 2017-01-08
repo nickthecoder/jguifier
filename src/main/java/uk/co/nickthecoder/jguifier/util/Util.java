@@ -12,6 +12,7 @@ import javax.swing.UIManager.LookAndFeelInfo;
  */
 public class Util
 {
+    public static String DEFAULT_LOOK_AND_FEEL = "GTK+"; // "GTK"; // "Nimbus"
 
     public static boolean empty(String value)
     {
@@ -20,8 +21,6 @@ public class Util
         }
         return value.equals("");
     }
-
-    public static String DEFAULT_LOOK_AND_FEEL = "GTK+"; // "GTK"; // "Nimbus"
 
     public static void defaultLookAndFeel()
     {
@@ -84,4 +83,36 @@ public class Util
         return str;
     }
 
+    /**
+     * Given a string, which is quoted with double quotes, returns the contents, without the double quotes.
+     * 
+     * @param value
+     * @return The contents of the quoted string.
+     */
+    public static String unescapeDoubleQuotes(String value)
+    {
+        if (value.startsWith("\"") && (value.endsWith("\""))) {
+            return value.substring(1, value.length() - 1).replaceAll("\\\"", "\"");
+            // Replace all \" slash quote  with " quote
+        }
+        return value;
+    }
+
+    /**
+     * Creates a new File in a similar way as {@link File#File(File, String)}, but with an list of child paths.
+     * 
+     * @param parent
+     *            The base directory
+     * @param portions
+     *            A list of sub-directories to navigate, ending with a directory or file.
+     * @return The new file
+     */
+    public static File createFile(File parent, String... portions)
+    {
+        File result = parent;
+        for (String portion : portions) {
+            result = new File(result, portion);
+        }
+        return result;
+    }
 }
