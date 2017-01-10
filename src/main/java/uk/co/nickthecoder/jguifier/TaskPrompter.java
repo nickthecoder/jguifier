@@ -39,7 +39,7 @@ public class TaskPrompter
         GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().height / 2;
 
     private Task _task;
-    
+
     private ParametersPanel _parametersPanel;
 
     public TaskPrompter(Task task)
@@ -57,8 +57,8 @@ public class TaskPrompter
         contentPane.setLayout(new BorderLayout());
 
         _parametersPanel = new ParametersPanel();
-        _parametersPanel.addParameters( _task.getRootParameter() );
-        
+        _parametersPanel.addParameters(_task.getRootParameter());
+
         // Scroll
         MaxJScrollPane tableScroll = new MaxJScrollPane(
             _parametersPanel,
@@ -116,29 +116,12 @@ public class TaskPrompter
             }
         });
 
-        // on ESC key close frame
-        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-            KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "Cancel"); //$NON-NLS-1$
-        getRootPane().getActionMap().put("Cancel", new AbstractAction() { //$NON-NLS-1$
-                private static final long serialVersionUID = 1;
-
-                @Override
-                public void actionPerformed(ActionEvent e)
-                {
-                    onCancel();
-                }
-            });
-
         // Complete the layout of the frame
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
 
-        // table.setBackground( Color.BLUE );
-        // panel.setBackground( Color.YELLOW );
-
     }
-
 
     public void onOk()
     {

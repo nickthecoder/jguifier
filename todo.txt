@@ -1,10 +1,6 @@
 Current Task
 ============
 
-Make more reusable by
-	allowing FileParameter to be used without a TaskPrompter
-		create a ParameterContainer class. TaskPrompter uses one or extends it.
-
 
 BUGS
 ====

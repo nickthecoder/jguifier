@@ -30,11 +30,11 @@ public class DirectoriesFirstComparator implements Comparator<File>
     {
         if (a.isFile()) {
             if (b.isDirectory()) {
-                return -1;
+                return 1;
             }
         } else {
             if (b.isFile()) {
-                return 1;
+                return -1;
             }
         }
 

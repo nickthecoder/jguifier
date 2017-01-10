@@ -16,7 +16,24 @@ import java.util.List;
 public class FileLister
     implements FileFilter
 {
+    /**
+     * Compares files based on their path, ignoring case, so that "B" and "b" are both greater than "A" and "a".
+     */
     public static final Comparator<File> NAME_ORDER = new Comparator<File>()
+    {
+        @Override
+        public int compare(File a, File b)
+        {
+            return a.getPath().toLowerCase().compareTo(b.getPath().toLowerCase());
+        }
+
+    };
+
+    /**
+     * Compares files based on how their path name strings compare. Note this is case sensitive, and is therefore
+     * not usually the best solution. Consider {@link #NAME_ORDER} instead.
+     */
+    public static final Comparator<File> PATH_ORDER = new Comparator<File>()
     {
         @Override
         public int compare(File a, File b)
@@ -77,7 +94,7 @@ public class FileLister
     };
 
     /**
-     * The depth of recursion through the filesystem. 1 lists a single directory,
+     * The depth of recursion through the file system. 1 lists a single directory,
      * 0 lists nothing.
      */
     private int _depth = 1;
