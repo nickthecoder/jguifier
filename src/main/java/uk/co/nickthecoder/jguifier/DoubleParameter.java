@@ -20,15 +20,9 @@ public class DoubleParameter
 
     private double _maximum = Double.MAX_VALUE;
 
-    public DoubleParameter(String name, String label)
+    public DoubleParameter(String name)
     {
-        super(name, label);
-        _columns = 8;
-    }
-
-    public DoubleParameter(String name, String label, Double defaultValue)
-    {
-        super(name, label, defaultValue);
+        super(name);
         _columns = 8;
     }
 

@@ -60,14 +60,9 @@ public class FileParameter
 
     private String[] _filterExtensions;
 
-    public FileParameter(String name, String label)
+    public FileParameter(String name)
     {
-        this(name, label, null);
-    }
-
-    public FileParameter(String name, String label, File defaultValue)
-    {
-        super(name, label, defaultValue);
+        super(name);
 
         _exists = TriState.MAYBE;
         _isDirectory = TriState.MAYBE;

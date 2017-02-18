@@ -2,6 +2,8 @@ package uk.co.nickthecoder.jguifier;
 
 import java.awt.Component;
 
+import uk.co.nickthecoder.jguifier.util.Util;
+
 /**
  * The base class for parameters. A parameter stores both the metadata
  * (such as a label, is the parameter is required etc) as well as the parameter's value.
@@ -15,10 +17,11 @@ public abstract class Parameter
 
     private String _label;
 
-    public Parameter(String name, String label)
+
+    public Parameter(String name)
     {
         _name = name;
-        _label = label;
+        _label = Util.uncamel(name);
     }
 
     /**

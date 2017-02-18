@@ -18,8 +18,8 @@ import uk.co.nickthecoder.jguifier.util.Util;
  * <code>
  *    public class MyTask extends Task {
  *    
- *       private StringParameter m_foo = new StringParameter( "foo", "Foo" );
- *       private IntegetParameter m_bar = new IntegerParameter( "bar", "Foo" ).setRange( 0, 10 );
+ *       private StringParameter m_foo = new StringParameter( "foo" );
+ *       private IntegetParameter m_bar = new IntegerParameter( "bar").setRange( 0, 10 );
  *       
  *       public MyTask() {
  *          addParameters( foo, bar );
@@ -52,7 +52,7 @@ public abstract class Task
     /**
      * The hierarchical list of parameters (groups can have sub-groups).
      */
-    private GroupParameter _root = new GroupParameter("__ROOT", "__ROOT");
+    private GroupParameter _root = new GroupParameter("__ROOT");
 
     /**
      * A map of the parameters keyed on their name.

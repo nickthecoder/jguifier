@@ -10,20 +10,20 @@ import java.io.PrintStream;
 
 public class Example extends Task
 {
-    private IntegerParameter _number = new IntegerParameter("number", "Very Long Label")
+    private IntegerParameter _number = new IntegerParameter("number")
         .range(1, 10);
 
-    private StringChoiceParameter _greeting = new StringChoiceParameter("greeting", "Greeting")
+    private StringChoiceParameter _greeting = new StringChoiceParameter("greeting")
         .choices("Hello", "Hi", "Watcha");
 
-    private StringParameter _message = new StringParameter("message", "Message")
+    private StringParameter _message = new StringParameter("message")
         .stretch();
 
-    private ChoiceParameter<PrintStream> _output = new ChoiceParameter<PrintStream>("output", "Output")
+    private ChoiceParameter<PrintStream> _output = new ChoiceParameter<PrintStream>("output")
         .choice("stdout", System.out, "Normal")
         .choice("stderr", System.err, "Error").value(System.err);
 
-    private FileParameter _file = new FileParameter("file", "File");
+    private FileParameter _file = new FileParameter("file");
 
     public Example()
     {
@@ -58,23 +58,23 @@ public class Example extends Task
 
 public class Example extends Task
 {
-    private IntegerParameter _integer = new IntegerParameter("integer", "Integer")
+    private IntegerParameter _integer = new IntegerParameter("integer")
         .range(1, 10);
 
-    private DoubleParameter _double = new DoubleParameter("double", "Double")
+    private DoubleParameter _double = new DoubleParameter("double")
         .range(1.0, 10.0);
 
-    private StringChoiceParameter _greeting = new StringChoiceParameter("greeting", "Greeting")
+    private StringChoiceParameter _greeting = new StringChoiceParameter("greeting")
         .choices("Hello", "Hi", "Watcha");
 
-    private StringParameter _message = new StringParameter("message", "Message")
+    private StringParameter _message = new StringParameter("message")
         .stretch();
 
-    private ChoiceParameter<PrintStream> _output = new ChoiceParameter<PrintStream>("output", "Output")
+    private ChoiceParameter<PrintStream> _output = new ChoiceParameter<PrintStream>("output")
         .choice("stdout", System.out, "Normal")
         .choice("stderr", System.err, "Error").value(System.err);
 
-    private FileParameter _file = new FileParameter("file", "File");
+    private FileParameter _file = new FileParameter("file");
 
     public Example()
     {

@@ -12,7 +12,7 @@ import javax.swing.event.ChangeListener;
 /**
  * A parameter holding values true, false and null.
  * From the command line a BooleanParameter can be given using the text "true", "1", "yes", and "false", "0", "no".
- * I have no intension of allowing non-english translations of any of these - sorry.
+ * I have no intension of allowing non-English translations of any of these - sorry.
  */
 public class BooleanParameter
     extends ValueParameter<Boolean>
@@ -22,20 +22,9 @@ public class BooleanParameter
 
     private String _oppositeName = null;
 
-    public BooleanParameter(String name, String label)
+    public BooleanParameter(String name)
     {
-        this(name, label, null);
-    }
-
-    public BooleanParameter(String name, String label, Boolean defaultValue)
-    {
-        super(name, label, defaultValue);
-    }
-
-    public BooleanParameter oppositeName(String name)
-    {
-        setOppositeName(name);
-        return this;
+        super(name);
     }
 
     public void setOppositeName(String name)
@@ -47,6 +36,12 @@ public class BooleanParameter
     public String getOppositeName()
     {
         return _oppositeName;
+    }
+    
+    public BooleanParameter oppositeName( String oppositeName )
+    {
+        setOppositeName( oppositeName );
+        return this;
     }
 
     @Override

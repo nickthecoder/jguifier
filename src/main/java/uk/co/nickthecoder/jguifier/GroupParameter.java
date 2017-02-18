@@ -19,9 +19,9 @@ public class GroupParameter
 {
     private List<Parameter> _children = new ArrayList<Parameter>();
 
-    public GroupParameter(String name, String label)
+    public GroupParameter(String name)
     {
-        super(name, label);
+        super(name);
     }
 
     @Override

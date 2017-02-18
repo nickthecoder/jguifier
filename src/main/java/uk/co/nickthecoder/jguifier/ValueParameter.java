@@ -18,19 +18,13 @@ public abstract class ValueParameter<T> extends Parameter
      * @param label
      *            A human readable version of the name, used when setting values via a GUI.
      */
-    public ValueParameter(String name, String label, T defaultValue)
+    public ValueParameter(String name)
     {
-        super(name, label);
+        super(name);
 
-        _value = defaultValue;
         _required = true;
 
         _listeners = null;
-    }
-
-    public ValueParameter(String name, String label)
-    {
-        this(name, label, null);
     }
 
     /**

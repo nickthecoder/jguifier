@@ -19,15 +19,9 @@ public class IntegerParameter
 
     private int _maximum = Integer.MAX_VALUE;
 
-    public IntegerParameter(String name, String label)
+    public IntegerParameter(String name)
     {
-        super(name, label);
-        _columns = 6;
-    }
-
-    public IntegerParameter(String name, String label, Integer defaultValue)
-    {
-        super(name, label, defaultValue);
+        super(name);
         _columns = 6;
     }
 

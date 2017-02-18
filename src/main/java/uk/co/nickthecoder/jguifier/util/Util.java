@@ -99,6 +99,56 @@ public class Util
     }
 
     /**
+     * Simpler version of {{@link #uncamel(String, String, boolean)},
+     * where <code>sep = ' '</code> and <code>first = true</code>.
+     */
+    public static String uncamel(String str)
+    {
+        return uncamel(str, " ");
+    }
+
+    /**
+     * Simpler version of {{@link #uncamel(String, String, boolean)}, where <code>first = true</code>.
+     */
+    public static String uncamel(String str, String sep)
+    {
+        return uncamel(str, sep, true);
+    }
+
+    /**
+     * Takes a camel cased string, and converts it into a space separated version.
+     * 
+     * @param str
+     *            The string to convert
+     * @param sep
+     *            The separation character(s) between the words
+     * @param first
+     *            Should the first letter be capitalised
+     * @return
+     */
+    public static String uncamel(String str, String sep, boolean first)
+    {
+
+        StringBuffer result = new StringBuffer();
+        boolean wasUpper = false;
+
+        for (int i = 0; i < str.length(); i++) {
+            char c = str.charAt(i);
+            if (first) {
+                result.append(Character.toUpperCase(c));
+                first = false;
+            } else {
+                if (Character.isUpperCase(c) && !wasUpper) {
+                    result.append(sep);
+                }
+                result.append(c);
+            }
+            wasUpper = Character.isUpperCase(c);
+        }
+        return result.toString();
+    }
+
+    /**
      * Creates a new File in a similar way as {@link File#File(File, String)}, but with an list of child paths.
      * 
      * @param parent

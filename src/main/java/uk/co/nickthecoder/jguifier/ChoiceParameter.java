@@ -38,9 +38,9 @@ public class ChoiceParameter<T> extends ValueParameter<T>
      * @param label
      *            A human readable label used within the GUI
      */
-    public ChoiceParameter(String name, String label)
+    public ChoiceParameter(String name)
     {
-        super(name, label);
+        super(name);
         _mapping = new HashMap<String, T>();
         _labelMapping = new HashMap<String, String>();
         _keys = new ArrayList<String>();

@@ -16,14 +16,9 @@ public abstract class TextParameter<T> extends ValueParameter<T>
 
     protected boolean _stretchy = false;
 
-    public TextParameter(String name, String label)
+    public TextParameter(String name)
     {
-        super(name, label);
-    }
-
-    public TextParameter(String name, String label, T defaultValue)
-    {
-        super(name, label, defaultValue);
+        super(name);
     }
 
     public void setColumns(int value)

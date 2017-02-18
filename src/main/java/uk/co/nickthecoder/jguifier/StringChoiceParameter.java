@@ -8,9 +8,9 @@ package uk.co.nickthecoder.jguifier;
 public class StringChoiceParameter extends ChoiceParameter<String>
 {
 
-    public StringChoiceParameter(String name, String label)
+    public StringChoiceParameter(String name)
     {
-        super(name, label);
+        super(name);
     }
 
     /**

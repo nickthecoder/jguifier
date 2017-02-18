@@ -14,14 +14,9 @@ public class StringParameter
     extends TextParameter<String>
 {
 
-    public StringParameter(String name, String label)
+    public StringParameter(String name)
     {
-        super(name, label);
-    }
-
-    public StringParameter(String name, String label, String defaultValue)
-    {
-        super(name, label, defaultValue);
+        super(name);
     }
 
     public StringParameter stretch()
