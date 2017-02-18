@@ -1,27 +1,10 @@
 package uk.co.nickthecoder.jguifier;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
 
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
-import uk.co.nickthecoder.jguifier.guiutil.JScrollPopupMenu;
-import uk.co.nickthecoder.jguifier.util.FileLister;
 
 /**
  * A {@link Parameter} for a filename or directory.
@@ -122,15 +105,15 @@ public class FileParameter
         _isDirectory = value;
     }
 
+    public TriState getIsDirectory()
+    {
+        return _isDirectory;
+    }
+    
     public FileParameter directory()
     {
         setIsDirectory(true);
         return this;
-    }
-
-    public TriState getIsDirectory()
-    {
-        return _isDirectory;
     }
 
     /**
@@ -213,6 +196,16 @@ public class FileParameter
         _filterExtensions = extensions;
     }
 
+    public String getExtensionsDescription()
+    {
+        return _filterDescription;
+    }
+    
+    public String[] getExtensions()
+    {
+        return _filterExtensions;
+    }
+    
     @Override
     public void check()
         throws ParameterException
@@ -338,194 +331,25 @@ public class FileParameter
         return false;
     }
 
-    private JTextField _textField;
-    private JButton _completeButton;
-
     @Override
-    public Component createComponent(final ParametersPanel parametersPanel)
+    public Component createComponent(final ParametersPanel panel)
     {
-        _textField = new JTextField(getValue() == null ? "" : getValue().getPath());
-        textField(_textField, parametersPanel);
+        FileComponent fileField = new FileComponent(this, getValue() == null ? "" : getValue().getPath());
+        JTextField textField = fileField.getTextField();
+        
+        textField(textField, panel);
 
-        _completeButton = new JButton("\u2193");
-        _completeButton.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                createPopupMenu();
-            }
-        });
-
-        JButton pickButton = new JButton(" … ");
-        pickButton.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                onFileChooser(parametersPanel, _textField);
-            }
-        });
-
-        _textField.addKeyListener(new KeyListener()
-        {
-
-            @Override
-            public void keyTyped(KeyEvent e)
-            {
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e)
-            {
-                if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-                    createPopupMenu();
-                }
-            }
-
-            @Override
-            public void keyPressed(KeyEvent e)
-            {
-            }
-        });
-
-        JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
-        panel.add(_textField, BorderLayout.CENTER);
-        JPanel buttons = new JPanel();
-
-        buttons.setLayout(new BorderLayout());
-        buttons.add(_completeButton, BorderLayout.WEST);
-        buttons.add(pickButton, BorderLayout.EAST);
-
-        panel.add(buttons, BorderLayout.EAST);
-
-        return panel;
+        return fileField;
     }
-
-    private JPopupMenu _popupMenu;
-
-    private void createPopupMenu()
-    {
-        _popupMenu = new JScrollPopupMenu();
-
-        File value = getValue();
-
-        File parent = value.getParentFile();
-        if (parent != null) {
-            addPopupItem("..", parent);
-        }
-
-        if (value.isDirectory()) {
-            // Add sub-directories and matching files
-            addToComboBox(value, "");
-        }
-
-        // Add files and directories that match the text currently entered
-        if (parent != null) {
-            addToComboBox(parent, value.getName());
-        }
-
-        _popupMenu.show(_completeButton, 0, 0);
+    
+    /*
+    try {
+        _fileParameter.setStringValue(_textField.getText());
+        parametersPanel.clearError(this);
+    } catch (Exception e) {
+        parametersPanel.setError(this, e.getMessage());
     }
+    */
 
-    private void addToComboBox(File directory, String prefix)
-    {
-        List<File> children;
-        try {
-            FileLister fileLister = new FileLister().directoriesFirst().includeDirectories();
-            if (_isDirectory == TriState.TRUE ) {
-                fileLister.excludeFiles();
-            }
-            children = fileLister.listFiles(directory);
-        } catch (IOException e) {
-            return;
-        }
-
-        for (File child : children) {
-            if (child.getName().equals( prefix) ) {
-                continue;
-            }
-            
-            if (child.getName().startsWith(prefix)) {
-
-                if (child.isHidden()) {
-                    if (child.isDirectory()) {
-                        if ((!_includeHidden) && (!_enterHidden)) {
-                            // Skip over hidden directories
-                            continue;
-                        }
-                    } else {
-                        if (!_includeHidden) {
-                            // Skip over hidden files.
-                            continue;
-                        }
-                    }
-                }
-                if (autocompleteMatches(child)) {
-
-                    addPopupItem(child.getName(), child);
-                }
-            }
-        }
-    }
-
-    private void addPopupItem(final String label, final File file)
-    {
-        JMenuItem menuItem = new JMenuItem(label);
-        _popupMenu.add(menuItem);
-
-        if (file.isDirectory()) {
-            Font font = menuItem.getFont();
-            menuItem.setFont(font.deriveFont(font.getStyle() | Font.BOLD));
-        }
-
-        menuItem.addActionListener(new ActionListener()
-        {
-
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                System.out.println("Selected " + file);
-                _textField.setText(file.getPath());
-            }
-
-        });
-    }
-
-    private void onFileChooser(final ParametersPanel parametersPanel, JTextField textField)
-    {
-        JFileChooser fileChooser = new JFileChooser(textField.getText());
-
-        int fsm = JFileChooser.FILES_AND_DIRECTORIES;
-        String title = "Select a file or directory";
-
-        if (_isDirectory == TriState.TRUE) {
-            fsm = JFileChooser.DIRECTORIES_ONLY;
-            title = "Select a directory";
-        } else if (_isDirectory == TriState.FALSE) {
-            fsm = JFileChooser.FILES_ONLY;
-            title = "Select a file";
-        }
-
-        fileChooser.setFileSelectionMode(fsm);
-        fileChooser.setDialogTitle(title);
-        fileChooser.setApproveButtonText("Select");
-        if (_filterExtensions != null) {
-            fileChooser.setFileFilter(new FileNameExtensionFilter(_filterDescription, _filterExtensions));
-        }
-
-        int result = fileChooser.showOpenDialog(parametersPanel);
-        if (result == JFileChooser.APPROVE_OPTION) {
-
-            textField.setText(fileChooser.getSelectedFile().getPath());
-            try {
-                setStringValue(textField.getText());
-                parametersPanel.clearError(this);
-            } catch (Exception e) {
-                parametersPanel.setError(this, e.getMessage());
-            }
-        }
-    }
-
+    
 }

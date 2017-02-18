@@ -16,6 +16,8 @@ FileParameter component.
 New Features
 ============
 
+Create ParameterHolder interface for ParametersPanel
+
 FileParameter to display message, when the wrong type of file is chosen (e.g. file vs directory, hidden, wrong extension).
 
 Hide the scrollbar when it is not needed, but extra room still allocated for it by tweaking preferred size.
