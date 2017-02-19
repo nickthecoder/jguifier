@@ -6,15 +6,11 @@ Current Task
 BUGS
 ====
 
-Sort out choices (delete one of the classes)
-
 Error message to be left aligned.
 
 New Features
 ============
 
 FileParameter to display message, when the wrong type of file is chosen (e.g. file vs directory, hidden, wrong extension).
-
-Hide the scrollbar when it is not needed, but extra room still allocated for it by tweaking preferred size.
 
 	

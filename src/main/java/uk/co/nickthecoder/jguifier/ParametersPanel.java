@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
@@ -57,6 +58,7 @@ public class ParametersPanel extends JPanel
             JLabel parameterErrorLabel = createErrorLabel();
             _parameterErrorLabels.put(parameter.getName(), parameterErrorLabel);
             parameterErrorLabel.setVisible(false);
+            parameterErrorLabel.setHorizontalAlignment(SwingConstants.LEFT);
 
             if (parameter instanceof GroupParameter) {
                 GroupParameter subGroup = (GroupParameter) parameter;
