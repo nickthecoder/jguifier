@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -109,6 +110,37 @@ public abstract class Task
     }
 
     /**
+     * Sets the name of the task based on the filename of the script containing this Task class.
+     * Advanced scenarios may need to explicitly use {@link #setName(String)} or {@link #guessName(Object)}.
+     */
+    public void guessName()
+    {
+        guessName(this);
+    }
+
+    /**
+     * Sets the name of the task based on the filename of the source code containing the definition of <code>obj</code>.
+     * This is useful if you want to create many script files, which all use the exact same Task subclass,
+     * but the name of the Task should be based on the script's filename, not the filename containing the
+     * Task definition.
+     * <p>
+     * This is especially true, because default values are stored based on a Task's name. So having multiple tasks, with
+     * different names, but sharing a common Task class can be useful, because each can have their own default values.
+     * </p>
+     */
+    public void guessName(Object obj)
+    {
+        URL url = obj.getClass().getProtectionDomain().getCodeSource().getLocation();
+        File file = new File(url.getPath());
+        String name = file.getName();
+        if (name.endsWith(".java")) {
+            setName( obj.getClass().getSimpleName() );
+        } else {
+            setName(file.getName());
+        }
+    }
+
+    /**
      * 
      * @return The name of this Task, the default implementation returns the classname with the package name removed.
      *         i.e. The {@link Example} task will return just "Example".
@@ -116,7 +148,7 @@ public abstract class Task
     public String getName()
     {
         if (_name == null) {
-            return this.getClass().getName().replaceAll(".*\\.", "");
+            this.guessName();
         }
         return _name;
     }
@@ -228,33 +260,33 @@ public abstract class Task
             fos = new FileOutputStream(getDefaultsFile());
             PrintWriter out = new PrintWriter(fos);
 
-            saveDefaults( out, getRootParameter() ); 
-            
+            saveDefaults(out, getRootParameter());
+
             out.flush();
         } finally {
-            if ( fos != null) {
+            if (fos != null) {
                 fos.close();
             }
         }
 
     }
 
-    private void saveDefaults( PrintWriter out, GroupParameter gp )
+    private void saveDefaults(PrintWriter out, GroupParameter gp)
     {
         for (Parameter parameter : getParameters()) {
             if (parameter instanceof ValueParameter) {
                 ValueParameter<?> vp = (ValueParameter<?>) parameter;
                 String value = vp.getStringValue();
-                if ( ! Util.empty(value) ) {
-                    out.println( vp.getName() + "=" + vp.getStringValue() );
+                if (!Util.empty(value)) {
+                    out.println(vp.getName() + "=" + vp.getStringValue());
                 }
-                
+
             } else if (parameter instanceof GroupParameter) {
-                saveDefaults( out, (GroupParameter) parameter );
+                saveDefaults(out, (GroupParameter) parameter);
             }
         }
     }
-    
+
     private void parseDefault(String line)
     {
         line = line.trim();

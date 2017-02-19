@@ -31,9 +31,8 @@ public class FileParameters extends Task
 
     static void main(String[] argv)
     {
-        def task = new FileParameters();
-        task.setName("fileParameters.groovy");
-        task.runFromMain(argv);
+        def task = new FileParameters()
+        task.runFromMain(argv)
     }
 }
 

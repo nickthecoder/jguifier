@@ -97,7 +97,10 @@ public class Example extends Task
     public static void main(String[] argv)
     {
         Example example = new Example();
-        example.setName("example.sh"); // Pretend we call this class from a shell script called "example.sh"
+        // When using a groovy script, the task's name will be automatically assigned. See Task.guessName()
+        // However, if you are calling java code from a shell script, then you should explicitly set the name of the
+        // shell script like so :
+        example.setName("example.sh"); 
         example.runFromMain(argv);
     }
 }
