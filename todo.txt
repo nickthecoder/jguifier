@@ -6,11 +6,8 @@ Current Task
 BUGS
 ====
 
-Error message to be left aligned.
-
 New Features
 ============
 
-FileParameter to display message, when the wrong type of file is chosen (e.g. file vs directory, hidden, wrong extension).
 
 	

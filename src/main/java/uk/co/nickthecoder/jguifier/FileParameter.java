@@ -23,9 +23,9 @@ import javax.swing.JTextField;
 public class FileParameter
     extends TextParameter<File>
 {
-    private TriState _exists;
+    private TriState _exists = TriState.MAYBE;
 
-    private TriState _isDirectory;
+    private TriState _isDirectory = TriState.FALSE;
 
     /**
      * If false (which is the default), then hidden files and directories will not be listed in the GUI.
@@ -37,12 +37,13 @@ public class FileParameter
      */
     private boolean _enterHidden = false;
 
-    private boolean _writable;
+    private boolean _writable = false;
 
-    private String _filterDescription;
+    private String _filterDescription = null;
 
-    private String[] _filterExtensions;
+    private String[] _filterExtensions = null;
 
+    
     public FileParameter(String name)
     {
         this( name, null);
@@ -52,9 +53,6 @@ public class FileParameter
     {
         super(name, value);
 
-        _exists = TriState.MAYBE;
-        _isDirectory = TriState.MAYBE;
-        _writable = false;
         _stretchy = true;
     }
 
@@ -114,10 +112,26 @@ public class FileParameter
     {
         return _isDirectory;
     }
+
+    public FileParameter directory( Boolean value )
+    {
+        if (value == null) {
+            setIsDirectory(TriState.MAYBE);
+        } else {
+            setIsDirectory( value ? TriState.TRUE : TriState.FALSE );
+        }
+        return this;
+    }
     
     public FileParameter directory()
     {
         setIsDirectory(true);
+        return this;
+    }
+    
+    public FileParameter file()
+    {
+        setIsDirectory(false);
         return this;
     }
 
@@ -212,67 +226,6 @@ public class FileParameter
     }
     
     @Override
-    public void check()
-        throws ParameterException
-    {
-        super.check();
-
-        try {
-
-            File file = getValue();
-            if (!file.isAbsolute()) {
-                file = file.getAbsoluteFile();
-            }
-
-            if (_exists != TriState.MAYBE) {
-                if (_exists == TriState.TRUE) {
-                    if (!file.exists()) {
-                        throw new ParameterException(this, "File does not exist");
-                    }
-
-                    if (!file.canRead()) {
-                        throw new ParameterException(this, "File is not readable");
-                    }
-
-                } else {
-                    if (file.exists()) {
-                        throw new ParameterException(this, "File exists");
-                    }
-                }
-            }
-
-            if (_isDirectory != TriState.MAYBE) {
-                if (file.exists()) {
-                    if (file.isDirectory()) {
-                        if (_isDirectory == TriState.FALSE) {
-                            throw new ParameterException(this, "Is a directory");
-                        }
-                    } else {
-                        if (_isDirectory == TriState.TRUE) {
-                            throw new ParameterException(this, "Is not a directory");
-                        }
-                    }
-                }
-            }
-
-            if (_writable) {
-                File parent = file.getParentFile();
-                if (!parent.canWrite()) {
-                    throw new ParameterException(this, "Directory is not writable");
-                }
-                if (file.exists() && !file.canWrite()) {
-                    throw new ParameterException(this, "File is not writable");
-                }
-            }
-
-        } catch (ParameterException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new ParameterException(this, e.getMessage());
-        }
-    }
-
-    @Override
     public String getDescription()
     {
         return super.getDescription() + "\n" +
@@ -285,6 +238,61 @@ public class FileParameter
 
     }
 
+    @Override
+    public String valid(File value)
+        throws ParameterException
+    {
+        if (value == null) {
+            return super.valid(value);
+        }
+
+        // Exists ?
+        boolean exists = value.exists();
+        if ( (_exists == TriState.TRUE) && !exists) {
+            return "Does not exist";
+        }
+        if ( (_exists == TriState.FALSE) && exists) {
+            return "Already exists";
+        }
+
+        if (exists) {
+
+            // Directory/File?
+            boolean isDir = value.isDirectory();
+            
+            if ( (_isDirectory == TriState.TRUE) && !isDir) {
+                return "Not a directory";
+            }    
+            if (_isDirectory == TriState.FALSE && isDir) {
+                return "Expected a file, not a directory";
+            }
+
+            // Writable ?
+            if ( _writable ) {
+                if (value.isDirectory()) {
+                    if (!value.canWrite()) {
+                        return "You cannot write to this directory"; 
+                    }
+                } else {
+                    if (!value.canWrite() ) {
+                        return "You cannot write to this file";
+                    }
+                    if (!value.getParentFile().canWrite() ) {
+                        return "You cannot write to the directory";
+                    }
+                }
+            }
+        }
+        
+        
+        // Correct file extension?
+        if ( !matchesExtensions(value) ) {
+            return "Wrong file extension (" + _filterExtensions + ")"; 
+        }
+        
+        return null;
+    }
+    
     @Override
     public void autocomplete(String cur)
     {
@@ -319,6 +327,20 @@ public class FileParameter
         }
     }
 
+    public boolean matchesExtensions( File file )
+    {
+        if ( _filterExtensions == null) {
+            return true;
+        }
+        
+        for (String ext : _filterExtensions) {
+            if (file.getName().endsWith("." + ext)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     public boolean autocompleteMatches(File file)
     {
         if (_filterExtensions == null) {
@@ -328,11 +350,10 @@ public class FileParameter
             return true;
         }
 
-        for (String ext : _filterExtensions) {
-            if (file.getName().endsWith("." + ext)) {
-                return true;
-            }
+        if (matchesExtensions(file)) {
+            return true;
         }
+
         return false;
     }
 

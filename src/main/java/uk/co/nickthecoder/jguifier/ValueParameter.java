@@ -107,15 +107,28 @@ public abstract class ValueParameter<T> extends Parameter
         return getValue().toString();
     }
 
+    /**
+     * Set the value of the parameter.
+     * The parameter is checked, throwing a ParameterException when invalid.
+     * However, the value is set even when an exception is thrown. This allows parameters to be set to
+     * invalid values in the GUI.
+     * <p>
+     * If the value is valid, and has changed, then a message is fired to all {@link ParameterListener}s.
+     * </p>
+     * @param value
+     * @throws ParameterException
+     */
     public void setValue(T value)
     {
+        boolean changed = (value != _value );
+        _value = value;
+        
         String reason = valid(value);
         if (reason != null) {
             throw new ParameterException(this, reason);
         }
 
-        if (value != _value) {
-            _value = value;
+        if (changed) {
             fireChangeEvent();
         }
     }
