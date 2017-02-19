@@ -2,6 +2,7 @@ package uk.co.nickthecoder.jguifier;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GraphicsEnvironment;
@@ -10,15 +11,18 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
@@ -44,6 +48,10 @@ public class TaskPrompter
 
     private ParametersPanel _parametersPanel;
 
+    private JPanel _detailsPanel;
+
+    private JPanel _defaultsPanel;
+
     private JTextField _commandLabel;
 
     public TaskPrompter(Task task)
@@ -51,7 +59,11 @@ public class TaskPrompter
         super("Prompt");
         _task = task;
     }
-    
+
+    public Task getTask()
+    {
+        return _task;
+    }
     
     public void prompt()
     {
@@ -63,23 +75,24 @@ public class TaskPrompter
 
         // Parameters
         _parametersPanel = new ParametersPanel();
-        _parametersPanel.addParameters(_task.getRootParameter());
-        _task.getRootParameter().addListener(this);
-        
+        _parametersPanel.addParameters(getTask().getRootParameter());
+        getTask().getRootParameter().addListener(this);
+
         // Details
         _detailsPanel = new JPanel();
         _detailsPanel.setVisible(false);
         _detailsPanel.setLayout(new BorderLayout());
         JPanel commandPanel = new JPanel();
-        commandPanel.setLayout(new BorderLayout() );
-        commandPanel.setBorder( BorderFactory.createTitledBorder("Command") );
-        _commandLabel = new JTextField( this._task.getCommand() );
-        //_commandLabel.setColumns(30);
+        commandPanel.setLayout(new BorderLayout());
+        commandPanel.setBorder(BorderFactory.createTitledBorder("Command"));
+        _commandLabel = new JTextField(getTask().getCommand());
+        // _commandLabel.setColumns(30);
         _commandLabel.setEditable(false);
         commandPanel.add(_commandLabel, BorderLayout.CENTER);
         _detailsPanel.add(commandPanel, BorderLayout.NORTH);
-        
-        JButton copyCommandButton = new JButton( "Copy" );
+
+        // Copy Button
+        JButton copyCommandButton = new JButton("Copy");
         copyCommandButton.addActionListener(new ActionListener()
         {
             @Override
@@ -91,50 +104,88 @@ public class TaskPrompter
         });
         commandPanel.add(copyCommandButton, BorderLayout.EAST);
 
-        //Scrolling Panel
+        // Defaults File
+        _defaultsPanel = new JPanel();
+        _defaultsPanel.setVisible(false);
+        _defaultsPanel.setLayout(new BorderLayout());
+        _defaultsPanel.setBorder(BorderFactory.createTitledBorder("Defaults"));
+        JTextField defaultsFileLabel = new JTextField(getTask().getDefaultsFile().getPath());
+        defaultsFileLabel.setEditable(false);
+        _defaultsPanel.add(defaultsFileLabel, BorderLayout.CENTER);
+
+        // Defaults Folder Icon
+        JButton defaultsFolderButton = new JButton( UIManager.getIcon("FileView.directoryIcon") );
+        defaultsFolderButton.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                try {
+                    Desktop.getDesktop().open(getTask().getDefaultsFile().getParentFile());
+                } catch (IOException e1) {
+                    // Do nothing
+                }
+            }
+        });
+        _defaultsPanel.add( defaultsFolderButton, BorderLayout.WEST);
+        
+        // Save Defaults Button
+        JButton saveDefaultsButton = new JButton("Save");
+        saveDefaultsButton.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                try {
+                    getTask().saveDefaults();
+                } catch (Exception e1) {
+                    JOptionPane.showMessageDialog(null, "Save Failed\n\n" + e1);
+                }
+            }
+        });
+        _defaultsPanel.add(saveDefaultsButton, BorderLayout.EAST);
+
+        // Scrolling Panel
         ScrollablePanel scrollablePanel = new ScrollablePanel();
         scrollablePanel.setScrollableTracksViewportWidth(true);
         scrollablePanel.setLayout(new BoxLayout(scrollablePanel, BoxLayout.Y_AXIS));
-        scrollablePanel.add( _parametersPanel );
-        scrollablePanel.add( _detailsPanel );
-        
+        scrollablePanel.add(_parametersPanel);
+        scrollablePanel.add(_detailsPanel);
+        scrollablePanel.add(_defaultsPanel);
 
         // Scroll
         MaxJScrollPane scrollPane = new MaxJScrollPane(
             scrollablePanel,
             ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
             ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        
+
         scrollPane.setMaxHeight(MAX_TABLE_HEIGHT);
         scrollPane.setMinimumSize(new Dimension(0, 0));
 
         scrollPane.setViewportBorder(BorderFactory.createEmptyBorder());
-
 
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         Dimension scrollSize = scrollPane.getPreferredSize();
         if (scrollSize.getHeight() > MAX_TABLE_HEIGHT) {
             scrollPane.setPreferredSize(new Dimension((int) scrollSize.getWidth(), MAX_TABLE_HEIGHT));
         }
-        
+
         VerticalStretchLayout vsl = new VerticalStretchLayout();
         vsl.setStretch(scrollPane, 1.0);
-        //vsl.setStretch(scrollingPanel, 1.0);
-        
+        // vsl.setStretch(scrollingPanel, 1.0);
+
         JPanel panel = new JPanel();
         panel.setLayout(vsl);
-        
 
         panel.add(scrollPane);
-        //panel.add( scrollingPanel );
+        // panel.add( scrollingPanel );
         contentPane.add(panel, BorderLayout.CENTER);
 
-        
         // Buttons
         JPanel buttonsPanel = new JPanel();
         buttonsPanel.setLayout(new BorderLayout());
         contentPane.add(buttonsPanel, BorderLayout.SOUTH);
-        
+
         JPanel rightButtonsPanel = new JPanel();
         rightButtonsPanel.setBorder(new EmptyBorder(0, 10, 5, 10));
         rightButtonsPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -145,7 +196,7 @@ public class TaskPrompter
 
         buttonsPanel.add(rightButtonsPanel, BorderLayout.EAST);
         buttonsPanel.add(leftButtonsPanel, BorderLayout.WEST);
-        
+
         // Ok Button
         JButton okButton = new JButton("OK");
         getRootPane().setDefaultButton(okButton);
@@ -172,17 +223,17 @@ public class TaskPrompter
                 onCancel();
             }
         });
-        
+
         // Details button
-        final JButton detailsButton = new JButton( "Details >>>" );
-        leftButtonsPanel.add( detailsButton );
+        final JButton detailsButton = new JButton("Details >>>");
+        leftButtonsPanel.add(detailsButton);
         detailsButton.addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent e)
             {
                 boolean showing = toggleDetails();
-                detailsButton.setText( showing ? "Details <<<" : "Details >>>" );
+                detailsButton.setText(showing ? "Details <<<" : "Details >>>");
             }
         });
 
@@ -190,26 +241,25 @@ public class TaskPrompter
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
-        
+
     }
-    
-    private JPanel _detailsPanel;
-        
+
     public boolean toggleDetails()
     {
-        _detailsPanel.setVisible( !_detailsPanel.isVisible() );
+
+        boolean visible = !_detailsPanel.isVisible();
+        _detailsPanel.setVisible(visible);
+        _defaultsPanel.setVisible(visible);
         
-        boolean visible = _detailsPanel.isVisible();
         if (visible) {
             _detailsPanel.scrollRectToVisible(_detailsPanel.getBounds());
         }
         return visible;
     }
-    
-    
+
     public void onOk()
     {
-        for (Parameter parameter : _task.getParameters()) {
+        for (Parameter parameter : getTask().getParameters()) {
             JLabel errorLabel = _parametersPanel.getErrorLabel(parameter);
             if (errorLabel.isVisible()) {
                 return;
@@ -217,7 +267,7 @@ public class TaskPrompter
         }
 
         boolean errors = false;
-        for (Parameter parameter : _task.getParameters()) {
+        for (Parameter parameter : getTask().getParameters()) {
             try {
                 parameter.check();
             } catch (ParameterException e) {
@@ -230,7 +280,7 @@ public class TaskPrompter
         }
 
         try {
-            _task.check();
+            getTask().check();
         } catch (ParameterException e) {
             _parametersPanel.setError(e.getParameter(), e.getMessage());
             return;
@@ -238,7 +288,7 @@ public class TaskPrompter
 
         dispose();
         try {
-            _task.run();
+            getTask().run();
         } catch (TaskException e) {
             System.out.println(e);
             // MORE Show and error dialog
@@ -256,8 +306,8 @@ public class TaskPrompter
     @Override
     public void changed(Parameter source)
     {
-        if ( _commandLabel != null ) {
-            _commandLabel.setText( _task.getCommand() );
+        if (_commandLabel != null) {
+            _commandLabel.setText(getTask().getCommand());
         }
     }
 

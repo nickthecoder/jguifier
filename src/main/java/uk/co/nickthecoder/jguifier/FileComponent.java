@@ -25,18 +25,18 @@ import uk.co.nickthecoder.jguifier.util.FileLister;
 public class FileComponent extends JPanel
 {
     private static final long serialVersionUID = 1L;
- 
+
     private FileParameter _fileParameter;
-    
+
     private JTextField _textField;
-    
+
     private JButton _completeButton;
-    
+
     private JPopupMenu _popupMenu;
-    
+
     public FileFilter fileFilter;
 
-    public FileComponent( FileParameter fileParameter, String text )
+    public FileComponent(FileParameter fileParameter, String text)
     {
         _fileParameter = fileParameter;
         _textField = new JTextField(text);
@@ -76,10 +76,12 @@ public class FileComponent extends JPanel
                     createPopupMenu();
                 } else if (e.getKeyCode() == KeyEvent.VK_UP) {
 
+                    if (_fileParameter.getValue() != null) {
                         File parent = _fileParameter.getValue().getParentFile();
-                        if ( parent != null ) {
-                            _textField.setText( parent.getPath() );
+                        if (parent != null) {
+                            _textField.setText(parent.getPath());
                         }
+                    }
                 }
             }
 
@@ -100,19 +102,19 @@ public class FileComponent extends JPanel
         this.add(buttons, BorderLayout.EAST);
 
     }
-    
+
     public JTextField getTextField()
     {
         return _textField;
     }
-    
+
     private void createPopupMenu()
     {
         _popupMenu = new JScrollPopupMenu();
 
         File value = _fileParameter.getValue();
         if (value == null) {
-            value = new File( "." );
+            value = new File(".");
             try {
                 value = value.getCanonicalFile();
             } catch (IOException e) {
@@ -131,11 +133,10 @@ public class FileComponent extends JPanel
             addToComboBox(parent, value.getName());
         }
 
-        if ( _popupMenu.getSubElements().length > 0 ) {
+        if (_popupMenu.getSubElements().length > 0) {
             _popupMenu.show(_completeButton, 0, 0);
         }
     }
-
 
     private void addPopupItem(final String label, final File file)
     {
@@ -158,15 +159,13 @@ public class FileComponent extends JPanel
 
         });
     }
-    
-
 
     private void addToComboBox(File directory, String prefix)
     {
         List<File> children;
         try {
             FileLister fileLister = new FileLister().directoriesFirst().includeDirectories();
-            if ( _fileParameter.getIsDirectory() == TriState.TRUE ) {
+            if (_fileParameter.getIsDirectory() == TriState.TRUE) {
                 fileLister.excludeFiles();
             }
             children = fileLister.listFiles(directory);
@@ -175,15 +174,15 @@ public class FileComponent extends JPanel
         }
 
         for (File child : children) {
-            if (child.getName().equals( prefix) ) {
+            if (child.getName().equals(prefix)) {
                 continue;
             }
-            
+
             if (child.getName().startsWith(prefix)) {
 
                 if (child.isHidden()) {
                     if (child.isDirectory()) {
-                        if ((! _fileParameter.getIncludeHidden()) && (! _fileParameter.getEnterHidden())) {
+                        if ((!_fileParameter.getIncludeHidden()) && (!_fileParameter.getEnterHidden())) {
                             // Skip over hidden directories
                             continue;
                         }
@@ -202,7 +201,6 @@ public class FileComponent extends JPanel
         }
     }
 
-
     private void onFileChooser()
     {
         JFileChooser fileChooser = new JFileChooser(_textField.getText());
@@ -213,7 +211,7 @@ public class FileComponent extends JPanel
         if (_fileParameter.getIsDirectory() == TriState.TRUE) {
             fsm = JFileChooser.DIRECTORIES_ONLY;
             title = "Select a directory";
-        } else if (_fileParameter.getIsDirectory()== TriState.FALSE) {
+        } else if (_fileParameter.getIsDirectory() == TriState.FALSE) {
             fsm = JFileChooser.FILES_ONLY;
             title = "Select a file";
         }

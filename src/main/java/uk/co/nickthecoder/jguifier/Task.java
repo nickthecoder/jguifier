@@ -3,8 +3,11 @@ package uk.co.nickthecoder.jguifier;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -80,6 +83,7 @@ public abstract class Task
     private BooleanParameter _helpParameter;
     private BooleanParameter _autoCompleteParameter;
     private BooleanParameter _debugParameter;
+    private BooleanParameter _lookupDefaultsParameter;
     private ChoiceParameter<TriState> _promptParameter;
 
     public Task()
@@ -88,13 +92,15 @@ public abstract class Task
         _parametersMap = new HashMap<String, Parameter>();
         _metaParametersMap = new HashMap<String, Parameter>();
 
-        _taskNameParameter = new StringParameter("taskName");
+        _taskNameParameter = new StringParameter("taskName", null);
         _helpParameter = new BooleanParameter("help", false);
         _autoCompleteParameter = new BooleanParameter("autocomplete", false);
         _debugParameter = new BooleanParameter("debug", false).oppositeName("no-debug");
+        _lookupDefaultsParameter = new BooleanParameter("lookupDefaults", true);
         _promptParameter = new TriStateParameter("prompt", TriState.MAYBE);
 
-        addMetaParameters(_helpParameter, _autoCompleteParameter, _promptParameter, _debugParameter);
+        addMetaParameters(_helpParameter, _autoCompleteParameter, _promptParameter, _debugParameter,
+            _lookupDefaultsParameter);
     }
 
     public void setName(String name)
@@ -169,6 +175,12 @@ public abstract class Task
         }
     }
 
+    public File getDefaultsFile()
+    {
+        return Util.createFile(
+            new File(System.getProperty("user.home")), ".local", "jguifier", getName() + ".defaults");
+    }
+
     /**
      * Looks up the defaultValues in the default location. For linux this is ~/.local/jguifier/CLASSNAME.defaults
      * Currently, this is also the location that is tried for other operating systems too, which probably won't work!
@@ -177,8 +189,8 @@ public abstract class Task
      */
     public Task lookupDefaults()
     {
-        File defaultsFile = Util.createFile(
-            new File(System.getProperty("user.home")), ".local", "jguifier", getName() + ".defaults");
+        File defaultsFile = getDefaultsFile();
+        debug.println("Looking up parameter defaults in : " + defaultsFile);
 
         return lookupDefaults(defaultsFile);
     }
@@ -208,6 +220,41 @@ public abstract class Task
         return this;
     }
 
+    public void saveDefaults()
+        throws IOException
+    {
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(getDefaultsFile());
+            PrintWriter out = new PrintWriter(fos);
+
+            saveDefaults( out, getRootParameter() ); 
+            
+            out.flush();
+        } finally {
+            if ( fos != null) {
+                fos.close();
+            }
+        }
+
+    }
+
+    private void saveDefaults( PrintWriter out, GroupParameter gp )
+    {
+        for (Parameter parameter : getParameters()) {
+            if (parameter instanceof ValueParameter) {
+                ValueParameter<?> vp = (ValueParameter<?>) parameter;
+                String value = vp.getStringValue();
+                if ( ! Util.empty(value) ) {
+                    out.println( vp.getName() + "=" + vp.getStringValue() );
+                }
+                
+            } else if (parameter instanceof GroupParameter) {
+                saveDefaults( out, (GroupParameter) parameter );
+            }
+        }
+    }
+    
     private void parseDefault(String line)
     {
         line = line.trim();
@@ -477,6 +524,10 @@ public abstract class Task
         try {
             if (!parseArgs(argv)) {
                 return;
+            }
+
+            if (_lookupDefaultsParameter.getValue()) {
+                lookupDefaults();
             }
 
             debug.println("Parameters : ");

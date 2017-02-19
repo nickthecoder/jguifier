@@ -2,8 +2,6 @@ package uk.co.nickthecoder.jguifier;
 
 /**
  * A {@link ChoiceParameter}, with Strings for keys.
- * 
- * Does exactly the same thing as
  */
 public class StringChoiceParameter extends ChoiceParameter<String>
 {

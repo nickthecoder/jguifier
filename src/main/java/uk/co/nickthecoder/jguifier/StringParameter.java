@@ -13,7 +13,8 @@ import uk.co.nickthecoder.jguifier.util.Util;
 public class StringParameter
     extends TextParameter<String>
 {
-
+    public int maxLength = Integer.MAX_VALUE;
+    
     public StringParameter(String name)
     {
         this(name, "");
@@ -54,11 +55,20 @@ public class StringParameter
         return this;
     }
 
+    public StringParameter maxLength( int value )
+    {
+        this.maxLength = value;
+        return this;
+    }
+    
     @Override
     public String valid(String value)
     {
         if (isRequired() && (Util.empty(value))) {
             return super.valid(null);
+        }
+        if ((value != null) && (value.length() > maxLength) ) {
+            return "Too long. Maximum of " + maxLength + " characters";
         }
         return null;
     }

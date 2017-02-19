@@ -70,13 +70,14 @@ public class DoubleParameter
         if (Util.empty(string)) {
             setValue(null);
         } else {
+            double value;
             try {
-                double value = Double.parseDouble(string);
-                setValue(value);
+                value = Double.parseDouble(string);
 
             } catch (Exception e) {
                 throw new ParameterException(this, "Not a number");
             }
+            setValue(value);
         }
         check();
 

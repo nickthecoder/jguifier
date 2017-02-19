@@ -10,21 +10,11 @@ Sort out choices (delete one of the classes)
 
 Error message to be left aligned.
 
-FileParameter component.
-	Down key on an empty directory is weird (shows just ".."). Instead, disable the button when it would show nothing.
-
 New Features
 ============
 
 FileParameter to display message, when the wrong type of file is chosen (e.g. file vs directory, hidden, wrong extension).
 
 Hide the scrollbar when it is not needed, but extra room still allocated for it by tweaking preferred size.
-
-Add "More >>>" and "Less <<<", which reveals the command line, "Copy" button? and a "Save Defaults" button.
-	Maybe just highlight the command line, so ctrl+C will copy it
-	Maybe ctrl+C should copy the command
-
-FileParameter component to accept UP key to remove the last part of the path
-	Maybe remove ".." from the list of completions?
 
 	
