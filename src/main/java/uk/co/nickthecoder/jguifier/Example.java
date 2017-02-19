@@ -101,6 +101,6 @@ public class Example extends Task
         // However, if you are calling java code from a shell script, then you should explicitly set the name of the
         // shell script like so :
         example.setName("example.sh"); 
-        example.runFromMain(argv);
+        example.go(argv);
     }
 }

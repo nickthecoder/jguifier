@@ -3,36 +3,23 @@
 import uk.co.nickthecoder.jguifier.*
 import uk.co.nickthecoder.jguifier.util.*
 
-public class FileParameters extends Task
-{
+def mustExist = new FileParameter("mustExist").exists(true)
+def mustNotExist = new FileParameter("mustNotExist").exists(false)
+def mayExist = new FileParameter("mayExist")
 
-    FileParameter mustExist = new FileParameter("mustExist").exists(true)
-    FileParameter mustNotExist = new FileParameter("mustNotExist").exists(false)
-    FileParameter mayExist = new FileParameter("mayExist")
+def directory = new FileParameter("directory").directory()
+def file = new FileParameter("file").directory(false)
+def file2 = new FileParameter("file2") // Should be the default
+def either = new FileParameter("either").directory(null)
 
-    FileParameter directory = new FileParameter("directory").directory()
-    FileParameter file = new FileParameter("file").directory(false)
-    FileParameter file2 = new FileParameter("file2") // Should be the default
-    FileParameter either = new FileParameter("either").directory(null)
+def optional = new FileParameter("optional").optional()
+def writable = new FileParameter("writable").writable(true)
 
-    FileParameter optional = new FileParameter("optional").optional()
-    FileParameter writable = new FileParameter("writable").writable(true)
-
-    FileParameters()
-    {
-        super()
-        addParameters( mustExist, mustNotExist, mayExist,  directory, file, file2, either,  optional, writable )
-    }
-
-    @Override
-    void run() throws Exception
-    {
-    }
-
-    static void main(String[] argv)
-    {
-        def task = new FileParameters()
-        task.runFromMain(argv)
-    }
+new RunnableTask()
+.parameters( mustExist, mustNotExist, mayExist,  directory, file, file2, either,  optional, writable )
+.action {
+    println( "Done." )
 }
+.go(args)
+
 

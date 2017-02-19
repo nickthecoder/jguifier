@@ -85,7 +85,7 @@ public abstract class Task
     private BooleanParameter _autoCompleteParameter;
     private BooleanParameter _debugParameter;
     private BooleanParameter _lookupDefaultsParameter;
-    private ChoiceParameter<TriState> _promptParameter;
+    private BooleanParameter _promptParameter;
 
     public Task()
     {
@@ -98,10 +98,11 @@ public abstract class Task
         _autoCompleteParameter = new BooleanParameter("autocomplete", false);
         _debugParameter = new BooleanParameter("debug", false).oppositeName("no-debug");
         _lookupDefaultsParameter = new BooleanParameter("lookupDefaults", true);
-        _promptParameter = new TriStateParameter("prompt", TriState.MAYBE);
+        _promptParameter = new BooleanParameter("prompt", null).oppositeName("no-prompt");
 
         addMetaParameters(_helpParameter, _autoCompleteParameter, _promptParameter, _debugParameter,
             _lookupDefaultsParameter);
+
     }
 
     public void setName(String name)
@@ -133,8 +134,8 @@ public abstract class Task
         URL url = obj.getClass().getProtectionDomain().getCodeSource().getLocation();
         File file = new File(url.getPath());
         String name = file.getName();
-        if (name.endsWith(".java")) {
-            setName( obj.getClass().getSimpleName() );
+        if (name.endsWith(".jar")) {
+            setName(obj.getClass().getSimpleName());
         } else {
             setName(file.getName());
         }
@@ -204,6 +205,15 @@ public abstract class Task
     {
         for (Parameter parameter : parameters) {
             _metaParametersMap.put(parameter.getName(), parameter);
+            
+            if (parameter instanceof BooleanParameter) {
+                BooleanParameter bp = (BooleanParameter) parameter;
+                if (bp.getOppositeName() != null) {
+                    assert !this._metaParametersMap.containsKey(bp.getOppositeName()) : "Duplicate parameter opposite name";
+                    this._metaParametersMap.put(bp.getOppositeName(), parameter);
+                }
+            }
+
         }
     }
 
@@ -551,7 +561,7 @@ public abstract class Task
         }
     }
 
-    public void runFromMain(String[] argv)
+    public void go(String[] argv)
     {
         try {
             if (!parseArgs(argv)) {
@@ -574,7 +584,7 @@ public abstract class Task
                 }
                 check();
             } catch (ParameterException e) {
-                if (_promptParameter.getValue() == TriState.FALSE) {
+                if (_promptParameter.getValue() == Boolean.FALSE) {
                     System.out.println(e);
                     System.exit(1);
                 }
@@ -582,7 +592,7 @@ public abstract class Task
                 return;
             }
 
-            if (_promptParameter.getValue() == TriState.TRUE) {
+            if (_promptParameter.getValue() == Boolean.TRUE) {
                 promptTask();
             } else {
                 run();
