@@ -21,7 +21,12 @@ public class IntegerParameter
 
     public IntegerParameter(String name)
     {
-        super(name);
+        this(name, null);
+    }
+
+    public IntegerParameter(String name, Integer value)
+    {
+        super(name, value);
         _columns = 6;
     }
 
@@ -123,7 +128,7 @@ public class IntegerParameter
         // If value has been changed, then update the parameter's, to prevent "Required" error message,
         // when the default was not set.
         setValue(value);
-        
+
         final SpinnerNumberModel model = new SpinnerNumberModel(value, (Integer) getMinimumValue(),
             (Integer) getMaximumValue(), (Integer) 1);
         final JSpinner component = new JSpinner(model);

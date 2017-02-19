@@ -25,20 +25,38 @@ public class Column
 
     int minimumWidth;
 
+    int preferredWidth;
+
     /**
-     * The minimum width for this column is the maximum preferred size of each of its cells.
+     * The minimum width for this column is the maximum of the preferred size of each of its cells.
      */
     public int calculateMinimumWidth()
     {
         minimumWidth = 0;
 
         for (Component component : cells) {
-            int width = component.getPreferredSize().width;
+            int width = component.getMinimumSize().width;
             if (minimumWidth < width) {
                 minimumWidth = width;
             }
         }
         return minimumWidth;
+    }
+    
+    /**
+     * The minimum width for this column is the maximum of the preferred size of each of its cells.
+     */
+    public int calculatePreferredWidth()
+    {
+        preferredWidth = 0;
+
+        for (Component component : cells) {
+            int width = component.getPreferredSize().width;
+            if (preferredWidth < width) {
+                preferredWidth = width;
+            }
+        }
+        return preferredWidth;
     }
 
 }

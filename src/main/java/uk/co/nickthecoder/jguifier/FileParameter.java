@@ -45,7 +45,12 @@ public class FileParameter
 
     public FileParameter(String name)
     {
-        super(name);
+        this( name, null);
+    }
+    
+    public FileParameter(String name, File value)
+    {
+        super(name, value);
 
         _exists = TriState.MAYBE;
         _isDirectory = TriState.MAYBE;

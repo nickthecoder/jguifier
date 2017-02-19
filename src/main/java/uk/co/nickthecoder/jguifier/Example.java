@@ -80,6 +80,7 @@ public class Example extends Task
     {
         super();
         addParameters(_integer, _double, _greeting, _message, _output, _file);
+        //addParameters(_file);
     }
 
     private PrintStream getStream()
@@ -100,6 +101,7 @@ public class Example extends Task
     public static void main(String[] argv)
     {
         Example example = new Example();
+        example.setName( "example.sh" ); // Pretend we call this class from a shell script called "example.sh"
         example.lookupDefaults();
         example.runFromMain(argv);
     }

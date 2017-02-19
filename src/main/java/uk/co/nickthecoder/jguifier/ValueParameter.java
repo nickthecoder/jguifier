@@ -1,7 +1,5 @@
 package uk.co.nickthecoder.jguifier;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public abstract class ValueParameter<T> extends Parameter
 {
@@ -10,21 +8,17 @@ public abstract class ValueParameter<T> extends Parameter
 
     private boolean _required;
 
-    private List<ParameterListener> _listeners;
-
     /**
      * @param name
      *            A unique (per Task) identifier, used when setting values using the command line.
      * @param label
      *            A human readable version of the name, used when setting values via a GUI.
      */
-    public ValueParameter(String name)
+    public ValueParameter(String name, T value)
     {
         super(name);
-
+        _value = value;
         _required = true;
-
-        _listeners = null;
     }
 
     /**
@@ -87,32 +81,6 @@ public abstract class ValueParameter<T> extends Parameter
         return _required;
     }
 
-    public void addListener(ParameterListener listener)
-    {
-        if (_listeners == null) {
-            _listeners = new ArrayList<ParameterListener>();
-        }
-        _listeners.add(listener);
-    }
-
-    public void remvoveListener(ParameterListener listener)
-    {
-        if (_listeners != null) {
-            _listeners.remove(listener);
-        }
-    }
-
-    /**
-     * Call implementations of Parameter should call this whenever their value changes.
-     */
-    protected void fireChangeEvent()
-    {
-        if (_listeners != null) {
-            for (ParameterListener pl : _listeners) {
-                pl.changed(this);
-            }
-        }
-    }
 
     /**
      * Sets the parameter from a string representation of a value, used when setting a value from the command line,
@@ -156,6 +124,12 @@ public abstract class ValueParameter<T> extends Parameter
     {
         return _value;
     }
+    
+    public ValueParameter<T> value( T value )
+    {
+        setValue( value );
+        return this;
+    }
 
     /**
      * Checks that the current value is valid. Used before a Task is run, to ensure that all the parameters are correct.
@@ -197,6 +171,6 @@ public abstract class ValueParameter<T> extends Parameter
     @Override
     public String toString()
     {
-        return super.toString() + " = " + _value.toString();
+        return super.toString() + " = " + (_value==null ? "null" : _value.toString());
     }
 }

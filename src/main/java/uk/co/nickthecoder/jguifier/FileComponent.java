@@ -111,6 +111,13 @@ public class FileComponent extends JPanel
         _popupMenu = new JScrollPopupMenu();
 
         File value = _fileParameter.getValue();
+        if (value == null) {
+            value = new File( "." );
+            try {
+                value = value.getCanonicalFile();
+            } catch (IOException e) {
+            }
+        }
 
         File parent = value.getParentFile();
 

@@ -5,23 +5,25 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GraphicsEnvironment;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 
-import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.KeyStroke;
+import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
 import uk.co.nickthecoder.jguifier.guiutil.MaxJScrollPane;
+import uk.co.nickthecoder.jguifier.guiutil.ScrollablePanel;
 import uk.co.nickthecoder.jguifier.guiutil.VerticalStretchLayout;
 import uk.co.nickthecoder.jguifier.util.Util;
 
@@ -31,7 +33,7 @@ import uk.co.nickthecoder.jguifier.util.Util;
  * @priority 4
  */
 public class TaskPrompter
-    extends JFrame
+    extends JFrame implements ParameterListener
 {
     private static final long serialVersionUID = 1;
 
@@ -42,12 +44,15 @@ public class TaskPrompter
 
     private ParametersPanel _parametersPanel;
 
+    private JTextField _commandLabel;
+
     public TaskPrompter(Task task)
     {
         super("Prompt");
         _task = task;
     }
-
+    
+    
     public void prompt()
     {
         Util.defaultLookAndFeel();
@@ -56,44 +61,96 @@ public class TaskPrompter
         Container contentPane = this.getContentPane();
         contentPane.setLayout(new BorderLayout());
 
+        // Parameters
         _parametersPanel = new ParametersPanel();
         _parametersPanel.addParameters(_task.getRootParameter());
+        _task.getRootParameter().addListener(this);
+        
+        // Details
+        _detailsPanel = new JPanel();
+        _detailsPanel.setVisible(false);
+        _detailsPanel.setLayout(new BorderLayout());
+        JPanel commandPanel = new JPanel();
+        commandPanel.setLayout(new BorderLayout() );
+        commandPanel.setBorder( BorderFactory.createTitledBorder("Command") );
+        _commandLabel = new JTextField( this._task.getCommand() );
+        //_commandLabel.setColumns(30);
+        _commandLabel.setEditable(false);
+        commandPanel.add(_commandLabel, BorderLayout.CENTER);
+        _detailsPanel.add(commandPanel, BorderLayout.NORTH);
+        
+        JButton copyCommandButton = new JButton( "Copy" );
+        copyCommandButton.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                clipboard.setContents(new StringSelection(_commandLabel.getText()), null);
+            }
+        });
+        commandPanel.add(copyCommandButton, BorderLayout.EAST);
+
+        //Scrolling Panel
+        ScrollablePanel scrollablePanel = new ScrollablePanel();
+        scrollablePanel.setScrollableTracksViewportWidth(true);
+        scrollablePanel.setLayout(new BoxLayout(scrollablePanel, BoxLayout.Y_AXIS));
+        scrollablePanel.add( _parametersPanel );
+        scrollablePanel.add( _detailsPanel );
+        
 
         // Scroll
-        MaxJScrollPane tableScroll = new MaxJScrollPane(
-            _parametersPanel,
+        MaxJScrollPane scrollPane = new MaxJScrollPane(
+            scrollablePanel,
             ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
             ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        tableScroll.setMaxHeight(MAX_TABLE_HEIGHT);
-        tableScroll.setMinimumSize(new Dimension(0, 0));
-        tableScroll.setViewportBorder(BorderFactory.createEmptyBorder());
+        
+        scrollPane.setMaxHeight(MAX_TABLE_HEIGHT);
+        scrollPane.setMinimumSize(new Dimension(0, 0));
 
+        scrollPane.setViewportBorder(BorderFactory.createEmptyBorder());
+
+
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        Dimension scrollSize = scrollPane.getPreferredSize();
+        if (scrollSize.getHeight() > MAX_TABLE_HEIGHT) {
+            scrollPane.setPreferredSize(new Dimension((int) scrollSize.getWidth(), MAX_TABLE_HEIGHT));
+        }
+        
         VerticalStretchLayout vsl = new VerticalStretchLayout();
-        vsl.setStretch(tableScroll, 1.0);
-
+        vsl.setStretch(scrollPane, 1.0);
+        //vsl.setStretch(scrollingPanel, 1.0);
+        
         JPanel panel = new JPanel();
         panel.setLayout(vsl);
+        
 
-        tableScroll.setBorder(BorderFactory.createEmptyBorder());
-        Dimension scrollSize = tableScroll.getPreferredSize();
-        if (scrollSize.getHeight() > MAX_TABLE_HEIGHT) {
-            tableScroll.setPreferredSize(new Dimension((int) scrollSize.getWidth(), MAX_TABLE_HEIGHT));
-        }
-
-        panel.add(tableScroll);
+        panel.add(scrollPane);
+        //panel.add( scrollingPanel );
         contentPane.add(panel, BorderLayout.CENTER);
 
+        
         // Buttons
-        JPanel buttonPane = new JPanel();
-        buttonPane.setBorder(new EmptyBorder(0, 10, 5, 10));
-        buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-        contentPane.add(buttonPane, BorderLayout.SOUTH);
+        JPanel buttonsPanel = new JPanel();
+        buttonsPanel.setLayout(new BorderLayout());
+        contentPane.add(buttonsPanel, BorderLayout.SOUTH);
+        
+        JPanel rightButtonsPanel = new JPanel();
+        rightButtonsPanel.setBorder(new EmptyBorder(0, 10, 5, 10));
+        rightButtonsPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
+        JPanel leftButtonsPanel = new JPanel();
+        leftButtonsPanel.setBorder(new EmptyBorder(0, 10, 5, 10));
+        leftButtonsPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+
+        buttonsPanel.add(rightButtonsPanel, BorderLayout.EAST);
+        buttonsPanel.add(leftButtonsPanel, BorderLayout.WEST);
+        
         // Ok Button
         JButton okButton = new JButton("OK");
         getRootPane().setDefaultButton(okButton);
         okButton.setActionCommand("OK");
-        buttonPane.add(okButton);
+        rightButtonsPanel.add(okButton);
         okButton.addActionListener(new ActionListener()
         {
             @Override
@@ -106,7 +163,7 @@ public class TaskPrompter
         // Cancel button
         JButton cancelButton = new JButton("Cancel");
         cancelButton.setActionCommand("Cancel");
-        buttonPane.add(cancelButton);
+        rightButtonsPanel.add(cancelButton);
         cancelButton.addActionListener(new ActionListener()
         {
             @Override
@@ -115,14 +172,41 @@ public class TaskPrompter
                 onCancel();
             }
         });
+        
+        // Details button
+        final JButton detailsButton = new JButton( "Details >>>" );
+        leftButtonsPanel.add( detailsButton );
+        detailsButton.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                boolean showing = toggleDetails();
+                detailsButton.setText( showing ? "Details <<<" : "Details >>>" );
+            }
+        });
 
         // Complete the layout of the frame
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
-
+        
     }
-
+    
+    private JPanel _detailsPanel;
+        
+    public boolean toggleDetails()
+    {
+        _detailsPanel.setVisible( !_detailsPanel.isVisible() );
+        
+        boolean visible = _detailsPanel.isVisible();
+        if (visible) {
+            _detailsPanel.scrollRectToVisible(_detailsPanel.getBounds());
+        }
+        return visible;
+    }
+    
+    
     public void onOk()
     {
         for (Parameter parameter : _task.getParameters()) {
@@ -167,6 +251,14 @@ public class TaskPrompter
     public void onCancel()
     {
         dispose();
+    }
+
+    @Override
+    public void changed(Parameter source)
+    {
+        if ( _commandLabel != null ) {
+            _commandLabel.setText( _task.getCommand() );
+        }
     }
 
 }

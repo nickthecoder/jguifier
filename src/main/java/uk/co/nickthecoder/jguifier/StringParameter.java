@@ -16,7 +16,12 @@ public class StringParameter
 
     public StringParameter(String name)
     {
-        super(name);
+        this(name, "");
+    }
+
+    public StringParameter(String name, String value)
+    {
+        super(name, value);
     }
 
     public StringParameter stretch()
@@ -50,7 +55,7 @@ public class StringParameter
     }
 
     @Override
-    public String valid( String value )
+    public String valid(String value)
     {
         if (isRequired() && (Util.empty(value))) {
             return super.valid(null);
@@ -62,8 +67,8 @@ public class StringParameter
     public Component createComponent(final ParametersPanel parametersPanel)
     {
         final JTextField component = new JTextField(getValue() == null ? "" : getValue());
-        textField( component, parametersPanel );
-        
+        textField(component, parametersPanel);
+
         return component;
     }
 

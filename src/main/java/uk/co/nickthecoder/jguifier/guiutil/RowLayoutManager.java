@@ -69,7 +69,10 @@ public class RowLayoutManager
 
         int totalWidths = 0;
         for (Column column : _tableLayoutManager.getColumns()) {
-            totalWidths += column.calculateMinimumWidth() + _tableLayoutManager.getColumnSpacing();
+            column.calculatePreferredWidth();
+            column.calculateMinimumWidth();
+
+            totalWidths += column.preferredWidth + _tableLayoutManager.getColumnSpacing();
         }
         totalWidths -= _tableLayoutManager.getColumnSpacing();
         int slack = parent.getWidth() - totalWidths - parent.getInsets().left - parent.getInsets().right;
@@ -83,12 +86,12 @@ public class RowLayoutManager
 
             Dimension preferredSize = child.getPreferredSize();
             int preferredWidth = preferredSize.width;
-            int columnWidth = column.calculateMinimumWidth();
+            int columnWidth = column.preferredWidth;
 
             int y = (height - (int) preferredSize.getHeight()) / 2;
 
             int width = preferredWidth;
-            if ((_stretchy) && (column.stretchFactor > 0)) {
+            if (_stretchy) {
                 width = columnWidth + (int) (slack * column.stretchFactor);
             }
 
@@ -123,7 +126,22 @@ public class RowLayoutManager
     @Override
     public Dimension preferredLayoutSize(Container parent)
     {
-        return minimumLayoutSize(parent);
+        List<Column> columns = _tableLayoutManager.getColumns();
+
+        int width = _tableLayoutManager.getRowSpacing() * (columns.size() - 1);
+
+        for (Column column : _tableLayoutManager.getColumns()) {
+            width += column.calculatePreferredWidth();
+        }
+
+        int height = 0;
+        for (Component child : parent.getComponents()) {
+            if (height < child.getPreferredSize().getHeight()) {
+                height = (int) child.getPreferredSize().getHeight();
+            }
+        }
+
+        return new Dimension(width, height);
     }
 
     /**

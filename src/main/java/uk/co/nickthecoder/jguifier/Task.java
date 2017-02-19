@@ -4,10 +4,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import uk.co.nickthecoder.jguifier.util.NullOutputStream;
 import uk.co.nickthecoder.jguifier.util.Util;
 
 /**
@@ -42,6 +44,8 @@ import uk.co.nickthecoder.jguifier.util.Util;
  */
 public abstract class Task
 {
+    private String _name = null;
+
     private String _description = "";
 
     /**
@@ -60,36 +64,61 @@ public abstract class Task
     private HashMap<String, Parameter> _parametersMap;
 
     /**
-     * If true, then the GUI will be displayed regardless of whether the parameters have been entered
-     * correctly. The user can override this value by adding the command line option --no-prompt.
-     * 
-     * Set this to true for Tasks which will always tend to be
+     * Parameters used by all Tasks, such as "--prompt", "--help", "--description", "--taskName" etc.
      */
-    private boolean _forcePrompt = false;
+    private HashMap<String, Parameter> _metaParametersMap;
 
     /**
-     * If true, then the GUI will not be displayed, even if the parameters are not valid, the command
-     * will just output an error message and then exit.
-     * 
-     * Most Tasks should keep this value at the default (false).
-     * 
-     * The user can override this value by adding the command line option --prompt
+     * The by default, all output is thrown away, but if the --debug parameter is set, then
+     * debug becomes System.out.
+     * So, pepper your code with <code>debug.println(...)</code> statements, and most the results
+     * will only be seen when --debug is set.
      */
-    private boolean _neverPrompt = false;
+    public PrintStream debug = NullOutputStream.nullPrintStream;
 
-    /**
-     * Along the debug method will do nothing when this is false, so you can sprinkle calls to
-     * debug throughout your task, and while in development set debug to false, then once its ready
-     * for production, set it to true.
-     * 
-     * This value can be overridden by the user with the command line option --debug and --no-debug
-     */
-    public boolean debug = false;
+    private StringParameter _taskNameParameter;
+    private BooleanParameter _helpParameter;
+    private BooleanParameter _autoCompleteParameter;
+    private BooleanParameter _debugParameter;
+    private ChoiceParameter<TriState> _promptParameter;
 
     public Task()
     {
         _parameters = new LinkedList<Parameter>();
         _parametersMap = new HashMap<String, Parameter>();
+        _metaParametersMap = new HashMap<String, Parameter>();
+
+        _taskNameParameter = new StringParameter("taskName");
+        _helpParameter = new BooleanParameter("help", false);
+        _autoCompleteParameter = new BooleanParameter("autocomplete", false);
+        _debugParameter = new BooleanParameter("debug", false).oppositeName("no-debug");
+        _promptParameter = new TriStateParameter("prompt", TriState.MAYBE);
+
+        addMetaParameters(_helpParameter, _autoCompleteParameter, _promptParameter, _debugParameter);
+    }
+
+    public void setName(String name)
+    {
+        _name = name;
+    }
+
+    /**
+     * 
+     * @return The name of this Task, the default implementation returns the classname with the package name removed.
+     *         i.e. The {@link Example} task will return just "Example".
+     */
+    public String getName()
+    {
+        if (_name == null) {
+            return this.getClass().getName().replaceAll(".*\\.", "");
+        }
+        return _name;
+    }
+
+    public Task name(String name)
+    {
+        setName(name);
+        return this;
     }
 
     public GroupParameter getRootParameter()
@@ -133,6 +162,13 @@ public abstract class Task
         }
     }
 
+    private void addMetaParameters(Parameter... parameters)
+    {
+        for (Parameter parameter : parameters) {
+            _metaParametersMap.put(parameter.getName(), parameter);
+        }
+    }
+
     /**
      * Looks up the defaultValues in the default location. For linux this is ~/.local/jguifier/CLASSNAME.defaults
      * Currently, this is also the location that is tried for other operating systems too, which probably won't work!
@@ -147,14 +183,9 @@ public abstract class Task
         return lookupDefaults(defaultsFile);
     }
 
-    /**
-     * 
-     * @return The name of this Task, the default implementation returns the classname with the package name removed.
-     *         i.e. The {@link Example} task will return just "Example".
-     */
-    public String getName()
+    public String getCommand()
     {
-        return this.getClass().getName().replaceAll(".*\\.", "");
+        return getName() + _root.getCommandString();
     }
 
     public Task lookupDefaults(File file)
@@ -188,7 +219,7 @@ public abstract class Task
                 String name = line.substring(0, eq).trim();
                 String value = line.substring(eq + 1).trim();
 
-                value = Util.unescapeDoubleQuotes(value);
+                value = Util.undoubleQuote(value);
 
                 Parameter parameter = this.findParameter(name);
                 if (parameter instanceof ValueParameter<?>) {
@@ -216,25 +247,16 @@ public abstract class Task
 
     public Parameter findParameter(String name)
     {
-        return _parametersMap.get(name);
+        Parameter result = _parametersMap.get(name);
+        if (result != null) {
+            return result;
+        }
+        return _metaParametersMap.get(name);
     }
 
     public List<Parameter> getParameters()
     {
         return _parameters;
-    }
-
-    public Task prompt()
-    {
-        _forcePrompt = true;
-        return this;
-    }
-
-    public Task prompt(boolean value)
-    {
-        _forcePrompt = value;
-        _neverPrompt = !value;
-        return this;
     }
 
     public void help()
@@ -262,20 +284,16 @@ public abstract class Task
 
     public void guifierHelp()
     {
-        System.out.println("guifier options :");
-        System.out.println("    --help                  : Displays this text");
-        System.out
-            .println("    --prompt, --no-prompt   : Overrides whether the parameters should be prompted using a GUI");
-        System.out
-            .println("    --debug, --no-debug     : May be useful to turn on debugging while developing your script");
-        System.out.println();
-    }
-
-    public void debug(Object message)
-    {
-        if (debug) {
-            System.out.println(message.toString());
-        }
+        // Replace with help from meta parameters
+        /*
+         * System.out.println("guifier options :");
+         * System.out.println("    --help                  : Displays this text");
+         * System.out
+         * .println("    --prompt, --no-prompt   : Overrides whether the parameters should be prompted using a GUI");
+         * System.out
+         * .println("    --debug, --no-debug     : May be useful to turn on debugging while developing your script");
+         * System.out.println();
+         */
     }
 
     private boolean parseArgs(String[] argv)
@@ -285,40 +303,7 @@ public abstract class Task
         for (int i = 0; i < argv.length; i++) {
             String arg = argv[i];
 
-            if ((i == 0) && "--autocomplete".equals(arg)) {
-
-                autocomplete(argv);
-                return false;
-
-            } else if ("--help".equals(arg)) {
-                if (i + 1 >= argv.length) {
-                    help();
-                } else {
-                    Parameter parameter = findParameter(argv[i + 1]);
-                    if (parameter == null) {
-                        help();
-                    } else {
-                        System.out.println(parameter.getDescription());
-                    }
-                }
-
-                return false;
-
-            } else if ("--no-prompt".equals(arg)) {
-                _forcePrompt = false;
-                _neverPrompt = true;
-
-            } else if ("--prompt".equals(arg)) {
-                _forcePrompt = true;
-                _neverPrompt = false;
-
-            } else if ("--no-debug".equals(arg)) {
-                debug = false;
-
-            } else if ("--debug".equals(arg)) {
-                debug = true;
-
-            } else if (arg.startsWith("--")) {
+            if (arg.startsWith("--")) {
 
                 String name;
                 String value;
@@ -388,18 +373,31 @@ public abstract class Task
                         }
                     }
                 }
+                if ((parameter == _autoCompleteParameter) && _autoCompleteParameter.getValue()) {
+                    autocomplete(argv);
+                    return false;
+                }
 
             } else {
                 throw new TaskException("Unexpected value : " + arg);
             }
+
+        }
+
+        if (_debugParameter.getValue()) {
+            debug = System.out;
+        }
+
+        if (_helpParameter.getValue()) {
+            help();
+            return false;
+        }
+
+        if (_taskNameParameter.getValue() != null) {
+            setName(_taskNameParameter.getValue());
         }
 
         return true;
-    }
-
-    private void debug(String s)
-    {
-        // System.err.println(s);
     }
 
     /**
@@ -425,21 +423,21 @@ public abstract class Task
         String[] params = new String[argv.length - 3];
         for (int i = 3; i < argv.length; i++) {
             params[i - 3] = argv[i];
-            debug("Params[" + (i - 3) + "] = " + argv[i]);
+            debug.println("Params[" + (i - 3) + "] = " + argv[i]);
         }
 
-        debug("Index = " + index);
+        debug.println("Index = " + index);
 
         String cur = index >= params.length ? "" : params[index];
         String prev = (index > 0) ? params[index - 1] : "";
 
-        debug("Autocomplete arguments");
+        debug.println("Autocomplete arguments");
         for (String arg : argv) {
-            debug("   '" + arg + "'");
+            debug.println("   '" + arg + "'");
         }
-        debug("Current : " + cur);
-        debug("Prev : " + prev);
-        debug("");
+        debug.println("Current : " + cur);
+        debug.println("Prev : " + prev);
+        debug.println("");
 
         /*
          * If the user has edited a command, deleting a parameter value, then cur will be the
@@ -450,7 +448,7 @@ public abstract class Task
          */
         if ((index != params.length) && (prev.startsWith("--")) && (cur.startsWith("--"))) {
             cur = "";
-            debug("Setting cur to  blank");
+            debug.println("Setting cur to  blank");
         }
 
         if (prev.startsWith("--")) {
@@ -458,7 +456,6 @@ public abstract class Task
             Parameter parameter = findParameter(name);
             if (parameter != null) {
                 parameter.autocomplete(cur);
-                // System.err.println( parameter.getHelp() );
             }
         } else {
             for (Parameter parameter : getParameters()) {
@@ -482,11 +479,9 @@ public abstract class Task
                 return;
             }
 
-            if (debug) {
-                debug("Parameters : ");
-                for (Parameter parameter : _parameters) {
-                    debug(parameter);
-                }
+            debug.println("Parameters : ");
+            for (Parameter parameter : _parameters) {
+                debug.println(parameter);
             }
 
             // Abort if any parameters are invalid.
@@ -496,7 +491,7 @@ public abstract class Task
                 }
                 check();
             } catch (ParameterException e) {
-                if (_neverPrompt) {
+                if (_promptParameter.getValue() == TriState.FALSE) {
                     System.out.println(e);
                     System.exit(1);
                 }
@@ -504,7 +499,7 @@ public abstract class Task
                 return;
             }
 
-            if (_forcePrompt) {
+            if (_promptParameter.getValue() == TriState.TRUE) {
                 promptTask();
             } else {
                 run();

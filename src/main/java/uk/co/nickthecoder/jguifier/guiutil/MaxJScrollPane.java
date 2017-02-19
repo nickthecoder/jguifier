@@ -1,5 +1,6 @@
 package uk.co.nickthecoder.jguifier.guiutil;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 
@@ -16,24 +17,13 @@ public class MaxJScrollPane
     private int _maxWidth = Integer.MAX_VALUE;
     private int _maxHeight = Integer.MAX_VALUE;
 
-    public MaxJScrollPane()
-    {
-        super();
-    }
-
-    public MaxJScrollPane(Component view)
-    {
-        super(view);
-    }
 
     public MaxJScrollPane(Component view, int vsbPolicy, int hsbPolicy)
     {
         super(view, vsbPolicy, hsbPolicy);
-    }
-
-    public MaxJScrollPane(int vsbPolicy, int hsbPolicy)
-    {
-        super(vsbPolicy, hsbPolicy);
+        Color srcCol = view.getBackground();
+        Color col = new Color( srcCol.getRed(), srcCol.getGreen(), srcCol.getBlue());
+        getViewport().setBackground(col);
     }
 
     public void setMaxSize(int width, int height)
@@ -65,6 +55,6 @@ public class MaxJScrollPane
         }
 
         return parent;
-
     }
+
 }

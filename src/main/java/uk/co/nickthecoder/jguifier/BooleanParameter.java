@@ -22,9 +22,9 @@ public class BooleanParameter
 
     private String _oppositeName = null;
 
-    public BooleanParameter(String name)
+    public BooleanParameter(String name, Boolean value)
     {
-        super(name);
+        super(name, value);
     }
 
     public void setOppositeName(String name)

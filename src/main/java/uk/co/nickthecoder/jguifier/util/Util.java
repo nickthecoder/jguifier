@@ -89,13 +89,32 @@ public class Util
      * @param value
      * @return The contents of the quoted string.
      */
-    public static String unescapeDoubleQuotes(String value)
+    public static String unquote(String value)
+    {
+        if (value.startsWith("\'") && (value.endsWith("\'"))) {
+            return value.substring(1, value.length() - 1).replaceAll("\\\'", "'");
+            // Replace all \' slash quote  with " quote
+        }
+        return value;
+    }
+    
+    public static String undoubleQuote(String value)
     {
         if (value.startsWith("\"") && (value.endsWith("\""))) {
             return value.substring(1, value.length() - 1).replaceAll("\\\"", "\"");
-            // Replace all \" slash quote  with " quote
+            // Replace all \" slash double-quote  with " double-quote
         }
         return value;
+    }
+
+    public static String quote(String value)
+    {
+        return "'" + value.replaceAll("'", "\\\\\'") + "'";        
+    }
+    
+    public static String doubleQuote(String value)
+    {
+        return '"' + value.replaceAll("\"", "\\\\\"") + '"';
     }
 
     /**

@@ -1,6 +1,8 @@
 package uk.co.nickthecoder.jguifier;
 
 import java.awt.Component;
+import java.util.ArrayList;
+import java.util.List;
 
 import uk.co.nickthecoder.jguifier.util.Util;
 
@@ -17,6 +19,7 @@ public abstract class Parameter
 
     private String _label;
 
+    private List<ParameterListener> _listeners;
 
     public Parameter(String name)
     {
@@ -89,6 +92,38 @@ public abstract class Parameter
     public boolean isStretchy()
     {
         return false;
+    }
+
+    public void addListener(ParameterListener listener)
+    {
+        if (_listeners == null) {
+            _listeners = new ArrayList<ParameterListener>();
+        }
+        _listeners.add(listener);
+    }
+
+    public void remvoveListener(ParameterListener listener)
+    {
+        if (_listeners != null) {
+            _listeners.remove(listener);
+        }
+    }
+
+    /**
+     * Call implementations of Parameter should call this whenever their value changes.
+     */
+    protected void fireChangeEvent(Parameter source)
+    {
+        if (_listeners != null) {
+            for (ParameterListener pl : _listeners) {
+                pl.changed(this);
+            }
+        }
+    }
+
+    protected void fireChangeEvent()
+    {
+        fireChangeEvent(this);
     }
 
     /**

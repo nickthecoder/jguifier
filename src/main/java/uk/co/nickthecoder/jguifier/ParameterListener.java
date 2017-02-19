@@ -9,5 +9,5 @@ package uk.co.nickthecoder.jguifier;
  */
 public interface ParameterListener
 {
-    public void changed(ValueParameter<?> source);
+    public void changed(Parameter source);
 }

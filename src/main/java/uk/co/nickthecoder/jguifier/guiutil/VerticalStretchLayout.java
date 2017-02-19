@@ -56,7 +56,20 @@ public class VerticalStretchLayout
     @Override
     public Dimension minimumLayoutSize(Container parent)
     {
-        return preferredLayoutSize(parent);
+        Insets insets = parent.getInsets();
+
+        int height = 0;
+        int width = 0;
+        for (Component child : parent.getComponents()) {
+            Dimension prefSize = child.getPreferredSize();
+            Dimension minSize = child.getPreferredSize();
+            height += (int) prefSize.getHeight();
+            if (minSize.getWidth() > width) {
+                width = (int) minSize.getWidth();
+            }
+        }
+
+        return new Dimension(width + insets.left + insets.right, height + insets.top + insets.bottom);
     }
 
     @Override

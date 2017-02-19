@@ -22,7 +22,12 @@ public class DoubleParameter
 
     public DoubleParameter(String name)
     {
-        super(name);
+        this(name, null);
+    }
+    
+    public DoubleParameter(String name, Double value)
+    {
+        super(name, value);
         _columns = 8;
     }
 

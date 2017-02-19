@@ -1,5 +1,7 @@
 package uk.co.nickthecoder.jguifier;
 
+import java.awt.Dimension;
+
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -16,9 +18,9 @@ public abstract class TextParameter<T> extends ValueParameter<T>
 
     protected boolean _stretchy = false;
 
-    public TextParameter(String name)
+    public TextParameter(String name, T value )
     {
-        super(name);
+        super(name, value);
     }
 
     public void setColumns(int value)
@@ -45,6 +47,7 @@ public abstract class TextParameter<T> extends ValueParameter<T>
     protected void textField(final JTextField textField, final ParametersPanel parametersPanel)
     {
         textField.setColumns(_columns);
+        textField.setMinimumSize( new Dimension( 10, textField.getPreferredSize().height) );
 
         textField.getDocument().addDocumentListener(new DocumentListener()
         {

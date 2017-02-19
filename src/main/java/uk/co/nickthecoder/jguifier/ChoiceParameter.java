@@ -40,7 +40,12 @@ public class ChoiceParameter<T> extends ValueParameter<T>
      */
     public ChoiceParameter(String name)
     {
-        super(name);
+        this( name, null );
+    }
+    
+    public ChoiceParameter(String name, T value)
+    {
+        super(name, value);
         _mapping = new HashMap<String, T>();
         _labelMapping = new HashMap<String, String>();
         _keys = new ArrayList<String>();

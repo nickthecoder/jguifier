@@ -129,7 +129,29 @@ public class TableLayoutManager
     @Override
     public Dimension preferredLayoutSize(Container parent)
     {
-        return minimumLayoutSize(parent);
+        Insets insets = parent.getInsets();
+
+        int height = insets.top + insets.bottom;
+        int width = 0;
+
+        boolean atLeastOne = false;
+
+        for (Component child : parent.getComponents()) {
+            if (child.isVisible()) {
+                atLeastOne = true;
+                height += child.getPreferredSize().getHeight() + _rowSpacing;
+                int rowWidth = (int) child.getPreferredSize().getWidth();
+                if (width < rowWidth) {
+                    width = rowWidth;
+                }
+            }
+        }
+        if (atLeastOne) {
+            height -= _rowSpacing;
+        }
+        width += insets.left + insets.right;
+
+        return new Dimension(width, height);
     }
 
     /**
