@@ -80,7 +80,6 @@ public abstract class Task
      */
     public PrintStream debug = NullOutputStream.nullPrintStream;
 
-    private StringParameter _taskNameParameter;
     private BooleanParameter _helpParameter;
     private BooleanParameter _autoCompleteParameter;
     private BooleanParameter _debugParameter;
@@ -93,11 +92,10 @@ public abstract class Task
         _parametersMap = new HashMap<String, Parameter>();
         _metaParametersMap = new HashMap<String, Parameter>();
 
-        _taskNameParameter = new StringParameter("taskName", null);
         _helpParameter = new BooleanParameter("help", false);
         _autoCompleteParameter = new BooleanParameter("autocomplete", false);
         _debugParameter = new BooleanParameter("debug", false).oppositeName("no-debug");
-        _lookupDefaultsParameter = new BooleanParameter("lookupDefaults", true);
+        _lookupDefaultsParameter = new BooleanParameter("lookupDefaults", true).oppositeName("no-lookupDefaults");
         _promptParameter = new BooleanParameter("prompt", null).oppositeName("no-prompt");
 
         addMetaParameters(_helpParameter, _autoCompleteParameter, _promptParameter, _debugParameter,
@@ -160,6 +158,16 @@ public abstract class Task
         return this;
     }
 
+    public String getDescription()
+    {
+        return _description;
+    }
+
+    public void setDescription(String value)
+    {
+        _description = value;
+    }
+
     public GroupParameter getRootParameter()
     {
         return _root;
@@ -205,7 +213,7 @@ public abstract class Task
     {
         for (Parameter parameter : parameters) {
             _metaParametersMap.put(parameter.getName(), parameter);
-            
+
             if (parameter instanceof BooleanParameter) {
                 BooleanParameter bp = (BooleanParameter) parameter;
                 if (bp.getOppositeName() != null) {
@@ -356,14 +364,17 @@ public abstract class Task
 
     public void taskHelp()
     {
-        System.out.println();
-        System.out.println(getName());
+        String description = getDescription();
+
         System.out.println();
 
-        if (!Util.empty(_description)) {
-            System.out.println(_description);
+        if (!Util.empty(description)) {
+            System.out.println(description);
             System.out.println();
         }
+
+        System.out.println(getName());
+        System.out.println();
 
         for (Parameter parameter : _parameters) {
             System.out.println("    " + parameter.getHelp());
@@ -373,16 +384,15 @@ public abstract class Task
 
     public void guifierHelp()
     {
-        // Replace with help from meta parameters
-        /*
-         * System.out.println("guifier options :");
-         * System.out.println("    --help                  : Displays this text");
-         * System.out
-         * .println("    --prompt, --no-prompt   : Overrides whether the parameters should be prompted using a GUI");
-         * System.out
-         * .println("    --debug, --no-debug     : May be useful to turn on debugging while developing your script");
-         * System.out.println();
-         */
+        System.out.println("jguifier options :");
+        System.out.println("    --help              : Displays this text");
+        System.out.println("    --prompt            : Force the GUI Task Prompter to appear");
+        System.out.println("    --no-prompt         : Runs the command without showing the GUI Task Prompter");
+        System.out.println("    --lookupDefaults    : Looks up user defined default values");
+        System.out.println("    --no-lookupDefaults : Ignores user defined default values");
+        System.out.println("    --debug             : Turn on debugging");
+        System.out.println();
+
     }
 
     private boolean parseArgs(String[] argv)
@@ -425,23 +435,10 @@ public abstract class Task
                     if (parameter instanceof BooleanParameter) {
                         BooleanParameter booleanParameter = (BooleanParameter) parameter;
 
-                        // Could be --name (which means true),
-                        // or --name value (where value is 0,1,true or false)
-                        // We can know which by looking at the next argument if there is one.
-                        if (i + 1 >= argv.length) {
-                            // Is --name (which means true)
-                            booleanParameter.setValue(true);
-                        } else {
-                            value = argv[i + 1];
-                            if (value.startsWith("--")) {
-                                // Is --name (which means true)
-                                booleanParameter.setValue(true);
-                            } else {
-                                // Is --name value, so parse value, and then skip over it.
-                                booleanParameter.setStringValue(value);
-                                i++;
-                            }
-                        }
+                        // Don't allow boolean parameters in the form --name value
+                        // Form --name=value has already been dealt with, so this must be form --name
+                        // where the value is true by default.
+                        booleanParameter.setValue(true);
                         // See BooleanParameter.setOppositeName for details
                         if (name.equals(booleanParameter.getOppositeName())) {
                             booleanParameter.setValue(!booleanParameter.getValue());
@@ -480,10 +477,6 @@ public abstract class Task
         if (_helpParameter.getValue()) {
             help();
             return false;
-        }
-
-        if (_taskNameParameter.getValue() != null) {
-            setName(_taskNameParameter.getValue());
         }
 
         return true;

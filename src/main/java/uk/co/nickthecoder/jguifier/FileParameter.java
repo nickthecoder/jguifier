@@ -43,12 +43,11 @@ public class FileParameter
 
     private String[] _filterExtensions = null;
 
-    
     public FileParameter(String name)
     {
-        this( name, null);
+        this(name, null);
     }
-    
+
     public FileParameter(String name, File value)
     {
         super(name, value);
@@ -113,22 +112,22 @@ public class FileParameter
         return _isDirectory;
     }
 
-    public FileParameter directory( Boolean value )
+    public FileParameter directory(Boolean value)
     {
         if (value == null) {
             setIsDirectory(TriState.MAYBE);
         } else {
-            setIsDirectory( value ? TriState.TRUE : TriState.FALSE );
+            setIsDirectory(value ? TriState.TRUE : TriState.FALSE);
         }
         return this;
     }
-    
+
     public FileParameter directory()
     {
         setIsDirectory(true);
         return this;
     }
-    
+
     public FileParameter file()
     {
         setIsDirectory(false);
@@ -181,6 +180,11 @@ public class FileParameter
         return _enterHidden;
     }
 
+    public FileParameter writable()
+    {
+        return writable(true);
+    }
+
     public FileParameter writable(boolean value)
     {
         setWritable(value);
@@ -219,23 +223,47 @@ public class FileParameter
     {
         return _filterDescription;
     }
-    
+
     public String[] getExtensions()
     {
         return _filterExtensions;
     }
-    
+
     @Override
     public String getDescription()
     {
-        return super.getDescription() + "\n" +
-            "    Must Exist  : " + _exists + "\n" +
-            "    Must be a directory : " + _isDirectory + "\n" +
-            "    Must be a writable file : " + _writable + "\n" +
-            (_filterExtensions == null ? "" :
-                "    File Extensions : " + _filterDescription + " " + Arrays.asList(_filterExtensions) + "\n"
-            );
+        StringBuffer result = new StringBuffer();
 
+        String sup = super.getDescription();
+        if (sup != null) {
+            result.append(sup);
+            result.append(". ");
+        }
+
+        if (_writable) {
+            result.append("writable ");
+        }
+        if (_isDirectory == TriState.TRUE) {
+            result.append("directory ");
+        } else if (_isDirectory == TriState.FALSE) {
+            result.append("file ");
+        } else {
+            result.append("file or directory ");
+        }
+
+        if (_exists == TriState.TRUE) {
+            result.append("must exist ");
+        } else if (_exists == TriState.FALSE) {
+            result.append("must not exist ");
+        } else {
+            result.append("may exist ");
+        }
+
+        if (_filterExtensions != null) {
+            result.append("extensions : " + Arrays.asList(_filterExtensions) + " ");
+        }
+
+        return result.toString();
     }
 
     @Override
@@ -248,10 +276,10 @@ public class FileParameter
 
         // Exists ?
         boolean exists = value.exists();
-        if ( (_exists == TriState.TRUE) && !exists) {
+        if ((_exists == TriState.TRUE) && !exists) {
             return "Does not exist";
         }
-        if ( (_exists == TriState.FALSE) && exists) {
+        if ((_exists == TriState.FALSE) && exists) {
             return "Already exists";
         }
 
@@ -259,40 +287,39 @@ public class FileParameter
 
             // Directory/File?
             boolean isDir = value.isDirectory();
-            
-            if ( (_isDirectory == TriState.TRUE) && !isDir) {
+
+            if ((_isDirectory == TriState.TRUE) && !isDir) {
                 return "Not a directory";
-            }    
+            }
             if (_isDirectory == TriState.FALSE && isDir) {
                 return "Expected a file, not a directory";
             }
 
             // Writable ?
-            if ( _writable ) {
+            if (_writable) {
                 if (value.isDirectory()) {
                     if (!value.canWrite()) {
-                        return "You cannot write to this directory"; 
+                        return "You cannot write to this directory";
                     }
                 } else {
-                    if (!value.canWrite() ) {
+                    if (!value.canWrite()) {
                         return "You cannot write to this file";
                     }
-                    if (!value.getParentFile().canWrite() ) {
+                    if (!value.getParentFile().canWrite()) {
                         return "You cannot write to the directory";
                     }
                 }
             }
         }
-        
-        
+
         // Correct file extension?
-        if ( !matchesExtensions(value) ) {
-            return "Wrong file extension (" + _filterExtensions + ")"; 
+        if (!matchesExtensions(value)) {
+            return "Wrong file extension (" + _filterExtensions + ")";
         }
-        
+
         return null;
     }
-    
+
     @Override
     public void autocomplete(String cur)
     {
@@ -327,12 +354,12 @@ public class FileParameter
         }
     }
 
-    public boolean matchesExtensions( File file )
+    public boolean matchesExtensions(File file)
     {
-        if ( _filterExtensions == null) {
+        if (_filterExtensions == null) {
             return true;
         }
-        
+
         for (String ext : _filterExtensions) {
             if (file.getName().endsWith("." + ext)) {
                 return true;
@@ -340,7 +367,7 @@ public class FileParameter
         }
         return false;
     }
-    
+
     public boolean autocompleteMatches(File file)
     {
         if (_filterExtensions == null) {
@@ -362,20 +389,19 @@ public class FileParameter
     {
         FileComponent fileField = new FileComponent(this, getValue() == null ? "" : getValue().getPath());
         JTextField textField = fileField.getTextField();
-        
+
         textField(textField, panel);
 
         return fileField;
     }
-    
-    /*
-    try {
-        _fileParameter.setStringValue(_textField.getText());
-        parametersPanel.clearError(this);
-    } catch (Exception e) {
-        parametersPanel.setError(this, e.getMessage());
-    }
-    */
 
-    
+    /*
+     * try {
+     * _fileParameter.setStringValue(_textField.getText());
+     * parametersPanel.clearError(this);
+     * } catch (Exception e) {
+     * parametersPanel.setError(this, e.getMessage());
+     * }
+     */
+
 }

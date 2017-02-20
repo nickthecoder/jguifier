@@ -18,6 +18,8 @@ public abstract class Parameter
     private String _name;
 
     private String _label;
+    
+    private String _description;
 
     private List<ParameterListener> _listeners;
 
@@ -43,23 +45,39 @@ public abstract class Parameter
         return _label;
     }
 
+    public void setDescription( String value )
+    {
+        _description = value;
+    }
+    
+    public String getDescription()
+    {
+        return _description;
+    }
+    
+    public Parameter description( String value )
+    {
+        setDescription( value );
+        return this;
+    }
+    
     /**
      * 
      * @return A one line description of this parameter.
      */
     public String getHelp()
     {
-        return "--" + _name + " (" + _label + ")";
-    }
-
-    /**
-     * The default implementation returns the same as getHelp.
-     * 
-     * @return A verbose description of this parameter, which may span many lines.
-     */
-    public String getDescription()
-    {
-        return getHelp();
+        int padLength = 18 - _name.length();
+        if (padLength < 1) padLength = 1;
+        
+        String padding = new String(new char[padLength]).replace("\0", " ");
+        
+        String desc = getDescription();
+        if (Util.empty(desc)) {
+            return "--" + _name;
+        } else {
+            return "--" + _name + padding + ": " + desc;
+        }
     }
 
     /**

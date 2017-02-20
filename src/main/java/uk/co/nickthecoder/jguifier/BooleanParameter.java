@@ -91,8 +91,7 @@ public class BooleanParameter
     public String getHelp()
     {
         if (_oppositeName != null) {
-            return "--" + getName() + " , --" + _oppositeName + " (" + getLabel() + ")"
-                + (getRequired() ? "" : " optional");
+            return super.getHelp() + "\n    --" + _oppositeName;
         } else {
             return super.getHelp();
         }
@@ -101,7 +100,12 @@ public class BooleanParameter
     @Override
     public String getDescription()
     {
-        return super.getDescription() + " [true|false]";
+        if ( _oppositeName == null ) {
+            String sup = super.getDescription();
+            return (sup == null ? "" : sup) + " [true|false]";
+        } else {
+            return super.getDescription();
+        }
     }
 
     @Override

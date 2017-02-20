@@ -27,7 +27,7 @@ public abstract class ValueParameter<T> extends Parameter
      */
     public String getHelp()
     {
-        return super.getHelp() + (_required ? "" : " optional");
+        return super.getHelp() + (_required ? "" : "(optional) ");
     }
 
     public ValueParameter<T> required(boolean value)

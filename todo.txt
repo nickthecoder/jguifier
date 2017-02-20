@@ -6,8 +6,10 @@ Current Task
 BUGS
 ====
 
+Autocomplete is broken
+
 New Features
 ============
 
+Use Geb for web scraping?
 
-	
