@@ -85,7 +85,7 @@ public class TaskPrompter
         JPanel commandPanel = new JPanel();
         commandPanel.setLayout(new BorderLayout());
         commandPanel.setBorder(BorderFactory.createTitledBorder("Command"));
-        _commandLabel = new JTextField(getTask().getCommand());
+        _commandLabel = new JTextField(getTask().getCommandString());
         // _commandLabel.setColumns(30);
         _commandLabel.setEditable(false);
         commandPanel.add(_commandLabel, BorderLayout.CENTER);
@@ -307,7 +307,7 @@ public class TaskPrompter
     public void changed(Parameter source)
     {
         if (_commandLabel != null) {
-            _commandLabel.setText(getTask().getCommand());
+            _commandLabel.setText(getTask().getCommandString());
         }
     }
 

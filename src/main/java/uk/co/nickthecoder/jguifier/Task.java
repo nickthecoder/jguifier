@@ -237,7 +237,7 @@ public abstract class Task
         return lookupDefaults(defaultsFile);
     }
 
-    public String getCommand()
+    public String getCommandString()
     {
         return getName() + _root.getCommandString();
     }
