@@ -56,11 +56,9 @@ public class Util
     {
         JButton result = new JButton();
         try {
-            System.out.println( "Getting resource " + resource + " = " + klass.getResource(resource) );
             Image image = ImageIO.read(klass.getResource(resource));
             result.setIcon(new ImageIcon(image));
         } catch (Exception e) {
-            e.printStackTrace();
             result.setText(fallbackText);
         }
         result.setToolTipText(fallbackText);

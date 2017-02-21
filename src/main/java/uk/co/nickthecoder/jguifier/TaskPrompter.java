@@ -55,7 +55,7 @@ public class TaskPrompter
 
     public TaskPrompter(Task task)
     {
-        super("Prompt");
+        super(task.getName());
         _task = task;
     }
 
@@ -63,7 +63,7 @@ public class TaskPrompter
     {
         return _task;
     }
-    
+
     public void prompt()
     {
         Util.defaultLookAndFeel();
@@ -91,7 +91,7 @@ public class TaskPrompter
         _detailsPanel.add(commandPanel, BorderLayout.NORTH);
 
         // Copy Button
-        JButton copyCommandButton = Util.createIconButton( getClass(), "editcopy.png", "Copy" );
+        JButton copyCommandButton = Util.createIconButton(getClass(), "editcopy.png", "Copy");
         copyCommandButton.addActionListener(new ActionListener()
         {
             @Override
@@ -113,7 +113,7 @@ public class TaskPrompter
         _defaultsPanel.add(defaultsFileLabel, BorderLayout.CENTER);
 
         // Defaults Folder Icon
-        JButton defaultsFolderButton = Util.createIconButton( getClass(), "fileopen.png", "Open" );
+        JButton defaultsFolderButton = Util.createIconButton(getClass(), "fileopen.png", "Open");
 
         defaultsFolderButton.addActionListener(new ActionListener()
         {
@@ -127,10 +127,10 @@ public class TaskPrompter
                 }
             }
         });
-        _defaultsPanel.add( defaultsFolderButton, BorderLayout.WEST);
-        
+        _defaultsPanel.add(defaultsFolderButton, BorderLayout.WEST);
+
         // Save Defaults Button
-        JButton saveDefaultsButton = Util.createIconButton( getClass(), "filesave.png", "Save" );
+        JButton saveDefaultsButton = Util.createIconButton(getClass(), "filesave.png", "Save");
         saveDefaultsButton.addActionListener(new ActionListener()
         {
             @Override
@@ -197,8 +197,11 @@ public class TaskPrompter
         buttonsPanel.add(rightButtonsPanel, BorderLayout.EAST);
         buttonsPanel.add(leftButtonsPanel, BorderLayout.WEST);
 
+        
         // Ok Button
         JButton okButton = new JButton("OK");
+        Dimension buttonSize = new Dimension(100, okButton.getPreferredSize().height);
+        okButton.setPreferredSize(buttonSize);
         getRootPane().setDefaultButton(okButton);
         okButton.setActionCommand("OK");
         rightButtonsPanel.add(okButton);
@@ -213,6 +216,7 @@ public class TaskPrompter
 
         // Cancel button
         JButton cancelButton = new JButton("Cancel");
+        cancelButton.setPreferredSize(buttonSize);
         cancelButton.setActionCommand("Cancel");
         rightButtonsPanel.add(cancelButton);
         cancelButton.addActionListener(new ActionListener()
@@ -226,6 +230,7 @@ public class TaskPrompter
 
         // Details button
         final JButton detailsButton = new JButton("Details >>>");
+        detailsButton.setPreferredSize(buttonSize);
         leftButtonsPanel.add(detailsButton);
         detailsButton.addActionListener(new ActionListener()
         {
@@ -250,7 +255,7 @@ public class TaskPrompter
         boolean visible = !_detailsPanel.isVisible();
         _detailsPanel.setVisible(visible);
         _defaultsPanel.setVisible(visible);
-        
+
         if (visible) {
             _detailsPanel.scrollRectToVisible(_detailsPanel.getBounds());
         }
@@ -289,18 +294,26 @@ public class TaskPrompter
         dispose();
         try {
             getTask().run();
-        } catch (TaskException e) {
-            System.out.println(e);
-            // MORE Show an error dialog?
+        } catch (ExitException e) {
+            // Do nothing.
         } catch (Exception e) {
-            e.printStackTrace();
-            // MORE Show an error dialog?
+            try {
+                System.err.println(e);
+                getTask().exit(Task.EXIT_TASK_FAILED);
+            } catch (Exception e2) {
+                // Do nothing
+            }
         }
     }
 
     public void onCancel()
     {
         dispose();
+        try {
+            getTask().exit(Task.EXIT_CANCELLED);
+        } catch (Exception e) {
+            // Do nothing
+        }
     }
 
     @Override

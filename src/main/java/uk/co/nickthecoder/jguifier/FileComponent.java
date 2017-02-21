@@ -1,6 +1,7 @@
 package uk.co.nickthecoder.jguifier;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -117,6 +118,10 @@ public class FileComponent extends JPanel
 
         this.add(buttons, BorderLayout.EAST);
 
+        int buttonHeight = _textField.getPreferredSize().height;
+        Dimension preferredSize = new Dimension( buttonHeight, buttonHeight ); // Make it square
+        _completeButton.setPreferredSize(preferredSize);
+        pickButton.setPreferredSize(preferredSize);
     }
 
     public JTextField getTextField()

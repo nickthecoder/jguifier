@@ -13,10 +13,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import uk.co.nickthecoder.jguifier.util.Exec;
+import uk.co.nickthecoder.jguifier.util.FileLister;
 import uk.co.nickthecoder.jguifier.util.NullOutputStream;
 import uk.co.nickthecoder.jguifier.util.Util;
-import uk.co.nickthecoder.jguifier.util.FileLister;
-import uk.co.nickthecoder.jguifier.util.Exec;
 
 /**
  * Tasks are at the center of jguifier. Your command line program should sub-cass Task, writing it logic in the
@@ -35,6 +35,40 @@ import uk.co.nickthecoder.jguifier.util.Exec;
  */
 public abstract class Task implements Runnable
 {
+    /**
+     * The exit status when the task completes without error
+     * 
+     * @priority 4
+     */
+    public static final int EXIT_OK = 0;
+
+    /**
+     * The exit status when the task is still running, or has not even started.
+     * 
+     * @priority 4
+     */
+    public static final int EXIT_RUNNING = Integer.MIN_VALUE;
+
+    /**
+     * The exit status when the task throws an exception
+     * 
+     * @priority 4
+     */
+    public static final int EXIT_CANCELLED = 254;
+    /**
+     * The exit status when the task does not run due to missing/invalid parameter
+     * 
+     * @priority 4
+     */
+    public static final int EXIT_BAD_PARAMETERS = 253;
+
+    /**
+     * The exit status when the task throws an exception
+     * 
+     * @priority 4
+     */
+    public static final int EXIT_TASK_FAILED = 252;
+
     private String _name = null;
 
     private String _description = "";
@@ -72,6 +106,18 @@ public abstract class Task implements Runnable
     private BooleanParameter _debugParameter;
     private BooleanParameter _lookupDefaultsParameter;
     private BooleanParameter _promptParameter;
+
+    /**
+     * Should System.exit be allowed
+     * 
+     * @see #exit(int)
+     */
+    private boolean allowExit = true;
+
+    /**
+     * The exit status
+     */
+    private int exitStatus = EXIT_RUNNING;
 
     /**
      * Create a new Task, initially without any Parameters.
@@ -687,7 +733,7 @@ public abstract class Task implements Runnable
      * Outputs <code>value</code> to stdout if it begins with <code>prefix</code>.
      * 
      * @param value
-     *            The value to be considered for autocompletion
+     *            The value to be considered for auto-completion
      * @param prefix
      *            The part of the argument when the tab key was pressed.
      * @priority 5
@@ -700,11 +746,64 @@ public abstract class Task implements Runnable
     }
 
     /**
+     * Prevent {@link System#exit(int)} being called. Use this if you create tasks which are NOT command line tasks,
+     * i.e., the task is part of a larger application.
+     * 
+     * @return this
+     * @priority 3
+     */
+    public Task neverExit()
+    {
+        allowExit = false;
+        return this;
+    }
+
+    /**
+     * Has the Task finished running?
+     */
+    public boolean isFinished()
+    {
+        return this.exitStatus != EXIT_RUNNING;
+    }
+
+    /**
+     * Either exits the JVM using {@link System#exit(int)}, or throws a {@link ExitException}.
+     * 
+     * @param exitStatus
+     *            Use positive numbers, and avoid anything over 200, because negative numbers are used by jguifier uses
+     *            these, such as {@link #EXIT_CANCELLED}.
+     *            Note, under Linux exit status appear to be limited to 0..255, however the javadocs for System.exit
+     *            has nothing to say on the allowed values.
+     * @see #neverExit()
+     * @priority 2
+     */
+    void exit(int exitStatus)
+    {
+        this.exitStatus = exitStatus;
+        if (allowExit) {
+            System.exit(exitStatus);
+        } else {
+            throw new ExitException(exitStatus);
+        }
+    }
+
+    /**
+     * 
+     * @return The exit status or {@link #EXIT_RUNNING} if the Task has not finished.
+     * @priority 3
+     */
+    public int getExitStatus()
+    {
+        return exitStatus;
+    }
+
+    /**
      * Parses the command line arguments, looks up any user defined values for parameters.
      * Then either prompt the command (using {@link TaskPrompter}, or runs the command.
      * <p>
-     * <b style="color:red">WARNING</b>. This method is designed to be run from a command line script, it contains
-     * {@link System#exit(int)} calls. Do NOT call it if you don't want the whole JVM to exit.
+     * <b style="color:red">WARNING</b>. This method is designed to be run from a command line script and contains
+     * {@link System#exit(int)} calls. This will terminate the whole JVM. To prevent this, call {@link #neverExit()}
+     * before calling the {@link #go(String[])} method.
      * </p>
      * 
      * @param argv
@@ -744,8 +843,8 @@ public abstract class Task implements Runnable
             } catch (ParameterException e) {
                 // If a parameter is missing or invalid, then either end the program, or prompt the command
                 if (_promptParameter.getValue() == Boolean.FALSE) {
-                    System.out.println(e);
-                    System.exit(3);
+                    System.err.println(e);
+                    exit(EXIT_BAD_PARAMETERS);
                 }
                 promptTask();
                 return;
@@ -758,12 +857,9 @@ public abstract class Task implements Runnable
                 run();
             }
 
-        } catch (TaskException e) {
-            System.out.println(e);
-            System.exit(2);
         } catch (Exception e) {
             e.printStackTrace();
-            System.exit(1);
+            exit(EXIT_TASK_FAILED);
         }
     }
 
