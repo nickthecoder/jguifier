@@ -37,7 +37,7 @@ public class Example extends Task
         addParameters(_integer, _double, _shortString, _longString, _greeting, _output, _file);
     }
 
-    protected void run() throws Exception
+    public void run()
     {
         PrintStream out = _output.getValue();
         
@@ -49,8 +49,7 @@ public class Example extends Task
     {
         Example example = new Example();
         example.setName("example.sh"); // Pretend we call this class from a shell script called "example.sh"
-        example.lookupDefaults();
-        example.runFromMain(argv);
+        example.go(argv);
     }
 
  * </pre></code>
@@ -86,7 +85,7 @@ public class Example extends Task
     }
 
     @Override
-    protected void run() throws Exception
+    public void run()
     {
         PrintStream out = _output.getValue();
 

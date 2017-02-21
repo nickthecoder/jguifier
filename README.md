@@ -1,11 +1,11 @@
-Creates a GUI front end for your own tools, as well as making command line tools easy to parse arguments.
+Creates a GUI front end for your own tools, as well as making command line arguments easy to parse.
 
 I create many simple tools, and if I didn't have something like jguifier, then they would probably be
 low quility shell scripts. Each script having to parse their arguments manually.
-Each with their own set of unique bugs and quirks. (e.g. should parameters be like  --name=foo or --name foo)
+Each having their own set of unique bugs and quirks. (e.g. should parameters be like  --name=foo or --name foo)
 
-JGuifier solves these problems, as well as making the commands easier to use, by automatically including a GUI verion
-as well as tab completion using the linux command line.
+JGuifier solves these problems, as well as making the commands easier to use, by automatically including
+a GUI verion as well as tab completion using the linux command line.
 
 The commands will be self documenting, as a "--help" argument will automatically list the expected parameters,
 including an optional short description for each.
@@ -26,13 +26,13 @@ a human readable label, their type, and optionally a short description.
 
 For example, a simple integer with possible values between 1 and 10 is defined like so :
 
-    countParameter = new IntegerParameter("count", "Count").range(1, 10);
+    countParameter = new IntegerParameter("count").range(1, 10).description( "your-description-here" );
 
 A simple string
 
-    myString = new StringParameter( "myString", "My String" );
+    myString = new StringParameter( "myString" );
 
-    myFile = new FileParameter( "myFile", "My File" ).exists(true).isDirectory(false);
+    myFile = new FileParameter( "myFile" ).exists(true).directory();
 
 Extend the Task class, adding a suitable constructor and define the "run" method :
 
@@ -52,9 +52,9 @@ Extend the Task class, adding a suitable constructor and define the "run" method
         }
     }
 
-Finally instantiate your class, and call the "runFromMain" method :
+Finally instantiate your class, and call the "go" method :
 
-    new MyTask().runFromMain( argv );
+    new MyTask().go( argv );
 
 
 Groovy Scripts
@@ -77,27 +77,14 @@ You can of course, add additional jars to the classpath to suit your needs.
 Dynamically adding jars to the classpath within your script is possible, but it's a PITA.
 
 
-Bean Shell Scripts
-==================
-
-Before I found Groovy, I used to use Bean Shell, but it isn't anywhere as good as Groovy, so I don't recommend it
-any more. However, if you do want to give it a try, you can make a similar shim to call the bean shell, or do
-what I *used* to do, and use "exec" to launch the bean shell. At the top of each ".bsh" file :
-
-    #!/bin/sh
-    //bin/true; exec java -cp /usr/share/java/bsh.jar:jguifier.jar bsh.Interpreter "$0" "$@"
-
-Note that the "//" is a java comment, but is also a valid alternative to just "/" (the root directory).
-
-
-GUI vs TUI (--prompt and --noprompt)
-====================================
+GUI vs TUI (--prompt and --no-prompt)
+=====================================
 
 When you run a script, the default behaviour is to display the GUI if one or more parameters are missing, or
 otherwise incorrect. If all parameters are ok, then the GUI is not displayed, and your script's run method is called.
 You can change this behviour, by using the "--prompt" and "--noprompt" options.
 
-"--nopromp" prevents the GUI from appearing even when parameters are missing (in which case stderr will show an
+"--no-promp" prevents the GUI from appearing even when parameters are missing (in which case stderr will show an
 error message, and the script exits without doing anything more).
 
 "--prompt" forces the GUI to appear even if the parameter are all present and correct.
@@ -115,7 +102,8 @@ To enable tab-completion when using the linux command line, add the following to
       return 0
     }
 
-    JGUIFIER_SCRIPTS=`cd ~/bin;echo *.bsh *.groovy`
+    # This assumed that all the groovy scripts in your bin directory use jguifier :
+    JGUIFIER_SCRIPTS=`cd ~/bin;echo *.groovy`
 
     complete -F _JGuifierComplete -o filenames ${JGUIFIER_SCRIPTS}
 

@@ -10,9 +10,27 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 /**
- * A parameter holding values true, false and null.
- * From the command line a BooleanParameter can be given using the text "true", "1", "yes", and "false", "0", "no".
- * I have no intension of allowing non-English translations of any of these - sorry.
+ * A parameter holding values true, false or null (if the parameter is {@link #optional()}).
+ * <p>
+ * Examples of how to pass boolean values from the command line. If the parameter name is "foo" :
+ * </p>
+ * <pre>
+ * <code>
+ * --foo=true --foo=false
+ * or just :
+ * --foo (sets the value to true)
+ * </code>
+ * </pre>
+ * 
+ * If you prefer the shortened version, you should set an {@link #oppositeName(String)}.
+ * If the opposite name is "bar", then :
+ * 
+ * <pre>
+ * <code>
+ * --bar (sets the foo's value to false).
+ * </code>
+ * </pre>
+ * 
  */
 public class BooleanParameter
     extends ValueParameter<Boolean>
@@ -27,6 +45,9 @@ public class BooleanParameter
         super(name, value);
     }
 
+    /**
+     * @param name
+     */
     public void setOppositeName(String name)
     {
         assert !getName().equals(_oppositeName);
@@ -37,10 +58,10 @@ public class BooleanParameter
     {
         return _oppositeName;
     }
-    
-    public BooleanParameter oppositeName( String oppositeName )
+
+    public BooleanParameter oppositeName(String oppositeName)
     {
-        setOppositeName( oppositeName );
+        setOppositeName(oppositeName);
         return this;
     }
 
@@ -100,7 +121,7 @@ public class BooleanParameter
     @Override
     public String getDescription()
     {
-        if ( _oppositeName == null ) {
+        if (_oppositeName == null) {
             String sup = super.getDescription();
             return (sup == null ? "" : sup) + " [true|false]";
         } else {
@@ -108,6 +129,10 @@ public class BooleanParameter
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * @priority 5
+     */
     @Override
     public void autocomplete(String cur)
     {

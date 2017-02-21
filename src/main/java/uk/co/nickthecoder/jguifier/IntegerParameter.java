@@ -19,11 +19,17 @@ public class IntegerParameter
 
     private int _maximum = Integer.MAX_VALUE;
 
+    /**
+     * @see ValueParameter#ValueParameter(String)
+     */
     public IntegerParameter(String name)
     {
         this(name, null);
     }
 
+    /**
+     * @see ValueParameter#ValueParameter(String, Object)
+     */
     public IntegerParameter(String name, Integer value)
     {
         super(name, value);

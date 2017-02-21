@@ -1,6 +1,5 @@
 package uk.co.nickthecoder.jguifier;
 
-
 public abstract class ValueParameter<T> extends Parameter
 {
 
@@ -9,10 +8,23 @@ public abstract class ValueParameter<T> extends Parameter
     private boolean _required;
 
     /**
+     * The default value will be null, but may be overridden by user-defined defaults using
+     * {@link Task#readDefaults()}.
+     * 
      * @param name
-     *            A unique (per Task) identifier, used when setting values using the command line.
-     * @param label
-     *            A human readable version of the name, used when setting values via a GUI.
+     *            The name of the parameter. Prefixed by "--" when specified on the command line.
+     */
+    public ValueParameter(String name)
+    {
+        this(name, null);
+    }
+
+    /**
+     * @param name
+     *            The name of the parameter, is prefixed by "--" when specified on the command line.
+     * @param value
+     *            The default value. However this value may be overridden by user-defined defaults using
+     *            {@link Task#readDefaults()}.
      */
     public ValueParameter(String name, T value)
     {
@@ -81,7 +93,6 @@ public abstract class ValueParameter<T> extends Parameter
         return _required;
     }
 
-
     /**
      * Sets the parameter from a string representation of a value, used when setting a value from the command line,
      * or other string-only sources. To set the value using the correct type, each subclass should define its own
@@ -115,14 +126,15 @@ public abstract class ValueParameter<T> extends Parameter
      * <p>
      * If the value is valid, and has changed, then a message is fired to all {@link ParameterListener}s.
      * </p>
+     * 
      * @param value
      * @throws ParameterException
      */
     public void setValue(T value)
     {
-        boolean changed = (value != _value );
+        boolean changed = (value != _value);
         _value = value;
-        
+
         String reason = valid(value);
         if (reason != null) {
             throw new ParameterException(this, reason);
@@ -137,10 +149,10 @@ public abstract class ValueParameter<T> extends Parameter
     {
         return _value;
     }
-    
-    public ValueParameter<T> value( T value )
+
+    public ValueParameter<T> value(T value)
     {
-        setValue( value );
+        setValue(value);
         return this;
     }
 
@@ -184,6 +196,6 @@ public abstract class ValueParameter<T> extends Parameter
     @Override
     public String toString()
     {
-        return super.toString() + " = " + (_value==null ? "null" : _value.toString());
+        return super.toString() + " = " + (_value == null ? "null" : _value.toString());
     }
 }

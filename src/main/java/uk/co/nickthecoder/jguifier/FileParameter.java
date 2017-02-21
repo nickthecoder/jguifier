@@ -43,11 +43,17 @@ public class FileParameter
 
     private String[] _filterExtensions = null;
 
+    /**
+     * @see ValueParameter#ValueParameter(String)
+     */
     public FileParameter(String name)
     {
         this(name, null);
     }
 
+    /**
+     * @see ValueParameter#ValueParameter(String, Object)
+     */
     public FileParameter(String name, File value)
     {
         super(name, value);

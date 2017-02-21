@@ -2,14 +2,20 @@ Current Task
 ============
 
 
-
 BUGS
 ====
 
-Autocomplete is broken
+If a command throws an error, it does not set the system exit value if the command was prompted.
+Want a safe version of "go" without the System.exit calls
 
 New Features
 ============
+
+Use a clipboard icon for Copy button (and put it on the left).
+
+Update the javadocs in my public web site.
+
+Put the choice's values in the help text.
 
 Use Geb for web scraping?
 

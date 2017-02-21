@@ -15,11 +15,17 @@ public class StringParameter
 {
     public int maxLength = Integer.MAX_VALUE;
     
+    /**
+     * @see ValueParameter#ValueParameter(String)
+     */
     public StringParameter(String name)
     {
         this(name, "");
     }
 
+    /**
+     * @see ValueParameter#ValueParameter(String)
+     */
     public StringParameter(String name, String value)
     {
         super(name, value);

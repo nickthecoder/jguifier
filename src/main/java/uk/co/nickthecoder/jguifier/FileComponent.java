@@ -22,6 +22,22 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import uk.co.nickthecoder.jguifier.guiutil.JScrollPopupMenu;
 import uk.co.nickthecoder.jguifier.util.FileLister;
 
+/**
+ * A Swing component for {@link FileParameter}s. Contains a TextField, where the files path can be typed, as well as
+ * two buttons, "Open" and "Down". The "Open" button displays the usual JFileChooser, however, I find that dialog box a
+ * little clunky to use, and I prefer to use the "Down" button. This behaves similarly to Linux's command line tab
+ * completion.
+ * <p>
+ * Type the first part of a file/directory name, then click the "Down" button (or the down key), and a list of possible
+ * matches is display in a pop-up menu. Select the one you want with the mouse or keyboard (using up/down, then enter).
+ * </p>
+ * <p>
+ * To further ease selecting files, the keyboard "Up" key, takes you up a directory, so getting to root, is very easy,
+ * you just press up lots of times!
+ * </p>
+ * 
+ * @priority 4
+ */
 public class FileComponent extends JPanel
 {
     private static final long serialVersionUID = 1L;

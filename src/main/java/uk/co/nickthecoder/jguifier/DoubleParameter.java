@@ -20,11 +20,17 @@ public class DoubleParameter
 
     private double _maximum = Double.MAX_VALUE;
 
+    /**
+     * @see ValueParameter#ValueParameter(String)
+     */
     public DoubleParameter(String name)
     {
         this(name, null);
     }
-    
+
+    /**
+     * @see ValueParameter#ValueParameter(String,Object)
+     */
     public DoubleParameter(String name, Double value)
     {
         super(name, value);
@@ -116,8 +122,8 @@ public class DoubleParameter
         }
         // If value has been changed, then update the parameter's, to prevent "Required" error message,
         // when the default was not set.
-        setValue( value );
-        
+        setValue(value);
+
         final SpinnerNumberModel model = new SpinnerNumberModel(value, (Double) getMinimumValue(),
             (Double) getMaximumValue(), (Double) 1.0);
         final JSpinner component = new JSpinner(model);

@@ -21,7 +21,10 @@ dependencies {
     compile 'uk.co.nickthecoder:prioritydoc:0.1'
 }
 
-
+/*
+ * gradle javadoc, and then copy them to my website manually with :
+ * 
+ */
 javadoc {
     source = sourceSets.main.allJava
     classpath = configurations.compile
@@ -32,7 +35,6 @@ javadoc {
     options.addStringOption( "usecookies" )
     options.addStringOption( "title", "JGuifier" )
     options.addStringOption( "link", "http://docs.oracle.com/javase/7/docs/api/")
-    //options.addStringOption( "diagrams", "src/docs/collisionStrategyDiagram.xml;src/docs/classDiagram.xml" )
     
     options.docletpath = configurations.compile.files.asType(List)
     verbose = false

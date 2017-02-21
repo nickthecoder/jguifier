@@ -291,10 +291,10 @@ public class TaskPrompter
             getTask().run();
         } catch (TaskException e) {
             System.out.println(e);
-            // MORE Show and error dialog
+            // MORE Show an error dialog?
         } catch (Exception e) {
             e.printStackTrace();
-            // MORE Show and error dialog
+            // MORE Show an error dialog?
         }
     }
 

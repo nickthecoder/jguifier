@@ -93,11 +93,11 @@ public class Util
     {
         if (value.startsWith("\'") && (value.endsWith("\'"))) {
             return value.substring(1, value.length() - 1).replaceAll("\\\'", "'");
-            // Replace all \' slash quote  with " quote
+            // Replace all \' slash quote with " quote
         }
         return value;
     }
-    
+
     public static String undoubleQuote(String value)
     {
         if (value.startsWith("\"") && (value.endsWith("\""))) {
@@ -109,9 +109,9 @@ public class Util
 
     public static String quote(String value)
     {
-        return "'" + value.replaceAll("'", "\\\\\'") + "'";        
+        return "'" + value.replaceAll("'", "\\\\\'") + "'";
     }
-    
+
     public static String doubleQuote(String value)
     {
         return '"' + value.replaceAll("\"", "\\\\\"") + '"';
@@ -143,11 +143,10 @@ public class Util
      *            The separation character(s) between the words
      * @param first
      *            Should the first letter be capitalised
-     * @return
+     * @return The converted string
      */
     public static String uncamel(String str, String sep, boolean first)
     {
-
         StringBuffer result = new StringBuffer();
         boolean wasUpper = false;
 

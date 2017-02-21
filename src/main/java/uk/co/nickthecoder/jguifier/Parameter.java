@@ -10,7 +10,7 @@ import uk.co.nickthecoder.jguifier.util.Util;
  * The base class for parameters. A parameter stores both the metadata
  * (such as a label, is the parameter is required etc) as well as the parameter's value.
  *
- * @priority 3
+ * @priority 1
  */
 public abstract class Parameter
 {
@@ -18,11 +18,16 @@ public abstract class Parameter
     private String _name;
 
     private String _label;
-    
+
     private String _description;
 
     private List<ParameterListener> _listeners;
 
+    /**
+     * 
+     * @param name
+     *            The name of the parameter. Prefixed by "--" when specified on the command line.
+     */
     public Parameter(String name)
     {
         _name = name;
@@ -31,6 +36,8 @@ public abstract class Parameter
 
     /**
      * @return The name of the parameter.
+     * 
+     * @priority 3
      */
     public String getName()
     {
@@ -39,28 +46,44 @@ public abstract class Parameter
 
     /**
      * @return The label as it will appear when prompted using the GUI.
+     * 
+     * @priority 3
      */
     public String getLabel()
     {
         return _label;
     }
 
-    public void setDescription( String value )
+    /**
+     * Simple setter
+     */
+    public void setDescription(String value)
     {
         _description = value;
     }
-    
+
+    /**
+     * Simple getter
+     * 
+     * @return The description
+     */
     public String getDescription()
     {
         return _description;
     }
-    
-    public Parameter description( String value )
+
+    /**
+     * A fluent API for {@link #setDescription(String)}.
+     * 
+     * @param value
+     * @return this
+     */
+    public Parameter description(String value)
     {
-        setDescription( value );
+        setDescription(value);
         return this;
     }
-    
+
     /**
      * 
      * @return A one line description of this parameter.
@@ -68,10 +91,11 @@ public abstract class Parameter
     public String getHelp()
     {
         int padLength = 18 - _name.length();
-        if (padLength < 1) padLength = 1;
-        
+        if (padLength < 1)
+            padLength = 1;
+
         String padding = new String(new char[padLength]).replace("\0", " ");
-        
+
         String desc = getDescription();
         if (Util.empty(desc)) {
             return "--" + _name;
@@ -83,7 +107,7 @@ public abstract class Parameter
     /**
      * Checks that the current value is valid. Used before a Task is run, to ensure that all the parameters are correct.
      * Note, that it is possible for parameters to be invalid, despite their values being check when they are set.
-     * This is because the deafult value may be invalid, and also because a valid value may <b>become</b> invalid,
+     * This is because the deafault value may be invalid, and also because a valid value may <b>become</b> invalid,
      * because
      * the parameter's meta data is changed, e.g. when a IntegerParameter's range is changed.
      * 
@@ -95,10 +119,11 @@ public abstract class Parameter
     }
 
     /**
-     * Creates an AWT Component object when a Task is displayed using the GUI.
+     * Creates a Swing Component object, used by the GUI when a Task is prompted.
      * 
      * @param taskPrompter
-     * @return The GUI component
+     *            Used by the created component to set and clear error messages on the ParametersPanel.
+     * @return The Swing component
      */
     public abstract Component createComponent(ParametersPanel panel);
 
@@ -112,6 +137,14 @@ public abstract class Parameter
         return false;
     }
 
+    /**
+     * The listener will be notified whenever this parameter's value is changed.
+     * 
+     * @param listener
+     * 
+     * @see #remvoveListener(ParameterListener)
+     * @priority 3
+     */
     public void addListener(ParameterListener listener)
     {
         if (_listeners == null) {
@@ -120,6 +153,14 @@ public abstract class Parameter
         _listeners.add(listener);
     }
 
+    /**
+     * Removes a listener
+     * 
+     * @param listener
+     * 
+     * @see #addListener(ParameterListener)
+     * @priority 4
+     */
     public void remvoveListener(ParameterListener listener)
     {
         if (_listeners != null) {
@@ -128,7 +169,13 @@ public abstract class Parameter
     }
 
     /**
-     * Call implementations of Parameter should call this whenever their value changes.
+     * To fire an change event, normally use : {@link #fireChangeEvent()}. This version
+     * allows the source to be a <b>difference</b> parameter. It was created so that {@link GroupParameter}s
+     * can notify their listeners whenever any of their child Parameters change.
+     * In this case, the source will be the child parameter, but the listeners notified will be those added to the
+     * Group.
+     * 
+     * @priority 5
      */
     protected void fireChangeEvent(Parameter source)
     {
@@ -139,6 +186,13 @@ public abstract class Parameter
         }
     }
 
+    /**
+     * All subclasses of Parameter should call this whenever their value changes.
+     * It will notify each listener in turn.
+     * 
+     * @see ParameterListener#changed(Parameter)
+     * @priority 4
+     */
     protected void fireChangeEvent()
     {
         fireChangeEvent(this);
@@ -152,6 +206,7 @@ public abstract class Parameter
      * 
      * @param cur
      *            What the user has typed in so far, and should be used to filter the values.
+     * @priority 5
      */
     public void autocomplete(String cur)
     {

@@ -6,6 +6,9 @@ package uk.co.nickthecoder.jguifier;
 public class StringChoiceParameter extends ChoiceParameter<String>
 {
 
+    /**
+     * @see ValueParameter#ValueParameter(String)
+     */
     public StringChoiceParameter(String name)
     {
         super(name);
