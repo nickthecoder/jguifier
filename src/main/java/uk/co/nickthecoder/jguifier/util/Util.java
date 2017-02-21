@@ -1,7 +1,11 @@
 package uk.co.nickthecoder.jguifier.util;
 
+import java.awt.Image;
 import java.io.File;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
@@ -33,6 +37,34 @@ public class Util
             }
         } catch (Exception e) {
         }
+    }
+
+    /**
+     * Creates a JButton with an Icon from the named resource, which should be in the class loader jar file as
+     * <code>klass</code>.
+     * 
+     * @param klass
+     *            Used to specify which class loader is used to retrieve the image resource. Usually
+     *            <code>yourInstance.getClass()</code> will suffice.
+     * @param resource
+     *            The location of the resource within the jar file.
+     * @param fallbackText
+     *            If the image couldn't be loaded, then use this text instead.
+     * @return
+     */
+    public static JButton createIconButton(Class<?> klass, String resource, String fallbackText )
+    {
+        JButton result = new JButton();
+        try {
+            System.out.println( "Getting resource " + resource + " = " + klass.getResource(resource) );
+            Image image = ImageIO.read(klass.getResource(resource));
+            result.setIcon(new ImageIcon(image));
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setText(fallbackText);
+        }
+        result.setToolTipText(fallbackText);
+        return result;
     }
 
     public static String removeExtension(File file)

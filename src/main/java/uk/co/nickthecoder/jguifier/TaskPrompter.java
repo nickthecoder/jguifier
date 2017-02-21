@@ -22,7 +22,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
@@ -92,7 +91,7 @@ public class TaskPrompter
         _detailsPanel.add(commandPanel, BorderLayout.NORTH);
 
         // Copy Button
-        JButton copyCommandButton = new JButton("Copy");
+        JButton copyCommandButton = Util.createIconButton( getClass(), "editcopy.png", "Copy" );
         copyCommandButton.addActionListener(new ActionListener()
         {
             @Override
@@ -102,7 +101,7 @@ public class TaskPrompter
                 clipboard.setContents(new StringSelection(_commandLabel.getText()), null);
             }
         });
-        commandPanel.add(copyCommandButton, BorderLayout.EAST);
+        commandPanel.add(copyCommandButton, BorderLayout.WEST);
 
         // Defaults File
         _defaultsPanel = new JPanel();
@@ -114,7 +113,8 @@ public class TaskPrompter
         _defaultsPanel.add(defaultsFileLabel, BorderLayout.CENTER);
 
         // Defaults Folder Icon
-        JButton defaultsFolderButton = new JButton( UIManager.getIcon("FileView.directoryIcon") );
+        JButton defaultsFolderButton = Util.createIconButton( getClass(), "fileopen.png", "Open" );
+
         defaultsFolderButton.addActionListener(new ActionListener()
         {
             @Override
@@ -130,7 +130,7 @@ public class TaskPrompter
         _defaultsPanel.add( defaultsFolderButton, BorderLayout.WEST);
         
         // Save Defaults Button
-        JButton saveDefaultsButton = new JButton("Save");
+        JButton saveDefaultsButton = Util.createIconButton( getClass(), "filesave.png", "Save" );
         saveDefaultsButton.addActionListener(new ActionListener()
         {
             @Override
