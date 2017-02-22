@@ -1,5 +1,6 @@
 package uk.co.nickthecoder.jguifier;
 
+
 public abstract class ValueParameter<T> extends Parameter
 {
 
@@ -8,8 +9,7 @@ public abstract class ValueParameter<T> extends Parameter
     private boolean _required;
 
     /**
-     * The default value will be null, but may be overridden by user-defined defaults using
-     * {@link Task#readDefaults()}.
+     * The default value will be null, but may be overridden by user-defined defaults using {@link Task#readDefaults()}.
      * 
      * @param name
      *            The name of the parameter. Prefixed by "--" when specified on the command line.
@@ -40,31 +40,6 @@ public abstract class ValueParameter<T> extends Parameter
     public String getHelp()
     {
         return super.getHelp() + (_required ? "" : "(optional) ");
-    }
-
-    public ValueParameter<T> required(boolean value)
-    {
-        setRequired(value);
-        return this;
-    }
-
-    /**
-     * Make the parameter required (i.e. cannot be left blank).
-     * Not usually needed, because Parameters are required by default.
-     */
-    public ValueParameter<T> required()
-    {
-        setRequired(true);
-        return this;
-    }
-
-    /**
-     * Make the parameter optional (i.e. it CAN be left blank).
-     */
-    public ValueParameter<T> optional()
-    {
-        setRequired(false);
-        return this;
     }
 
     /**
@@ -150,12 +125,6 @@ public abstract class ValueParameter<T> extends Parameter
         return _value;
     }
 
-    public ValueParameter<T> value(T value)
-    {
-        setValue(value);
-        return this;
-    }
-
     /**
      * Checks that the current value is valid. Used before a Task is run, to ensure that all the parameters are correct.
      * Note, that it is possible for parameters to be invalid, despite their values being check when they are set.
@@ -197,5 +166,31 @@ public abstract class ValueParameter<T> extends Parameter
     public String toString()
     {
         return super.toString() + " = " + (_value == null ? "null" : _value.toString());
+    }
+
+    public static class Builder<B extends Builder<B,P,T>,P extends ValueParameter<T>,T>
+        extends Parameter.Builder<B,P>
+    {  
+        public B value(T value)
+        {
+            making.setValue(value);
+            return builder;
+        }
+        
+        public T getValue()
+        {
+            return making.getValue();
+        }
+        
+        public B required()
+        {
+            making.setRequired(true);
+            return builder;
+        }
+        public B optional()
+        {
+            making.setRequired(false);
+            return builder;
+        }
     }
 }

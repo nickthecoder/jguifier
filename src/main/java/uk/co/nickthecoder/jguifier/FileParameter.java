@@ -48,18 +48,10 @@ public class FileParameter
      */
     public FileParameter(String name)
     {
-        this(name, null);
-    }
-
-    /**
-     * @see ValueParameter#ValueParameter(String, Object)
-     */
-    public FileParameter(String name, File value)
-    {
-        super(name, value);
-
+        super(name);
         _stretchy = true;
     }
+
 
     public void setStringValue(String value)
     {
@@ -68,18 +60,6 @@ public class FileParameter
         } else {
             setValue(new File(value));
         }
-    }
-
-    public FileParameter exists(boolean value)
-    {
-        setExists(value);
-        return this;
-    }
-
-    public FileParameter exists(TriState value)
-    {
-        setExists(value);
-        return this;
     }
 
     public void setExists(boolean value)
@@ -97,12 +77,6 @@ public class FileParameter
         return _exists;
     }
 
-    public FileParameter isDirectory(boolean value)
-    {
-        setIsDirectory(value);
-        return this;
-    }
-
     public void setIsDirectory(boolean value)
     {
         setIsDirectory(value ? TriState.TRUE : TriState.FALSE);
@@ -116,28 +90,6 @@ public class FileParameter
     public TriState getIsDirectory()
     {
         return _isDirectory;
-    }
-
-    public FileParameter directory(Boolean value)
-    {
-        if (value == null) {
-            setIsDirectory(TriState.MAYBE);
-        } else {
-            setIsDirectory(value ? TriState.TRUE : TriState.FALSE);
-        }
-        return this;
-    }
-
-    public FileParameter directory()
-    {
-        setIsDirectory(true);
-        return this;
-    }
-
-    public FileParameter file()
-    {
-        setIsDirectory(false);
-        return this;
     }
 
     /**
@@ -156,22 +108,6 @@ public class FileParameter
         return _includeHidden;
     }
 
-    public FileParameter includeHidden()
-    {
-        setIncludeHidden(true);
-        return this;
-    }
-
-    /**
-     * 
-     * @return this
-     */
-    public FileParameter enterHidden()
-    {
-        setEnterHidden(true);
-        return this;
-    }
-
     /**
      * 
      * @param value
@@ -186,16 +122,6 @@ public class FileParameter
         return _enterHidden;
     }
 
-    public FileParameter writable()
-    {
-        return writable(true);
-    }
-
-    public FileParameter writable(boolean value)
-    {
-        setWritable(value);
-        return this;
-    }
 
     public void setWritable(boolean value)
     {
@@ -207,17 +133,6 @@ public class FileParameter
         return _writable;
     }
 
-    public FileParameter extension(String description, String extension)
-    {
-        extensions(description, new String[] { extension });
-        return this;
-    }
-
-    public FileParameter extensions(String description, String... extensions)
-    {
-        setExtensions(description, extensions);
-        return this;
-    }
 
     public void setExtensions(String description, String... extensions)
     {
@@ -401,13 +316,77 @@ public class FileParameter
         return fileField;
     }
 
-    /*
-     * try {
-     * _fileParameter.setStringValue(_textField.getText());
-     * parametersPanel.clearError(this);
-     * } catch (Exception e) {
-     * parametersPanel.setError(this, e.getMessage());
-     * }
-     */
+    public static class Builder extends ValueParameter.Builder<Builder, FileParameter, File>
+    {
+        public Builder(String name)
+        {
+            making = new FileParameter(name);
+        }
+
+        public Builder mustExist()
+        {
+            making.setExists(TriState.TRUE);
+            return this;
+        }
+        
+        public Builder mustNotExist()
+        {
+            making.setExists(TriState.FALSE);
+            return this;
+        }
+        
+        public Builder mayExist()
+        {
+            making.setExists(TriState.MAYBE);
+            return this;
+        }
+
+        public Builder fileOrDirectory()
+        {
+            making.setIsDirectory(TriState.MAYBE);
+            return this;
+        }
+
+        public Builder directory()
+        {
+            making.setIsDirectory(TriState.TRUE);
+            return this;
+        }
+
+        public Builder file()
+        {
+            making.setIsDirectory(TriState.FALSE);
+            return this;
+        }
+
+        public Builder includeHidden()
+        {
+            making.setIncludeHidden(true);
+            return this;
+        }
+
+        public Builder enterHidden()
+        {
+            making.setEnterHidden(true);
+            return this;
+        }
+
+        public Builder writable()
+        {
+            return writable(true);
+        }
+
+        public Builder writable(boolean value)
+        {
+            making.setWritable(value);
+            return this;
+        }
+
+        public Builder extensions(String description, String... extensions)
+        {
+            making.setExtensions(description, extensions);
+            return this;
+        }
+    }
 
 }

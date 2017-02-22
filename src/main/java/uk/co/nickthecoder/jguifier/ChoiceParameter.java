@@ -60,19 +60,11 @@ public class ChoiceParameter<T> extends ValueParameter<T>
     private JComboBox<String> _comboBox;
 
     /**
-     * @see Parameter#Parameter(String)
+     * @see ValueParameter#ValueParameter(String)
      */
     public ChoiceParameter(String name)
     {
-        this(name, null);
-    }
-
-    /**
-     * @see ValueParameter#ValueParameter(String)
-     */
-    public ChoiceParameter(String name, T value)
-    {
-        super(name, value);
+        super(name);
         _mapping = new HashMap<String, T>();
         _labelMapping = new HashMap<String, String>();
         _keys = new ArrayList<String>();
@@ -128,40 +120,6 @@ public class ChoiceParameter<T> extends ValueParameter<T>
     }
 
     /**
-     * Add a choice, using a fluent API. The label will be the same as the key.
-     * 
-     * @param key
-     *            The key (Used on the command line : --parameterName=key)
-     * @param value
-     *            The value, as returned by {@link #getValue()}
-     * @return
-     *         this
-     */
-    public ChoiceParameter<T> choice(String key, T value)
-    {
-        addChoice(key, value);
-        return this;
-    }
-
-    /**
-     * Add a choice, using a fluent API.
-     * 
-     * @param key
-     *            The key (Used on the command line : --parameterName=key)
-     * @param value
-     *            The value, as returned by {@link #getValue()}
-     * @param label
-     *            The label seen in the GUI pull-down combobox. Not used when using the command line.
-     * @return
-     *         this
-     */
-    public ChoiceParameter<T> choice(String key, T value, String label)
-    {
-        addChoice(key, value, label);
-        return this;
-    }
-
-    /**
      * Checks that the value is one of the choice values.
      */
     public String valid(T value)
@@ -200,26 +158,7 @@ public class ChoiceParameter<T> extends ValueParameter<T>
     }
 
     /**
-     * A fluent version of {@link #setValue(Object)}.
-     * Note that if a ParameterException is thrown by {@link #setValue(Object)}, it will be quietly ignored.
-     * 
-     * @param value
-     *            The new value
-     * @return this
-     */
-    public ChoiceParameter<T> value(T value)
-    {
-        try {
-            setValue(value);
-        } catch (ParameterException e) {
-            // Do nothing
-        }
-        return this;
-    }
-
-    /**
-     * {@inheritDoc}
-     * Implemented using a JComboBox
+     * {@inheritDoc} Implemented using a JComboBox
      */
     @Override
     public Component createComponent(final ParametersPanel parametersPanel)
@@ -289,4 +228,30 @@ public class ChoiceParameter<T> extends ValueParameter<T>
             Task.autocompleteFilter(possible, cur);
         }
     }
+
+    protected abstract static class ChoiceBuilder<B extends ChoiceBuilder<B, P, T2>, P extends ChoiceParameter<T2>, T2>
+        extends ValueParameter.Builder<B, P, T2>
+    {
+        public B choice(String key, T2 value)
+        {
+            making.addChoice(key, value);
+            return builder;
+        }
+
+        public B choice(String key, T2 value, String label)
+        {
+            making.addChoice(key, value, label);
+            return builder;
+        }
+
+    }
+
+    public static class Builder<T2> extends ChoiceBuilder<Builder<T2>, ChoiceParameter<T2>, T2>
+    {
+        public Builder(String name)
+        {
+            making = new ChoiceParameter<T2>(name);
+        }
+    }
+
 }

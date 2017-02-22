@@ -65,23 +65,11 @@ public abstract class Parameter
     /**
      * Simple getter
      * 
-     * @return The description
+     * @return The description, displayed when the --help option is used on the command line.
      */
     public String getDescription()
     {
         return _description;
-    }
-
-    /**
-     * A fluent API for {@link #setDescription(String)}.
-     * 
-     * @param value
-     * @return this
-     */
-    public Parameter description(String value)
-    {
-        setDescription(value);
-        return this;
     }
 
     /**
@@ -217,5 +205,31 @@ public abstract class Parameter
     public String toString()
     {
         return _name;
+    }
+
+    /**
+     * A Builder Pattern, allowing Parameters to be defined in one long java statement.
+     * Generics are used to enforce the correct type safety.
+     * 
+     * @param <B> The Builder class (this)
+     * @param <P> The Parameter sub-class, such as IntegerParameter
+     */
+    public static class Builder<B extends Builder<B,P>,P extends Parameter>
+    {
+        protected P making;
+        
+        @SuppressWarnings("unchecked")
+        protected B builder = (B) this;
+        
+        public B description(String value)
+        {
+            making.setDescription(value);
+            return builder;
+        }
+        
+        public P parameter()
+        {
+            return making;
+        }
     }
 }

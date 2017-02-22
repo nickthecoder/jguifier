@@ -1,5 +1,6 @@
 package uk.co.nickthecoder.jguifier;
 
+
 public class TriStateParameter extends ChoiceParameter<TriState>
 {
 
@@ -8,15 +9,7 @@ public class TriStateParameter extends ChoiceParameter<TriState>
      */
     public TriStateParameter(String name)
     {
-        this( name, TriState.MAYBE);
-    }
-    
-    /**
-     * @see ValueParameter#ValueParameter(String)
-     */
-    public TriStateParameter(String name, TriState value )
-    {
-        super(name, value);
+        super(name);
         addChoice("true", TriState.TRUE);
         addChoice("false", TriState.FALSE);
         addChoice("1", TriState.TRUE);
@@ -24,4 +17,11 @@ public class TriStateParameter extends ChoiceParameter<TriState>
         addChoice("maybe", TriState.MAYBE);
     }
 
+    public static class Builder extends ChoiceParameter.ChoiceBuilder<Builder,TriStateParameter, TriState>
+    {
+        public Builder(String name)
+        {
+            making = new TriStateParameter(name);
+        }
+    }
 }

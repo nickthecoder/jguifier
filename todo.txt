@@ -8,5 +8,8 @@ BUGS
 New Features
 ============
 
+Finish javadocs
+
+
 Use Geb for web scraping?
 

@@ -5,7 +5,6 @@ package uk.co.nickthecoder.jguifier;
  */
 public class StringChoiceParameter extends ChoiceParameter<String>
 {
-
     /**
      * @see ValueParameter#ValueParameter(String)
      */
@@ -13,25 +12,21 @@ public class StringChoiceParameter extends ChoiceParameter<String>
     {
         super(name);
     }
-
-    /**
-     * Adds a whole bunch of choices, where the keys, value and labels are identical.
-     * 
-     * @param keys
-     *            A set of String used as the keys, labels and values.
-     * @return this
-     */
-    public StringChoiceParameter choices(String... keys)
+    
+    public static class Builder extends ChoiceParameter.ChoiceBuilder<Builder,StringChoiceParameter,String>
     {
-        for (String key : keys) {
-            addChoice(key, key);
+        public Builder(String name)
+        {
+            making = new StringChoiceParameter(name);
         }
-        return this;
+
+        public Builder choices(String... keys)
+        {
+            for (String key : keys) {
+                making.addChoice(key, key);
+            }
+            return this;
+        }
     }
 
-    public StringChoiceParameter choice(String key)
-    {
-        addChoice(key, key);
-        return this;
-    }
 }

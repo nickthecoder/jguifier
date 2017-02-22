@@ -24,15 +24,7 @@ public class IntegerParameter
      */
     public IntegerParameter(String name)
     {
-        this(name, null);
-    }
-
-    /**
-     * @see ValueParameter#ValueParameter(String, Object)
-     */
-    public IntegerParameter(String name, Integer value)
-    {
-        super(name, value);
+        super(name);
         _columns = 6;
     }
 
@@ -145,5 +137,19 @@ public class IntegerParameter
         textField(textField, parametersPanel);
 
         return component;
+    }
+
+    public static class Builder extends ValueParameter.Builder<Builder, IntegerParameter, Integer>
+    {
+        public Builder(String name)
+        {
+            making = new IntegerParameter(name);
+        }
+
+        public Builder range(Integer min, Integer max)
+        {
+            making.setRange(min, max);
+            return this;
+        }
     }
 }

@@ -24,9 +24,9 @@ public abstract class TextParameter<T> extends ValueParameter<T>
 
     protected boolean _stretchy = false;
 
-    public TextParameter(String name, T value)
+    public TextParameter(String name)
     {
-        super(name, value);
+        super(name);
     }
 
     public void setColumns(int value)
@@ -54,7 +54,7 @@ public abstract class TextParameter<T> extends ValueParameter<T>
     {
         textField.setColumns(_columns);
         textField.setMinimumSize(new Dimension(10, textField.getPreferredSize().height));
-
+        
         textField.getDocument().addDocumentListener(new DocumentListener()
         {
             @Override

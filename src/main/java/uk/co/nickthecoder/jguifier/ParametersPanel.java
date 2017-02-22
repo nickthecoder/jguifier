@@ -85,6 +85,13 @@ public class ParametersPanel extends JPanel
 
                 container.add(row);
                 container.add(parameterErrorLabel);
+                
+                String desc = parameter.getDescription();
+                if (desc != null ) {
+                    label.setToolTipText(desc);
+                }
+                
+
             }
 
         }

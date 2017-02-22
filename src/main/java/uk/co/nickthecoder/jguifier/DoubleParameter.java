@@ -25,15 +25,7 @@ public class DoubleParameter
      */
     public DoubleParameter(String name)
     {
-        this(name, null);
-    }
-
-    /**
-     * @see ValueParameter#ValueParameter(String,Object)
-     */
-    public DoubleParameter(String name, Double value)
-    {
-        super(name, value);
+        super(name);
         _columns = 8;
     }
 
@@ -45,12 +37,6 @@ public class DoubleParameter
     public double getMaximumValue()
     {
         return _maximum;
-    }
-
-    public DoubleParameter range(Double min, Double max)
-    {
-        setRange(min, max);
-        return this;
     }
 
     public void setRange(Double min, Double max)
@@ -133,5 +119,19 @@ public class DoubleParameter
         textField(textField, parametersPanel);
 
         return component;
+    }
+
+    public static class Builder extends ValueParameter.Builder<Builder, DoubleParameter, Double>
+    {
+        public Builder(String name)
+        {
+            making = new DoubleParameter(name);
+        }
+
+        public Builder range(Double min, Double max)
+        {
+            making.setRange(min, max);
+            return this;
+        }
     }
 }

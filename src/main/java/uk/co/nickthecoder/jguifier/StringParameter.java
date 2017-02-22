@@ -14,27 +14,13 @@ public class StringParameter
     extends TextParameter<String>
 {
     public int maxLength = Integer.MAX_VALUE;
-    
+
     /**
      * @see ValueParameter#ValueParameter(String)
      */
     public StringParameter(String name)
     {
-        this(name, "");
-    }
-
-    /**
-     * @see ValueParameter#ValueParameter(String)
-     */
-    public StringParameter(String name, String value)
-    {
-        super(name, value);
-    }
-
-    public StringParameter stretch()
-    {
-        setStretchy(true);
-        return this;
+        super(name);
     }
 
     @Override
@@ -44,27 +30,9 @@ public class StringParameter
         setValue(value);
     }
 
-    public StringParameter value(String value)
-        throws ParameterException
-    {
-        try {
-            setValue(value);
-        } catch (Exception e) {
-            // Do nothing - let the default value be illegal
-        }
-        return this;
-    }
-
-    public StringParameter columns(int value)
-    {
-        setColumns(value);
-        return this;
-    }
-
-    public StringParameter maxLength( int value )
+    public void setMaxLength( int value )
     {
         this.maxLength = value;
-        return this;
     }
     
     @Override
@@ -88,4 +56,30 @@ public class StringParameter
         return component;
     }
 
+    public static class Builder extends ValueParameter.Builder<Builder, StringParameter, String>
+    {
+        public Builder(String name)
+        {
+            making = new StringParameter(name);
+        }
+
+        public Builder stretch()
+        {
+            making.setStretchy(true);
+            return this;
+        }
+
+        public Builder columns( int columns )
+        {
+            making.setColumns(columns);
+            return this;
+        }
+        
+        public Builder maxLength( int maxLength )
+        {
+            making.setMaxLength(maxLength);
+            return this;
+        }
+
+    }
 }

@@ -132,9 +132,10 @@ public abstract class Task implements Runnable
 
         _helpParameter = new BooleanParameter("help", false);
         _autoCompleteParameter = new BooleanParameter("autocomplete", false);
-        _debugParameter = new BooleanParameter("debug", false).oppositeName("no-debug");
-        _lookupDefaultsParameter = new BooleanParameter("userDefaults", true).oppositeName("no-userDefaults");
-        _promptParameter = new BooleanParameter("prompt", null).oppositeName("no-prompt");
+        _debugParameter = new BooleanParameter.Builder("debug").value(false).oppositeName("no-debug").parameter();
+        _promptParameter = new BooleanParameter.Builder("prompt").oppositeName("no-prompt").parameter();
+        _lookupDefaultsParameter = new BooleanParameter.Builder("userDefaults").value(true).oppositeName("no-userDefaults")
+            .parameter();
 
         addMetaParameters(_helpParameter, _autoCompleteParameter, _promptParameter, _debugParameter,
             _lookupDefaultsParameter);

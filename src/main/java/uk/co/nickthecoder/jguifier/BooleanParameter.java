@@ -14,6 +14,7 @@ import javax.swing.event.ChangeListener;
  * <p>
  * Examples of how to pass boolean values from the command line. If the parameter name is "foo" :
  * </p>
+ * 
  * <pre>
  * <code>
  * --foo=true --foo=false
@@ -57,12 +58,6 @@ public class BooleanParameter
     public String getOppositeName()
     {
         return _oppositeName;
-    }
-
-    public BooleanParameter oppositeName(String oppositeName)
-    {
-        setOppositeName(oppositeName);
-        return this;
     }
 
     @Override
@@ -131,6 +126,7 @@ public class BooleanParameter
 
     /**
      * {@inheritDoc}
+     * 
      * @priority 5
      */
     @Override
@@ -140,6 +136,20 @@ public class BooleanParameter
         Task.autocompleteFilter("1", cur);
         Task.autocompleteFilter("true", cur);
         Task.autocompleteFilter("false", cur);
+    }
+
+    public static class Builder extends ValueParameter.Builder<Builder, BooleanParameter, Boolean>
+    {
+        public Builder(String name)
+        {
+            making = new BooleanParameter(name, null);
+        }
+
+        public Builder oppositeName(String oppositeName)
+        {
+            making.setOppositeName(oppositeName);
+            return this;
+        }
     }
 
 }

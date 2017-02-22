@@ -49,19 +49,7 @@ public class GroupParameter
             parameter.addListener(this);
         }
     }
-
-    public GroupParameter child(Parameter parameter)
-    {
-        addChildren(parameter);
-        return this;
-    }
-
-    public GroupParameter children(Parameter... parameters)
-    {
-        addChildren(parameters);
-        return this;
-    }
-
+    
     @Override
     public Component createComponent(final ParametersPanel parametersPanel)
     {
@@ -117,6 +105,28 @@ public class GroupParameter
     public String toString()
     {
         return "Group : " + super.toString();
+    }
+    
+
+    public static class Builder extends Parameter.Builder<Builder, GroupParameter>
+    {
+        public Builder(String name)
+        {
+            making = new GroupParameter(name);
+        }
+
+        public Builder child(Parameter parameter)
+        {
+            making.addChildren(parameter);
+            return this;
+        }
+
+        public Builder children(Parameter... parameters)
+        {
+            making.addChildren(parameters);
+            return this;
+        }
+
     }
 
 }
