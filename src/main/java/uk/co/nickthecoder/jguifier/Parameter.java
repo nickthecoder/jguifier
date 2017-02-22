@@ -211,23 +211,35 @@ public abstract class Parameter
      * A Builder Pattern, allowing Parameters to be defined in one long java statement.
      * Generics are used to enforce the correct type safety.
      * 
-     * @param <B> The Builder class (this)
-     * @param <P> The Parameter sub-class, such as IntegerParameter
+     * @param <B>
+     *            The Builder class (this)
+     * @param <P>
+     *            The Parameter sub-class, such as IntegerParameter
      */
-    public static class Builder<B extends Builder<B,P>,P extends Parameter>
+    public abstract static class Builder<B extends Builder<B, P>, P extends Parameter>
     {
         protected P making;
-        
+
+        /**
+         * Returns simply <code>this</code>, but needs an unchecked cast to keep the compiler happy.
+         * So rather than have the cast in every method call, this method keeps it in just one place.
+         * 
+         * @return this
+         * @priority 4
+         */
         @SuppressWarnings("unchecked")
-        protected B builder = (B) this;
-        
-        public B description(String value)
+        protected final B me()
+        {
+            return (B) this;
+        }
+
+        public final B description(String value)
         {
             making.setDescription(value);
-            return builder;
+            return me();
         }
-        
-        public P parameter()
+
+        public final P parameter()
         {
             return making;
         }

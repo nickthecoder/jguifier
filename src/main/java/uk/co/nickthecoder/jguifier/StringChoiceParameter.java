@@ -13,7 +13,7 @@ public class StringChoiceParameter extends ChoiceParameter<String>
         super(name);
     }
     
-    public static class Builder extends ChoiceParameter.ChoiceBuilder<Builder,StringChoiceParameter,String>
+    public static final class Builder extends ChoiceParameter.ChoiceBuilder<Builder,StringChoiceParameter,String>
     {
         public Builder(String name)
         {

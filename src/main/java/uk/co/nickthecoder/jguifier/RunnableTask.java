@@ -16,9 +16,9 @@ package uk.co.nickthecoder.jguifier;
  * import uk.co.nickthecoder.jguifier.util.*
  * 
  * def foo = new StringParameter( "foo" );
- * def bar = new IntegerParameter( "bar").range( 0, 10 );
+ * def bar = new IntegerParameter.Builder( "bar" ).range( 0, 10 ).parameter();
  * new RunnableTask()
- *     .parameters( mustExist, mustNotExist, mayExist,  directory, file, file2, either,  optional, writable )
+ *     .parameters( foo, bar )
  *     .action {
  *         // Program logic goes here!
  *         println( foo.value )

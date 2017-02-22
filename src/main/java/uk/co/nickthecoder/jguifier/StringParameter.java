@@ -21,6 +21,7 @@ public class StringParameter
     public StringParameter(String name)
     {
         super(name);
+        setStretchy(true);
     }
 
     @Override
@@ -33,6 +34,9 @@ public class StringParameter
     public void setMaxLength( int value )
     {
         this.maxLength = value;
+        if ( value <= 30 ) {
+            setColumns( value );
+        }
     }
     
     @Override
@@ -56,7 +60,7 @@ public class StringParameter
         return component;
     }
 
-    public static class Builder extends ValueParameter.Builder<Builder, StringParameter, String>
+    public static final class Builder extends TextParameter.Builder<Builder, StringParameter, String>
     {
         public Builder(String name)
         {
@@ -66,12 +70,6 @@ public class StringParameter
         public Builder stretch()
         {
             making.setStretchy(true);
-            return this;
-        }
-
-        public Builder columns( int columns )
-        {
-            making.setColumns(columns);
             return this;
         }
         

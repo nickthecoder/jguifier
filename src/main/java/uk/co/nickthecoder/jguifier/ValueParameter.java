@@ -1,6 +1,9 @@
 package uk.co.nickthecoder.jguifier;
 
-
+/**
+ * 
+ * @param <T> The Type of value, for example Double for DoubleParameters
+ */
 public abstract class ValueParameter<T> extends Parameter
 {
 
@@ -168,29 +171,33 @@ public abstract class ValueParameter<T> extends Parameter
         return super.toString() + " = " + (_value == null ? "null" : _value.toString());
     }
 
-    public static class Builder<B extends Builder<B,P,T>,P extends ValueParameter<T>,T>
-        extends Parameter.Builder<B,P>
-    {  
+    /**
+     * @param <B>
+     *            The Builder
+     * @param <P>
+     *            The Parameter
+     * @param <T>
+     *            The Type held by the parameter, eg Double for DoubleParameters
+     */
+    public abstract static class Builder<B extends Builder<B, P, T>, P extends ValueParameter<T>, T>
+        extends Parameter.Builder<B, P>
+    {
         public B value(T value)
         {
             making.setValue(value);
-            return builder;
+            return me();
         }
-        
-        public T getValue()
-        {
-            return making.getValue();
-        }
-        
+
         public B required()
         {
             making.setRequired(true);
-            return builder;
+            return me();
         }
+
         public B optional()
         {
             making.setRequired(false);
-            return builder;
+            return me();
         }
     }
 }

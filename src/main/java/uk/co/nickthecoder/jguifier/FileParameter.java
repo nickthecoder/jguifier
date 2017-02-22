@@ -7,18 +7,29 @@ import java.util.Arrays;
 import javax.swing.JTextField;
 
 /**
- * A {@link Parameter} for a filename or directory.
+ * A {@link Parameter} for a file or directory.
+ * Use the {@link Builder} class like so :
+ * 
+ * <pre>
+ * <code>
+ * new FileParameter.Builder("theDirectory").mustExist().directory().writable().parameter();
+ * </code>
+ * </pre>
  * 
  * The {@link TaskPrompter} will show as a text field, with a "..." button on the right, which will launch an
  * "Open File" dialog box.
- *
- * By default, a FileParameter expects a regular file, change this using {@link #directory()}.
- * 
- * By default the file can, but does not have to exist; change this using {@link #exists(boolean)}.
- * 
+ * <p>
+ * By default, a FileParameter expects a regular file. See {@link Builder#directory()}.
+ * </p>
+ * <p>
+ * By default the file can, but does not have to exist. See {@link Builder#mustExist()}, {@link Builder#mustNotExist()}.
+ * </p>
+ * <p>
  * By default, if the file exists, it does not have to be writable. If you plan to write to the file, then use
- * {@link #writable(boolean)}.
+ * {@link Builder#writable()}.
+ * </p>
  * 
+ * @see Builder
  */
 public class FileParameter
     extends TextParameter<File>
@@ -51,7 +62,6 @@ public class FileParameter
         super(name);
         _stretchy = true;
     }
-
 
     public void setStringValue(String value)
     {
@@ -122,7 +132,6 @@ public class FileParameter
         return _enterHidden;
     }
 
-
     public void setWritable(boolean value)
     {
         _writable = value;
@@ -132,7 +141,6 @@ public class FileParameter
     {
         return _writable;
     }
-
 
     public void setExtensions(String description, String... extensions)
     {
@@ -226,7 +234,13 @@ public class FileParameter
                     if (!value.canWrite()) {
                         return "You cannot write to this file";
                     }
-                    if (!value.getParentFile().canWrite()) {
+                    File parent = null;
+                    try {
+                        parent = value.getAbsoluteFile().getParentFile();
+                    } catch (Exception e) {
+                        // Do nothing
+                    }
+                    if ((parent != null) && (!parent.canWrite())) {
                         return "You cannot write to the directory";
                     }
                 }
@@ -316,7 +330,7 @@ public class FileParameter
         return fileField;
     }
 
-    public static class Builder extends ValueParameter.Builder<Builder, FileParameter, File>
+    public static final class Builder extends ValueParameter.Builder<Builder, FileParameter, File>
     {
         public Builder(String name)
         {
@@ -328,13 +342,13 @@ public class FileParameter
             making.setExists(TriState.TRUE);
             return this;
         }
-        
+
         public Builder mustNotExist()
         {
             making.setExists(TriState.FALSE);
             return this;
         }
-        
+
         public Builder mayExist()
         {
             making.setExists(TriState.MAYBE);

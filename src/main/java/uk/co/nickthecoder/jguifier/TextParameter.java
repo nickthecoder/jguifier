@@ -32,6 +32,7 @@ public abstract class TextParameter<T> extends ValueParameter<T>
     public void setColumns(int value)
     {
         this._columns = value;
+        setStretchy(false);
     }
 
     public int getColumns()
@@ -85,5 +86,15 @@ public abstract class TextParameter<T> extends ValueParameter<T>
                 }
             }
         });
+    }
+    
+    public abstract static class Builder<B extends Builder<B,P,T>,P extends TextParameter<T>,T>
+        extends ValueParameter.Builder<B,P,T>
+    {
+        public B columns( int columns )
+        {
+            making.setColumns( columns );
+            return me();
+        }
     }
 }

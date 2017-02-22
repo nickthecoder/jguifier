@@ -22,23 +22,21 @@ import javax.swing.JComboBox;
  * we could do something like :
  * 
  * <code><pre>
- * ChoiceParameter output = new ChoiceParameter<PrintWriter>( "output" );
- * output.addChoice( "stdout", System.out, "Standard Output" );
- * output.addChoice( "stderr", System.err );
+        ChoiceParameter<PrintStream> foo = new ChoiceParameter.Builder<PrintStream>("theName")
+            .choice("out", System.out, "Standard Output" )
+            .choice("err", System.err )
+            .parameter();
  * </pre></code>
  * 
- * As only stdout was given a nice label, the GUI will show a pull down list containing "Standard Output"
- * and "stderr".
- * <p>
- * We could have chosen to use the fluent API like so :
- * </p>
+ * Note only the first choice has been given a nice label, so the GUI would display a JComboBox with items
+ * "Standard Output" and "err".
  * 
- * <code><pre>
- * ChoiceParameter output = new ChoiceParameter<PrintWriter>( "output" )
- *     .choice( "stdout", System.out, "Standard Output" );
- *     .choice( "stderr", System.err );
- * </pre></code>
+ * <br/>
  * 
+ * The choice labels are not used on the command line. We would set the parameter from the command line like so:
+ * <code>--foo=out</code>
+ * 
+ * @see Builder
  */
 public class ChoiceParameter<T> extends ValueParameter<T>
 {
@@ -117,6 +115,11 @@ public class ChoiceParameter<T> extends ValueParameter<T>
     public void addChoice(String key, T value)
     {
         addChoice(key, value, key);
+    }
+
+    public void addChoice(T value)
+    {
+        addChoice(value.toString(), value);
     }
 
     /**
@@ -229,24 +232,30 @@ public class ChoiceParameter<T> extends ValueParameter<T>
         }
     }
 
+    /**
+     * Note, there are TWO builder classes within ChoiceParameter.
+     * ChoiceBuilder is abstract, and is used for sub-classes of ChoiceParameter, such as StringChoiceParameter.
+     * <p>
+     * {@link Builder} is final, and is the one used to build ChoiceParameters.
+     * </p>
+     */
     protected abstract static class ChoiceBuilder<B extends ChoiceBuilder<B, P, T2>, P extends ChoiceParameter<T2>, T2>
         extends ValueParameter.Builder<B, P, T2>
     {
         public B choice(String key, T2 value)
         {
             making.addChoice(key, value);
-            return builder;
+            return me();
         }
 
         public B choice(String key, T2 value, String label)
         {
             making.addChoice(key, value, label);
-            return builder;
+            return me();
         }
-
     }
 
-    public static class Builder<T2> extends ChoiceBuilder<Builder<T2>, ChoiceParameter<T2>, T2>
+    public static final class Builder<T2> extends ChoiceBuilder<Builder<T2>, ChoiceParameter<T2>, T2>
     {
         public Builder(String name)
         {

@@ -9,9 +9,18 @@ import javax.swing.SpinnerNumberModel;
 import uk.co.nickthecoder.jguifier.util.Util;
 
 /**
- * A parameter which accepts floating point numbers as well as null.
- * Can optionally specify a minimum and maximum value.
+ * A {@link Parameter}, which must be a double value, or may be null.
+ * Can be constrained by a range.
  * 
+ * Create using the corresponding {@link Builder} class, like so :
+ * 
+ * <pre>
+ * <code>
+ * new DoubleParameter.Builder( "theName" ).range( 0.0, 10.0 ).description( "blah" ).parameters();
+ * </pre>
+ * 
+ * @see Builder
+ *      </code>
  */
 public class DoubleParameter
     extends TextParameter<Double>
@@ -29,16 +38,36 @@ public class DoubleParameter
         _columns = 8;
     }
 
+    /**
+     * @return The minimum allowable value, or {@link Double#MIN_VALUE}
+     * @see {@link #setRange(Double, Double)}, {@link Builder#range(Double, Double)}.
+     * @priority 3
+     */
     public double getMinimumValue()
     {
         return _minimum;
     }
 
+    /**
+     * @return The maximum allowable value, or {@link Double#MAX_VALUE}
+     * @see {@link #setRange(Double, Double)}, {@link Builder#range(Double, Double)}.
+     * @priority 3
+     */
     public double getMaximumValue()
     {
         return _maximum;
     }
 
+    /**
+     * Sets the range of valid values.
+     * 
+     * @param min
+     *            Use {@link Double#MIN_VALUE} if you do not want a lower bound.
+     * @param max
+     *            Use {@link Double#MAX_VALUE} if you do not want an upper bound.
+     * @see {@link Builder#range(Double, Double)}
+     * @priority 1
+     */
     public void setRange(Double min, Double max)
     {
         if (min == null) {
@@ -121,7 +150,7 @@ public class DoubleParameter
         return component;
     }
 
-    public static class Builder extends ValueParameter.Builder<Builder, DoubleParameter, Double>
+    public static final class Builder extends ValueParameter.Builder<Builder, DoubleParameter, Double>
     {
         public Builder(String name)
         {

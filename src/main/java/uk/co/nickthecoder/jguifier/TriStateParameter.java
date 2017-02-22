@@ -17,7 +17,7 @@ public class TriStateParameter extends ChoiceParameter<TriState>
         addChoice("maybe", TriState.MAYBE);
     }
 
-    public static class Builder extends ChoiceParameter.ChoiceBuilder<Builder,TriStateParameter, TriState>
+    public static final class Builder extends ChoiceParameter.ChoiceBuilder<Builder,TriStateParameter, TriState>
     {
         public Builder(String name)
         {

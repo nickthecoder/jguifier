@@ -10,7 +10,16 @@ import uk.co.nickthecoder.jguifier.util.Util;
 
 /**
  * A {@link Parameter}, which must be an integer value, or may be null.
- *
+ * Can be constrained by a range.
+ * 
+ * Create using the corresponding {@link Builder} class, like so :
+ * 
+ * <pre>
+ * <code>
+ * new IntegerParameter.Builder( "theName" ).range( 0, 10 ).description( "blah" ).parameters();
+ * </pre>
+ * 
+ * </code>
  */
 public class IntegerParameter
     extends TextParameter<Integer>
@@ -139,7 +148,7 @@ public class IntegerParameter
         return component;
     }
 
-    public static class Builder extends ValueParameter.Builder<Builder, IntegerParameter, Integer>
+    public static final class Builder extends ValueParameter.Builder<Builder, IntegerParameter, Integer>
     {
         public Builder(String name)
         {

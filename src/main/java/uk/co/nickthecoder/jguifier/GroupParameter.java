@@ -108,7 +108,7 @@ public class GroupParameter
     }
     
 
-    public static class Builder extends Parameter.Builder<Builder, GroupParameter>
+    public static final class Builder extends Parameter.Builder<Builder, GroupParameter>
     {
         public Builder(String name)
         {

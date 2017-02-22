@@ -138,7 +138,7 @@ public class BooleanParameter
         Task.autocompleteFilter("false", cur);
     }
 
-    public static class Builder extends ValueParameter.Builder<Builder, BooleanParameter, Boolean>
+    public static final class Builder extends ValueParameter.Builder<BooleanParameter.Builder, BooleanParameter, Boolean>
     {
         public Builder(String name)
         {
