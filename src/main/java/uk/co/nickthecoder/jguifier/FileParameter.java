@@ -320,12 +320,12 @@ public class FileParameter
     }
 
     @Override
-    public Component createComponent(final ParametersPanel panel)
+    public Component createComponent(final ParameterHolder holder)
     {
         FileComponent fileField = new FileComponent(this, getValue() == null ? "" : getValue().getPath());
         JTextField textField = fileField.getTextField();
 
-        textField(textField, panel);
+        textField(textField, holder);
 
         return fileField;
     }

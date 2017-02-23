@@ -51,7 +51,7 @@ public class GroupParameter
     }
     
     @Override
-    public Component createComponent(final ParametersPanel parametersPanel)
+    public Component createComponent(final ParameterHolder holder)
     {
         JPanel panel = new JPanel();
         panel.setBorder(BorderFactory.createCompoundBorder(

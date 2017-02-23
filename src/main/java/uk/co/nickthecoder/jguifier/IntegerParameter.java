@@ -120,7 +120,7 @@ public class IntegerParameter
     }
 
     @Override
-    public Component createComponent(final ParametersPanel parametersPanel)
+    public Component createComponent(final ParameterHolder holder)
     {
         Integer value = getValue();
         if (value == null) {
@@ -143,7 +143,7 @@ public class IntegerParameter
         final JSpinner.DefaultEditor editor = (JSpinner.DefaultEditor) component.getEditor();
         final JTextField textField = editor.getTextField();
 
-        textField(textField, parametersPanel);
+        textField(textField, holder);
 
         return component;
     }

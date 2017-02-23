@@ -10,6 +10,8 @@ import java.util.Map;
 
 import javax.swing.JComboBox;
 
+import uk.co.nickthecoder.jguifier.util.Util;
+
 /**
  * A parameter whose value must be one from a predefines list of values.
  * The GUI will display this as a combobox.
@@ -43,17 +45,17 @@ public class ChoiceParameter<T> extends ValueParameter<T>
     /**
      * Maps keys to values. Used to convert a key into its corresponding value.
      */
-    private Map<String, T> _mapping = new HashMap<String, T>();
+    protected Map<String, T> _mapping = new HashMap<String, T>();
 
     /**
      * Maps keys to labels. Used to store the labels used by the GUI.
      */
-    private Map<String, String> _labelMapping = new HashMap<String, String>();
+    protected Map<String, String> _labelMapping = new HashMap<String, String>();
 
     /**
      * A list of the possible keys. This is needed to order the options correctly (Maps are not ordered).
      */
-    private List<String> _keys;
+    protected List<String> _keys;
 
     private JComboBox<String> _comboBox;
 
@@ -153,7 +155,7 @@ public class ChoiceParameter<T> extends ValueParameter<T>
     public String getStringValue()
     {
         for (String key : _mapping.keySet()) {
-            if (_mapping.get(key).equals(getValue())) {
+            if (Util.equals(_mapping.get(key), getValue())) {
                 return key;
             }
         }
@@ -164,7 +166,7 @@ public class ChoiceParameter<T> extends ValueParameter<T>
      * {@inheritDoc} Implemented using a JComboBox
      */
     @Override
-    public Component createComponent(final ParametersPanel parametersPanel)
+    public Component createComponent(final ParameterHolder holder)
     {
         _comboBox = new JComboBox<String>();
         updateComboBox();
@@ -177,10 +179,10 @@ public class ChoiceParameter<T> extends ValueParameter<T>
                 try {
                     int index = _comboBox.getSelectedIndex();
                     setStringValue(_keys.get(index));
-                    parametersPanel.clearError(ChoiceParameter.this);
+                    holder.clearError(ChoiceParameter.this);
 
                 } catch (Exception e) {
-                    parametersPanel.setError(ChoiceParameter.this, e.getMessage());
+                    holder.setError(ChoiceParameter.this, e.getMessage());
                 }
 
             }
@@ -196,16 +198,14 @@ public class ChoiceParameter<T> extends ValueParameter<T>
         }
 
         _comboBox.removeAllItems();
+        String stringValue = getStringValue();
 
         for (String key : _keys) {
             String label = _labelMapping.get(key);
             _comboBox.addItem(label);
-        }
-
-        // Select the correct item from the combobox.
-        int index = _keys.indexOf(getValue());
-        if (index >= 0) {
-            _comboBox.setSelectedIndex(index);
+            if (key.equals(stringValue)) {
+                _comboBox.setSelectedIndex(_comboBox.getItemCount() - 1);
+            }
         }
 
         /*
@@ -242,6 +242,12 @@ public class ChoiceParameter<T> extends ValueParameter<T>
     protected abstract static class ChoiceBuilder<B extends ChoiceBuilder<B, P, T2>, P extends ChoiceParameter<T2>, T2>
         extends ValueParameter.Builder<B, P, T2>
     {
+        public B choice(T2 value)
+        {
+            making.addChoice(value);
+            return me();
+        }
+        
         public B choice(String key, T2 value)
         {
             making.addChoice(key, value);

@@ -51,7 +51,7 @@ public abstract class TextParameter<T> extends ValueParameter<T>
         _stretchy = value;
     }
 
-    protected void textField(final JTextField textField, final ParametersPanel parametersPanel)
+    protected void textField(final JTextField textField, final ParameterHolder holder)
     {
         textField.setColumns(_columns);
         textField.setMinimumSize(new Dimension(10, textField.getPreferredSize().height));
@@ -80,9 +80,9 @@ public abstract class TextParameter<T> extends ValueParameter<T>
             {
                 try {
                     setStringValue(textField.getText());
-                    parametersPanel.clearError(TextParameter.this);
+                    holder.clearError(TextParameter.this);
                 } catch (Exception e) {
-                    parametersPanel.setError(TextParameter.this, e.getMessage());
+                    holder.setError(TextParameter.this, e.getMessage());
                 }
             }
         });

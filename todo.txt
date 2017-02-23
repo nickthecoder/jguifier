@@ -8,8 +8,57 @@ BUGS
 New Features
 ============
 
+Special
+
+
 Finish javadocs
 
+
+Task.tidyUp method???
+	Use it to close files etc
+
+
+WorkFoo (Name taken from AS/400 WRKxxx commands)
+	This should probably be a separate project from jguifier
+
+	Header contains task parameters
+	table shows the results
+	footer contains other data (totals etc)
+	
+	Table data can be sorted by clicking a heading - not part of the Task parameters, but done AFTERWARDS
+	
+	Object oriented - a bit like Windows power shell?
+	Common result objects :
+		File
+		Database table
+		Database row
+		crontab entry
+		Myth recording
+		TV Series
+		TV Episode
+		git status
+		other git stuff (branches, commits etc)
+		Pinkwino (will need a REST API)
+			Pinkwino instance (so I can list all of my wikis)
+			namespace
+			wiki Page (List Namespace, List Links, List Related Pages etc)
+			Version
+		To-do (from FDroid) - forgotten the name of the utility
+			groups
+			tasks
+		To-do text files (one file for each project, using symlinks in a single directory, or just a List of files)
+
+	Persist meta-data such as
+		"next episode to watch"
+		current git branch?
+
+
+	Advanced features (coded later)
+		Results are a TREE structure, rather than just a list, e.g. allowing for TV Episodes grouped into series
+		One window, with multiple tabs, each containing a different result set
+			Peal off tabs to make a new top-level window.
+			Middle click to create a new tab, left click to replace the current tab with a new GUITask
+			Back/Forward button to return to the previous GUITask 
 
 Use Geb for web scraping?
 

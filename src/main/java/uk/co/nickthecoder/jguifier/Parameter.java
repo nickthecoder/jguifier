@@ -113,7 +113,7 @@ public abstract class Parameter
      *            Used by the created component to set and clear error messages on the ParametersPanel.
      * @return The Swing component
      */
-    public abstract Component createComponent(ParametersPanel panel);
+    public abstract Component createComponent(ParameterHolder holder);
 
     /**
      * Should the component be stretched to the maximum width of the container?

@@ -75,7 +75,7 @@ public class BooleanParameter
     }
 
     @Override
-    public Component createComponent(final ParametersPanel parametersPanel)
+    public Component createComponent(final ParameterHolder holder)
     {
         final JCheckBox component = new JCheckBox();
         if (Boolean.TRUE == getValue()) {
@@ -93,9 +93,9 @@ public class BooleanParameter
             {
                 try {
                     setValue(component.getModel().isSelected());
-                    parametersPanel.clearError(BooleanParameter.this);
+                    holder.clearError(BooleanParameter.this);
                 } catch (Exception e) {
-                    parametersPanel.setError(BooleanParameter.this, e.getMessage());
+                    holder.setError(BooleanParameter.this, e.getMessage());
                 }
             }
         });

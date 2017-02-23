@@ -26,7 +26,7 @@ import uk.co.nickthecoder.jguifier.guiutil.TableLayoutManager;
  *
  * @priority 4
  */
-public class ParametersPanel extends JPanel
+public class ParametersPanel extends JPanel implements ParameterHolder
 {
     private static final long serialVersionUID = 1L;
 
@@ -119,14 +119,18 @@ public class ParametersPanel extends JPanel
         }
 
         JLabel label = _parameterErrorLabels.get(parameter.getName());
-        label.setText(message);
-        label.setVisible(true);
+        if (label != null) {
+            label.setText(message);
+            label.setVisible(true);
+        }
     }
 
     public void clearError(Parameter parameter)
     {
         JLabel label = _parameterErrorLabels.get(parameter.getName());
-        label.setText("");
-        label.setVisible(false);
+        if (label != null) {
+            label.setText("");
+            label.setVisible(false);
+        }
     }
 }

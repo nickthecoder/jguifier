@@ -54,6 +54,10 @@ public class FileListerTask extends Task
         .value(FileLister.NAME_ORDER)
         .parameter();
 
+    BooleanParameter reverse = new BooleanParameter.Builder("reverse").value(false)
+        .description("Reverse order")
+        .parameter();
+
     EnumParameter<FileLister.Sort> sort = new EnumParameter.Builder<FileLister.Sort>(FileLister.Sort.class, "sort")
         .description("How to sort a recursive tree")
         .value(FileLister.Sort.ALL)
@@ -71,21 +75,21 @@ public class FileListerTask extends Task
     {
         addParameters(directory,
             includeFiles, includeDirectories, includeHidden, enterHidden, depth, fileExtensions,
-            order, sort, absolute, canonical);
+            order, reverse, sort, absolute, canonical);
     }
-    
+
     public void run()
     {
         FileLister fileLister = createFileLister();
         try {
             results = fileLister.listFiles(directory.getValue());
             processResults();
-            
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
-    
+
     public void processResults()
     {
         for (File file : results) {
@@ -96,6 +100,7 @@ public class FileListerTask extends Task
     public FileLister createFileLister()
     {
         FileLister lister = new FileLister();
+        
         lister.setIncludeFiles(includeFiles.getValue());
         lister.setIncludeDirectories(includeDirectories.getValue());
         lister.setIncludeHidden(includeHidden.getValue());
@@ -107,10 +112,15 @@ public class FileListerTask extends Task
             lister.setFileExtensions(fileExtensions.getValue().split(","));
         }
 
+        if (reverse.getValue()) {
+            lister.order(new ReverseComparator<File>(order.getValue()));
+        } else {
+            lister.order(order.getValue());
+        }
+        lister.setSort(sort.getValue());
+
         lister.setAbsolute(absolute.getValue());
         lister.setCanonical(canonical.getValue());
-
-        lister.setSort(sort.getValue());
 
         return lister;
     }

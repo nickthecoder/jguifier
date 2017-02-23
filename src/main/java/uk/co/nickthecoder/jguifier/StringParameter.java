@@ -52,10 +52,10 @@ public class StringParameter
     }
 
     @Override
-    public Component createComponent(final ParametersPanel parametersPanel)
+    public Component createComponent(final ParameterHolder holder)
     {
         final JTextField component = new JTextField(getValue() == null ? "" : getValue());
-        textField(component, parametersPanel);
+        textField(component, holder);
 
         return component;
     }

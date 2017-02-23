@@ -123,7 +123,7 @@ public class DoubleParameter
     }
 
     @Override
-    public Component createComponent(final ParametersPanel parametersPanel)
+    public Component createComponent(final ParameterHolder holder)
     {
         Double value = getValue();
         if (value == null) {
@@ -145,7 +145,7 @@ public class DoubleParameter
         final JSpinner.DefaultEditor editor = (JSpinner.DefaultEditor) component.getEditor();
         final JTextField textField = editor.getTextField();
 
-        textField(textField, parametersPanel);
+        textField(textField, holder);
 
         return component;
     }

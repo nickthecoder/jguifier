@@ -1,11 +1,14 @@
 package uk.co.nickthecoder.jguifier;
 
+import java.io.File;
 import java.io.PrintStream;
+import java.text.SimpleDateFormat;
 
 /**
- * Here's example code, showing how to create a simple Task, with a couple of parameters.
+ * Here's example code, showing how to create a simple Task, with a different types of parameters.
  * 
  * <code><pre>
+
 public class Example extends Task
 {
     private BooleanParameter _boolean = new BooleanParameter.Builder("boolean").value(true).required().parameter();
@@ -16,12 +19,12 @@ public class Example extends Task
     private DoubleParameter _double = new DoubleParameter.Builder("double").range(1.0, 10.0).parameter();
 
     private StringParameter _shortString = new StringParameter.Builder("shortString")
-        .maxLength(10).description( "A short string" ).parameter();
+        .maxLength(10).description("A short string").parameter();
 
     private StringParameter _longString = new StringParameter.Builder("longString").stretch().parameter();
-    
+
     private StringChoiceParameter _greeting = new StringChoiceParameter.Builder("greeting")
-        .choices("Hello", "Hi", "Watcha").description( "Pick a greeting" ).parameter();
+        .choices("Hello", "Hi", "Watcha").description("Pick a greeting").parameter();
 
     private ChoiceParameter<PrintStream> _output = new ChoiceParameter.Builder<PrintStream>("output")
         .choice("stdout", System.out, "Normal")
@@ -30,10 +33,36 @@ public class Example extends Task
 
     private FileParameter _file = new FileParameter.Builder("file").file().mustExist().parameter();
 
+    // Choose one of the given date formats, or type your own format string
+    private SpecialParameter<StringParameter, String> _dateFormat = new SpecialParameter.Builder<StringParameter, String>(
+        "dateFormat")
+        .prefix("")
+        .choice("dd-MM-yyyy hh:mm")
+        .choice("dd-MMM-yyyy hh:mm")
+        .choice("yyyy-MMM-dd hh:mm")
+        .choice("yyyy-MM-dd hh:mm")
+        .regular(new StringParameter.Builder("dateFormat")
+            .value(new SimpleDateFormat().toPattern())
+            .parameter()
+        )
+        .parameter(); 
+
+    // Choose System.out or System.err, or enter any File
+    private ExtraSpecialParameter<PrintStream, FileParameter, File> _special =
+        new ExtraSpecialParameter.Builder<PrintStream, FileParameter, File>("special")
+            .choice("file", null, "Output to File")
+            .choice("out", System.out, "Standard Output")
+            .choice("err", System.err, "Standard Error")
+            .value(System.out)
+            .regular(
+                new FileParameter.Builder("specialFile").writable().parameter()
+            )
+            .parameter();
+
     public Example()
     {
         super();
-        addParameters(_boolean, _integer, _double, _shortString, _longString, _greeting, _output, _file);
+        addParameters(_boolean, _integer, _double, _shortString, _longString, _greeting, _output, _file, _format, _special);
     }
 
     public void run()
@@ -54,6 +83,7 @@ public class Example extends Task
         example.go(argv);
     }
 }
+
  * </pre></code>
  */
 
@@ -81,10 +111,37 @@ public class Example extends Task
 
     private FileParameter _file = new FileParameter.Builder("file").file().mustExist().parameter();
 
+    // Choose one of the given date formats, or type your own format string
+    private SpecialParameter<StringParameter, String> _dateFormat = new SpecialParameter.Builder<StringParameter, String>(
+        "dateFormat")
+        .prefix("")
+        .choice("dd-MM-yyyy hh:mm")
+        .choice("dd-MMM-yyyy hh:mm")
+        .choice("yyyy-MMM-dd hh:mm")
+        .choice("yyyy-MM-dd hh:mm")
+        .regular(new StringParameter.Builder("dateFormat")
+            .value(new SimpleDateFormat().toPattern())
+            .parameter()
+        )
+        .parameter();
+
+    // Choose System.out or System.err, or enter any File
+    private ExtraSpecialParameter<PrintStream, FileParameter, File> _special =
+        new ExtraSpecialParameter.Builder<PrintStream, FileParameter, File>("special")
+            .choice("file", null, "Output to File")
+            .choice("out", System.out, "Standard Output")
+            .choice("err", System.err, "Standard Error")
+            .value(System.out)
+            .regular(
+                new FileParameter.Builder("specialFile").writable().parameter()
+            )
+            .parameter();
+
     public Example()
     {
         super();
-        addParameters(_boolean, _integer, _double, _shortString, _longString, _greeting, _output, _file);
+        addParameters(_boolean, _integer, _double, _shortString, _longString, _greeting, _output, _file,
+            _dateFormat, _special);
     }
 
     @Override
