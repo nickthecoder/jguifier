@@ -145,12 +145,16 @@ public class Example extends Task
     }
 
     @Override
-    public void run()
+    public void body()
     {
+        // Note, this isn't good style, because out is not guaranteed to be closed correctly.
+        // For a better solution, use OutputFile, and call OutputFile.close() in Task.post()
         PrintStream out = _output.getValue();
 
         out.println(_greeting.getValue() + " " + _shortString.getValue());
         out.println(_longString.getValue());
+        
+        out.close();
     }
 
     public static void main(String[] argv)

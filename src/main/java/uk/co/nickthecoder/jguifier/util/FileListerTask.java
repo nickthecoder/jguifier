@@ -78,7 +78,7 @@ public class FileListerTask extends Task
             order, reverse, sort, absolute, canonical);
     }
 
-    public void run()
+    public void body()
     {
         FileLister fileLister = createFileLister();
         try {

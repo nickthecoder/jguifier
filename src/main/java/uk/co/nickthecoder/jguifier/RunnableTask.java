@@ -50,7 +50,7 @@ public class RunnableTask extends Task
         return this;
     }
 
-    public void run()
+    public void body()
     {
         runnable.run();
     }

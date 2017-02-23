@@ -134,7 +134,8 @@ public abstract class Task implements Runnable
         _autoCompleteParameter = new BooleanParameter("autocomplete", false);
         _debugParameter = new BooleanParameter.Builder("debug").value(false).oppositeName("no-debug").parameter();
         _promptParameter = new BooleanParameter.Builder("prompt").oppositeName("no-prompt").parameter();
-        _lookupDefaultsParameter = new BooleanParameter.Builder("userDefaults").value(true).oppositeName("no-userDefaults")
+        _lookupDefaultsParameter = new BooleanParameter.Builder("userDefaults").value(true)
+            .oppositeName("no-userDefaults")
             .parameter();
 
         addMetaParameters(_helpParameter, _autoCompleteParameter, _promptParameter, _debugParameter,
@@ -892,5 +893,33 @@ public abstract class Task implements Runnable
      * 
      * @priority 1
      */
-    public abstract void run();
+    public void run()
+    {
+        try {
+            pre();
+            body();
+        } finally {
+            post();
+        }
+    }
+
+    public abstract void body();
+
+    /**
+     * Actions performed before {@link #body()}
+     */
+    public void pre()
+    {
+        // Default implementation does nothing
+    }
+
+    /**
+     * Actions performed after {@link #body()} - called in a finally block. Useful to close resources
+     * regardless of whether the body completed succeffuly or not.
+     */
+    public void post()
+    {
+        // Default implementation does nothing
+    }
+
 }
