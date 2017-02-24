@@ -3,6 +3,8 @@ package uk.co.nickthecoder.jguifier.util;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -161,6 +163,15 @@ public class FileLister
      * set _canonical to false, and call {@link File#getCanonicalFile()} on each item listed.
      */
     private boolean _canonical = false;
+
+    /**
+     * If errors are detected along the way, write them out, but carry on going.
+     * 
+     * @see #getErorrs()
+     */
+    private StringWriter _errorWriter = new StringWriter();
+
+    private PrintWriter _errors = new PrintWriter(_errorWriter);
 
     /**
      * Constructor
@@ -591,6 +602,18 @@ public class FileLister
     }
 
     /**
+     * If errors occurred while listing, then they are ignored, so that the lister can continue doing as much as
+     * possible.
+     * This lets you see the errors.
+     * 
+     * @return The list of error, one error per line, or an empty string if no errors occurred.
+     */
+    public String getErorrs()
+    {
+        return _errorWriter.toString();
+    }
+
+    /**
      * Performs the listing.
      * 
      * @param directoryPath
@@ -599,7 +622,6 @@ public class FileLister
      * @throws IOException
      */
     public List<File> listFiles(String directoryPath)
-        throws IOException
     {
         return listFiles(new File(directoryPath));
     }
@@ -613,7 +635,6 @@ public class FileLister
      * @throws IOException
      */
     public List<File> listFiles(File directory)
-        throws IOException
     {
         List<File> results = new ArrayList<File>();
 
@@ -644,11 +665,11 @@ public class FileLister
      * @throws IOException
      */
     private void listFiles(List<File> results, File directory, int depth)
-        throws IOException
     {
         File[] files = directory.listFiles(this);
         if (files == null) {
-            throw new IOException("Failed to list directory " + directory);
+            _errors.println( "Failed to list directory " + directory);
+            return;
         }
 
         if (_sort == Sort.DIRECTORY) {
@@ -659,7 +680,7 @@ public class FileLister
                 try {
                     file = file.getCanonicalFile();
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    _errors.println( e );
                 }
             } else if (_absolute) {
                 file = file.getAbsoluteFile();

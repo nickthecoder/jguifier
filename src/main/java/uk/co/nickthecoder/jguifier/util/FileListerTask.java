@@ -1,7 +1,6 @@
 package uk.co.nickthecoder.jguifier.util;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 
@@ -81,20 +80,8 @@ public class FileListerTask extends Task
     public void body()
     {
         FileLister fileLister = createFileLister();
-        try {
-            results = fileLister.listFiles(directory.getValue());
-            processResults();
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void processResults()
-    {
-        for (File file : results) {
-            System.out.println(file);
-        }
+        results = fileLister.listFiles(directory.getValue());
     }
 
     public FileLister createFileLister()

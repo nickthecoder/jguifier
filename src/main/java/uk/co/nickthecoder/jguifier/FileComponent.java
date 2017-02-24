@@ -184,15 +184,12 @@ public class FileComponent extends JPanel
     private void addToComboBox(File directory, String prefix)
     {
         List<File> children;
-        try {
-            FileLister fileLister = new FileLister().directoriesFirst().includeDirectories();
-            if (_fileParameter.getIsDirectory() == TriState.TRUE) {
-                fileLister.excludeFiles();
-            }
-            children = fileLister.listFiles(directory);
-        } catch (IOException e) {
-            return;
+
+        FileLister fileLister = new FileLister().directoriesFirst().includeDirectories();
+        if (_fileParameter.getIsDirectory() == TriState.TRUE) {
+            fileLister.excludeFiles();
         }
+        children = fileLister.listFiles(directory);
 
         for (File child : children) {
             if (child.getName().equals(prefix)) {

@@ -54,7 +54,7 @@ public class ParametersPanel extends JPanel implements ParameterHolder
     private void addParameters(GroupParameter group, Container container)
     {
         for (Parameter parameter : group.getChildren()) {
-
+            
             JLabel parameterErrorLabel = createErrorLabel();
             _parameterErrorLabels.put(parameter.getName(), parameterErrorLabel);
             parameterErrorLabel.setVisible(false);
@@ -83,6 +83,9 @@ public class ParametersPanel extends JPanel implements ParameterHolder
                 rlm.add(component);
                 rlm.setStretchy(parameter.isStretchy());
 
+                if (parameter.hide) {
+                    row.setVisible(false);
+                }
                 container.add(row);
                 container.add(parameterErrorLabel);
                 
