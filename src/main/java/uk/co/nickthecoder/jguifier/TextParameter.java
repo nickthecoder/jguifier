@@ -53,6 +53,17 @@ public abstract class TextParameter<T> extends ValueParameter<T>
 
     protected void textField(final JTextField textField, final ParameterHolder holder)
     {
+        addListener( new ParameterListener() {
+            @Override
+            public void changed(Parameter source)
+            {
+                String text = TextParameter.this.getStringValue();
+                if (!textField.getText().equals(text)) {
+                    textField.setText(text);
+                }
+            }
+        });
+        
         textField.setColumns(_columns);
         textField.setMinimumSize(new Dimension(10, textField.getPreferredSize().height));
         

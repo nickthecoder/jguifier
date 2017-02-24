@@ -100,6 +100,22 @@ public class BooleanParameter
             }
         });
 
+        addListener(new ParameterListener() {
+            @Override
+            public void changed(Parameter source)
+            {
+                Boolean newValue = BooleanParameter.this.getValue();
+                if (newValue == null) {
+                    return;
+                }
+                
+                boolean old = component.isSelected();
+                if (old == (boolean) newValue) {
+                    component.setSelected(newValue);
+                }
+            }            
+        });
+        
         return component;
     }
 

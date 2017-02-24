@@ -188,6 +188,18 @@ public class ChoiceParameter<T> extends ValueParameter<T>
             }
         });
 
+        addListener(new ParameterListener() {
+            @Override
+            public void changed(Parameter source)
+            {
+                String oldKey = _keys.get(_comboBox.getSelectedIndex() );
+                String newKey = getStringValue();
+                if ( (oldKey == null) || ! oldKey.equals(newKey) ) {
+                    _comboBox.setSelectedItem(_labelMapping.get(newKey));
+                }
+            }
+        });
+        
         return _comboBox;
     }
 
