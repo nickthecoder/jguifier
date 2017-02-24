@@ -108,7 +108,7 @@ public class FileListerTask extends Task
 
         lister.setDepth(depth.getValue());
 
-        if (fileExtensions.getValue() != null) {
+        if (! Util.empty(fileExtensions.getValue())) {
             lister.setFileExtensions(fileExtensions.getValue().split(","));
         }
 
