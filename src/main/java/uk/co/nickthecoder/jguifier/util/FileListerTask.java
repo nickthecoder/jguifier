@@ -17,35 +17,35 @@ public class FileListerTask extends Task
 {
     public List<File> results = null;
 
-    FileParameter directory = new FileParameter.Builder("directory").directory().mustExist()
+    public FileParameter directory = new FileParameter.Builder("directory").directory().mustExist()
         .description("Starting directory")
         .parameter();
 
-    BooleanParameter includeFiles = new BooleanParameter.Builder("includeFiles").value(true)
+    public BooleanParameter includeFiles = new BooleanParameter.Builder("includeFiles").value(true)
         .description("Include files in the results")
         .parameter();
 
-    BooleanParameter includeDirectories = new BooleanParameter.Builder("includeDirectories").value(false)
+    public BooleanParameter includeDirectories = new BooleanParameter.Builder("includeDirectories").value(false)
         .description("Include directories in the results")
         .parameter();
 
-    BooleanParameter includeHidden = new BooleanParameter.Builder("includeHidden").value(false)
+    public BooleanParameter includeHidden = new BooleanParameter.Builder("includeHidden").value(false)
         .description("Include hidden files/directories in the results")
         .parameter();
 
-    BooleanParameter enterHidden = new BooleanParameter.Builder("enterHidden").value(false)
+    public BooleanParameter enterHidden = new BooleanParameter.Builder("enterHidden").value(false)
         .description("Enter hidden directories?")
         .parameter();
 
-    IntegerParameter depth = new IntegerParameter.Builder("depth").value(1)
+    public IntegerParameter depth = new IntegerParameter.Builder("depth").value(1)
         .description("How deep down the tree; 1 = a single directlry")
         .parameter();
 
-    StringParameter fileExtensions = new StringParameter.Builder("fileExtensions")
+    public StringParameter fileExtensions = new StringParameter.Builder("fileExtensions")
         .description("List only files with matching file extensions (comma separated, without the dot)")
         .optional().parameter();
 
-    ChoiceParameter<Comparator<File>> order = new ChoiceParameter.Builder<Comparator<File>>("order")
+    public ChoiceParameter<Comparator<File>> order = new ChoiceParameter.Builder<Comparator<File>>("order")
         .description("Ordering")
         .choice("name", FileLister.NAME_ORDER, "By Filename")
         .choice("path", FileLister.PATH_ORDER, "By Pathname")
@@ -54,20 +54,20 @@ public class FileListerTask extends Task
         .value(FileLister.NAME_ORDER)
         .parameter();
 
-    BooleanParameter reverse = new BooleanParameter.Builder("reverse").value(false)
+    public BooleanParameter reverse = new BooleanParameter.Builder("reverse").value(false)
         .description("Reverse order")
         .parameter();
 
-    EnumParameter<FileLister.Sort> sort = new EnumParameter.Builder<FileLister.Sort>(FileLister.Sort.class, "sort")
+    public EnumParameter<FileLister.Sort> sort = new EnumParameter.Builder<FileLister.Sort>(FileLister.Sort.class, "sort")
         .description("How to sort a recursive tree")
         .value(FileLister.Sort.ALL)
         .parameter();
 
-    BooleanParameter absolute = new BooleanParameter.Builder("absolute")
+    public BooleanParameter absolute = new BooleanParameter.Builder("absolute")
         .description("Return absolute filenames?")
         .value(false).parameter();
 
-    BooleanParameter canonical = new BooleanParameter.Builder("canonical")
+    public BooleanParameter canonical = new BooleanParameter.Builder("canonical")
         .description("Return canonical filenames?")
         .value(false).parameter();
 

@@ -264,7 +264,7 @@ public class TaskPrompter
 
     public void onOk()
     {
-        for (Parameter parameter : getTask().getParameters()) {
+        for (Parameter parameter : getTask().getParameters().children()) {
             JLabel errorLabel = _parametersPanel.getErrorLabel(parameter);
             if (errorLabel.isVisible()) {
                 return;
@@ -272,7 +272,7 @@ public class TaskPrompter
         }
 
         boolean errors = false;
-        for (Parameter parameter : getTask().getParameters()) {
+        for (Parameter parameter : getTask().getParameters().children()) {
             try {
                 parameter.check();
             } catch (ParameterException e) {

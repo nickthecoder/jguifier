@@ -8,77 +8,7 @@ BUGS
 New Features
 ============
 
-Special
-
-
 Finish javadocs
-
-
-Task.tidyUp method???
-	Use it to close files etc
-
-
-WrkFoo (Name taken from AS/400 WRKxxx commands)
-	This should probably be a separate project from jguifier
-
-	Header contains task parameters
-	table shows the results
-	footer contains other data (totals etc)
-	
-	Table data can be sorted by clicking a heading - not part of the Task parameters, but done AFTERWARDS
-	
-	Each WrkFoo has a set of WrkMores, which can operate on a row of the results.
-		The WrkMore has a 2 character shortcut code, which can be typed into a text field on the left of each row
-		Or double click to run the default WrkMore
-		Or right click a row for a menu of each WrkMore, with a nice label (and shortcut reminder)
-		
-		Shortcut "o" opens the file in the default application (which will be the default WrkMore)
-		Shortcut "e" on a file opens it in a text editor
-
-		Also have a list of WrkMores which apply to the current WrkFoo, rather than one of its results
-			Maybe have a TextField in the header to type these (but can also be typed into any row for the same effect)?
-		Also have a list of top-level WrkMores, which do not relate to the current WrkFoo
-			
-	
-	Object oriented - a bit like Windows power shell?
-	Common result objects :
-		File (wrkf)
-		Database table (wrkdb)
-		Database row (wrktable)
-		crontab entry (wrkcron)
-		Myth recording (wrkmyth)
-		TV Series (wrktv)
-		TV Episode (wrktve)
-		git status (wrkgits)
-		other git stuff (branches, commits etc)
-		Pinkwino (will need a REST API)
-			Pinkwino instance (so I can list all of my wikis) (wrkpw)
-			namespace (wrkpwn)
-			wiki Page (List Namespace, List Links, List Related Pages etc) (wrkpwp)
-			Version (wrkpwv)
-		To-do (from FDroid) - forgotten the name of the utility
-			groups
-			tasks
-		To-do text files (one file for each project, using symlinks in a single directory, or just a List of files) (wrktodo)
-
-	Persist meta-data such as
-		"next episode to watch"
-		current git branch?
-
-
-	Advanced features (coded later)
-
-		One window, with multiple tabs, each containing a different result set
-			Peal off tabs to make a new top-level window.
-			Middle click to create a new tab, left click to replace the current tab with a new GUITask
-			Back/Forward button to return to the previous GUITask 
-			Each tab gets it name from the WrkFoo command name (such as WrkF), but can be overridden with arbitrary text
-
-		Results are a TREE structure, rather than just a list, e.g. allowing for TV Episodes grouped into series
-
-		An ncurses version, (good for ssh into remote servers)
-			https://github.com/mabe02/lanterna
-			https://sourceforge.net/projects/javacurses/
 
 Use Geb for web scraping?
 

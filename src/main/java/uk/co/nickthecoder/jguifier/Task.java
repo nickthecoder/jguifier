@@ -457,7 +457,7 @@ public abstract class Task implements Runnable
 
     private void saveDefaults(PrintWriter out, GroupParameter gp)
     {
-        for (Parameter parameter : getParameters()) {
+        for (Parameter parameter : _parameters) {
             if (parameter instanceof ValueParameter) {
                 ValueParameter<?> vp = (ValueParameter<?>) parameter;
                 String value = vp.getStringValue();
@@ -523,16 +523,13 @@ public abstract class Task implements Runnable
     }
 
     /**
-     * Returns the list of Parameters, in the order the were added, which is also the order they will be displayed
-     * in the GUI.
-     * 
-     * @return The list of parameters
-     * @priority 4
-     */
-    public List<Parameter> getParameters()
-    {
-        return _parameters;
-    }
+    *
+    * @priority 4
+    */
+   public GroupParameter getParameters()
+   {
+       return _root;
+   }
 
     /**
      * Prints a help message to stdout. The message will give the name of the task, a summary of each of its parameters,
@@ -570,7 +567,7 @@ public abstract class Task implements Runnable
 
     }
 
-    private boolean parseArgs(String[] argv, boolean metaOnly)
+    public boolean parseArgs(String[] argv, boolean metaOnly)
         throws TaskException
     {
 
@@ -723,7 +720,7 @@ public abstract class Task implements Runnable
                 parameter.autocomplete(cur);
             }
         } else {
-            for (Parameter parameter : getParameters()) {
+            for (Parameter parameter : _parameters) {
                 autocompleteFilter("--" + parameter.getName(), cur);
             }
         }

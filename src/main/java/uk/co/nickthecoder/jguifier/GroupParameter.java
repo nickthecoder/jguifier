@@ -32,6 +32,11 @@ public class GroupParameter
     {
     }
 
+    public List<Parameter> children()
+    {
+        return _children;
+    }
+    
     public void addParameter(Parameter parameter)
     {
         addChildren(parameter);
