@@ -162,6 +162,8 @@ public class ChoiceParameter<T> extends ValueParameter<T>
         return null;
     }
 
+    protected boolean inNotification = false;
+
     /**
      * {@inheritDoc} Implemented using a JComboBox
      */
@@ -176,6 +178,7 @@ public class ChoiceParameter<T> extends ValueParameter<T>
             @Override
             public void actionPerformed(ActionEvent event)
             {
+                inNotification = true;
                 try {
                     int index = _comboBox.getSelectedIndex();
                     setStringValue(_keys.get(index));
@@ -183,23 +186,24 @@ public class ChoiceParameter<T> extends ValueParameter<T>
 
                 } catch (Exception e) {
                     holder.setError(ChoiceParameter.this, e.getMessage());
+                } finally {
+                    inNotification = false;
                 }
 
             }
         });
 
-        addListener(new ParameterListener() {
+        addListener(new ParameterListener()
+        {
             @Override
             public void changed(Parameter source)
             {
-                String oldKey = _keys.get(_comboBox.getSelectedIndex() );
-                String newKey = getStringValue();
-                if ( (oldKey == null) || ! oldKey.equals(newKey) ) {
-                    _comboBox.setSelectedItem(_labelMapping.get(newKey));
+                if (!inNotification) {
+                    _comboBox.setSelectedItem(_labelMapping.get(getStringValue()));
                 }
             }
         });
-        
+
         return _comboBox;
     }
 
@@ -259,7 +263,7 @@ public class ChoiceParameter<T> extends ValueParameter<T>
             making.addChoice(value);
             return me();
         }
-        
+
         public B choice(String key, T2 value)
         {
             making.addChoice(key, value);

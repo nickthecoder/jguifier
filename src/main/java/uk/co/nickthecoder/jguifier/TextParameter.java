@@ -51,22 +51,24 @@ public abstract class TextParameter<T> extends ValueParameter<T>
         _stretchy = value;
     }
 
+    protected boolean inNotification = false;
+
     protected void textField(final JTextField textField, final ParameterHolder holder)
     {
-        addListener( new ParameterListener() {
+        addListener(new ParameterListener()
+        {
             @Override
             public void changed(Parameter source)
             {
-                String text = TextParameter.this.getStringValue();
-                if (!textField.getText().equals(text)) {
-                    textField.setText(text);
+                if (!inNotification) {
+                    textField.setText(getStringValue());
                 }
             }
         });
-        
+
         textField.setColumns(_columns);
         textField.setMinimumSize(new Dimension(10, textField.getPreferredSize().height));
-        
+
         textField.getDocument().addDocumentListener(new DocumentListener()
         {
             @Override
@@ -89,22 +91,25 @@ public abstract class TextParameter<T> extends ValueParameter<T>
 
             public void checkValue()
             {
+                inNotification = true;
                 try {
                     setStringValue(textField.getText());
                     holder.clearError(TextParameter.this);
                 } catch (Exception e) {
                     holder.setError(TextParameter.this, e.getMessage());
+                } finally {
+                    inNotification = false;
                 }
             }
         });
     }
-    
-    public abstract static class Builder<B extends Builder<B,P,T>,P extends TextParameter<T>,T>
-        extends ValueParameter.Builder<B,P,T>
+
+    public abstract static class Builder<B extends Builder<B, P, T>, P extends TextParameter<T>, T>
+        extends ValueParameter.Builder<B, P, T>
     {
-        public B columns( int columns )
+        public B columns(int columns)
         {
-            making.setColumns( columns );
+            making.setColumns(columns);
             return me();
         }
     }

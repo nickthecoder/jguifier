@@ -2,7 +2,8 @@ package uk.co.nickthecoder.jguifier;
 
 /**
  * 
- * @param <T> The Type of value, for example Double for DoubleParameters
+ * @param <T>
+ *            The Type of value, for example Double for DoubleParameters
  */
 public abstract class ValueParameter<T> extends Parameter
 {

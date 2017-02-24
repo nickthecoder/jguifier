@@ -523,13 +523,13 @@ public abstract class Task implements Runnable
     }
 
     /**
-    *
-    * @priority 4
-    */
-   public GroupParameter getParameters()
-   {
-       return _root;
-   }
+     *
+     * @priority 4
+     */
+    public GroupParameter getParameters()
+    {
+        return _root;
+    }
 
     /**
      * Prints a help message to stdout. The message will give the name of the task, a summary of each of its parameters,
@@ -552,7 +552,9 @@ public abstract class Task implements Runnable
         System.out.println();
 
         for (Parameter parameter : _parameters) {
-            System.out.println("    " + parameter.getHelp());
+            if (!parameter.hide) {
+                System.out.println("    " + parameter.getHelp());
+            }
         }
         System.out.println();
 

@@ -5,19 +5,19 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.List;
 
+import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import uk.co.nickthecoder.jguifier.guiutil.JScrollPopupMenu;
@@ -78,33 +78,32 @@ public class FileComponent extends JPanel
             }
         });
 
-        _textField.addKeyListener(new KeyListener()
+        _textField.getInputMap().put(KeyStroke.getKeyStroke("UP"), "upDirectory");
+        _textField.getActionMap().put("upDirectory", new AbstractAction()
         {
+            private static final long serialVersionUID = 1L;
 
             @Override
-            public void keyTyped(KeyEvent e)
+            public void actionPerformed(ActionEvent e)
             {
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e)
-            {
-                if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-                    createPopupMenu();
-                } else if (e.getKeyCode() == KeyEvent.VK_UP) {
-
-                    if (_fileParameter.getValue() != null) {
-                        File parent = _fileParameter.getValue().getParentFile();
-                        if (parent != null) {
-                            _textField.setText(parent.getPath());
-                        }
+                if (_fileParameter.getValue() != null) {
+                    File parent = _fileParameter.getValue().getParentFile();
+                    if (parent != null) {
+                        _textField.setText(parent.getPath());
                     }
                 }
             }
+        });
+
+        _textField.getInputMap().put(KeyStroke.getKeyStroke("DOWN"), "directoryPopup");
+        _textField.getActionMap().put("directoryPopup", new AbstractAction()
+        {
+            private static final long serialVersionUID = 1L;
 
             @Override
-            public void keyPressed(KeyEvent e)
+            public void actionPerformed(ActionEvent e)
             {
+                createPopupMenu();
             }
         });
 
@@ -119,7 +118,7 @@ public class FileComponent extends JPanel
         this.add(buttons, BorderLayout.EAST);
 
         int buttonHeight = _textField.getPreferredSize().height;
-        Dimension preferredSize = new Dimension( buttonHeight, buttonHeight ); // Make it square
+        Dimension preferredSize = new Dimension(buttonHeight, buttonHeight); // Make it square
         _completeButton.setPreferredSize(preferredSize);
         pickButton.setPreferredSize(preferredSize);
     }
@@ -171,7 +170,6 @@ public class FileComponent extends JPanel
 
         menuItem.addActionListener(new ActionListener()
         {
-
             @Override
             public void actionPerformed(ActionEvent e)
             {

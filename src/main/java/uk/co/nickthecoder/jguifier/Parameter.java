@@ -22,7 +22,7 @@ public abstract class Parameter
     private String _description;
 
     public boolean hide;
-    
+
     private List<ParameterListener> _listeners;
 
     /**
@@ -246,13 +246,13 @@ public abstract class Parameter
             making.hide = true;
             return me();
         }
-        
+
         public final B hide(boolean value)
         {
             making.hide = value;
             return me();
         }
-        
+
         public final P parameter()
         {
             return making;

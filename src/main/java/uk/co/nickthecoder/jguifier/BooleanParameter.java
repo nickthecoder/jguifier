@@ -74,6 +74,8 @@ public class BooleanParameter
 
     }
 
+    protected boolean inNotification = false;
+
     @Override
     public Component createComponent(final ParameterHolder holder)
     {
@@ -91,31 +93,29 @@ public class BooleanParameter
             @Override
             public void stateChanged(ChangeEvent changeEvent)
             {
+                inNotification = true;
                 try {
                     setValue(component.getModel().isSelected());
                     holder.clearError(BooleanParameter.this);
                 } catch (Exception e) {
                     holder.setError(BooleanParameter.this, e.getMessage());
+                } finally {
+                    inNotification = false;
                 }
             }
         });
 
-        addListener(new ParameterListener() {
+        addListener(new ParameterListener()
+        {
             @Override
             public void changed(Parameter source)
             {
-                Boolean newValue = BooleanParameter.this.getValue();
-                if (newValue == null) {
-                    return;
+                if (!inNotification) {
+                    component.setSelected(getValue() == Boolean.TRUE);
                 }
-                
-                boolean old = component.isSelected();
-                if (old == (boolean) newValue) {
-                    component.setSelected(newValue);
-                }
-            }            
+            }
         });
-        
+
         return component;
     }
 
@@ -154,7 +154,8 @@ public class BooleanParameter
         Task.autocompleteFilter("false", cur);
     }
 
-    public static final class Builder extends ValueParameter.Builder<BooleanParameter.Builder, BooleanParameter, Boolean>
+    public static final class Builder extends
+        ValueParameter.Builder<BooleanParameter.Builder, BooleanParameter, Boolean>
     {
         public Builder(String name)
         {
