@@ -36,7 +36,7 @@ public class GroupParameter
     {
         return _children;
     }
-    
+
     public void addParameter(Parameter parameter)
     {
         addChildren(parameter);
@@ -54,7 +54,22 @@ public class GroupParameter
             parameter.addListener(this);
         }
     }
-    
+
+    public Parameter findParameter(String name)
+    {
+        for (Parameter parameter : _children) {
+            if (parameter.getName().equals(name)) {
+                return parameter;
+            } else if (parameter instanceof GroupParameter) {
+                Parameter result = ((GroupParameter) parameter).findParameter(name);
+                if (result != null) {
+                    return result;
+                }
+            }
+        }
+        return null;
+    }
+
     @Override
     public Component createComponent(final ParameterHolder holder)
     {
@@ -95,8 +110,7 @@ public class GroupParameter
     /**
      * Forwards change events from the Group's children to this Group's listeners.
      * This lets clients listen for events from all of a Task's parameters by listening to
-     * the root parameter like so :
-     * <code><pre>
+     * the root parameter like so : <code><pre>
      * task.getRootParameter().addListener( ... );
      * </pre></code>
      */
@@ -111,7 +125,6 @@ public class GroupParameter
     {
         return "Group : " + super.toString();
     }
-    
 
     public static final class Builder extends Parameter.Builder<Builder, GroupParameter>
     {
