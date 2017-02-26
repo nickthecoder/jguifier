@@ -152,12 +152,6 @@ public class FileLister
     private FileFilter _customFilter = null;
 
     /**
-     * If true, then the files listed will be absolute files. If false, then the files are relative to the directory
-     * being listed.
-     */
-    private boolean _absolute = false;
-
-    /**
      * If true, then the canonical names are returned. Note that finding canonical names can cause an exception to be
      * thrown, which will cause the listing to be aborted. If you wish to handle these kind of errors yourself, then
      * set _canonical to false, and call {@link File#getCanonicalFile()} on each item listed.
@@ -314,35 +308,6 @@ public class FileLister
     public int getDepth()
     {
         return _depth;
-    }
-
-    /**
-     * Files will be returned as absolute files (instead of as files relative to the base directory of the search).
-     * A fluent version of {@link #setAbsolute(boolean)}.
-     * 
-     * @return this
-     */
-    public FileLister absolute()
-    {
-        setAbsolute(true);
-        return this;
-    }
-
-    /**
-     * Files will be returned as absolute files (instead of as files relative to the base directory of the search).
-     * The default is 'false', i.e. return relative files.
-     * 
-     * @param value
-     *            True to return absolute files, false for relative files.
-     */
-    public void setAbsolute(boolean value)
-    {
-        _absolute = value;
-    }
-
-    public boolean getAbsolute()
-    {
-        return _absolute;
     }
 
     /**
@@ -682,8 +647,6 @@ public class FileLister
                 } catch (Exception e) {
                     _errors.println( e );
                 }
-            } else if (_absolute) {
-                file = file.getAbsoluteFile();
             }
             results.add(file);
 

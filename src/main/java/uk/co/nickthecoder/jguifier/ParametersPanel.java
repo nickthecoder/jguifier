@@ -83,7 +83,7 @@ public class ParametersPanel extends JPanel implements ParameterHolder
                 rlm.add(component);
                 rlm.setStretchy(parameter.isStretchy());
 
-                if (parameter.hide) {
+                if (!parameter.visible) {
                     row.setVisible(false);
                 }
                 container.add(row);

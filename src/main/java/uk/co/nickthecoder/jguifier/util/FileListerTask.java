@@ -62,10 +62,6 @@ public class FileListerTask extends Task
         .value(FileLister.Sort.ALL)
         .parameter();
 
-    public BooleanParameter absolute = new BooleanParameter.Builder("absolute")
-        .description("Return absolute filenames?")
-        .value(false).parameter();
-
     public BooleanParameter canonical = new BooleanParameter.Builder("canonical")
         .description("Return canonical filenames?")
         .value(false).parameter();
@@ -74,7 +70,7 @@ public class FileListerTask extends Task
     {
         addParameters(directory,
             includeFiles, includeDirectories, includeHidden, enterHidden, depth, fileExtensions,
-            order, reverse, sort, absolute, canonical);
+            order, reverse, sort, canonical);
     }
 
     public void body()
@@ -106,7 +102,6 @@ public class FileListerTask extends Task
         }
         lister.setSort(sort.getValue());
 
-        lister.setAbsolute(absolute.getValue());
         lister.setCanonical(canonical.getValue());
 
         return lister;

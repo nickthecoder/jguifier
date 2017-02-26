@@ -552,7 +552,7 @@ public abstract class Task implements Runnable
         System.out.println();
 
         for (Parameter parameter : _parameters) {
-            if (!parameter.hide) {
+            if (parameter.visible) {
                 System.out.println("    " + parameter.getHelp());
             }
         }
