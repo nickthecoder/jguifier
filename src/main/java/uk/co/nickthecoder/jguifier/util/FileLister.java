@@ -10,6 +10,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Lists the contents of a directory. Does much more than {@link File#list()}!
@@ -537,6 +539,52 @@ public class FileLister
         return _fileExtensions;
     }
 
+    public FileLister filterFiles( Pattern pattern )
+    {
+        setFilePattern(pattern);
+        return this;
+    }
+
+    
+    
+    private Pattern filePattern;
+    
+    public void setFilePattern( Pattern pattern )
+    {
+        filePattern = pattern;
+    }
+    
+    public Pattern getFilePattern()
+    {
+        return filePattern;
+    }
+
+    public FileLister filePattern( Pattern pattern )
+    {
+        setFilePattern( pattern );
+        return this;
+    }
+    
+    private Pattern directoryPattern;
+    
+    
+    public void setDirectoryPattern( Pattern pattern )
+    {
+        directoryPattern = pattern;
+    }
+    
+    public Pattern getDirectoryPattern()
+    {
+        return directoryPattern;
+    }
+    
+    public FileLister directoryPattern( Pattern pattern )
+    {
+        setDirectoryPattern( pattern );
+        return this;
+    }
+
+    
     /**
      * A fluent version of {@link #setCustomFilter(FileFilter)}.
      * If this is called twice, the filter from the first call will be ignored. However, future versions of this library
@@ -688,11 +736,23 @@ public class FileLister
             if (!_enterHidden && !_includeHidden && file.isHidden()) {
                 return false;
             }
-
+            if (directoryPattern != null) {
+               Matcher directoryMatcher = directoryPattern.matcher(file.getName());
+               if (! directoryMatcher.matches()) {
+                   return false;
+               }
+            }
+            
         } else {
             if (!_includeHidden && file.isHidden()) {
                 return false;
             }
+            if (filePattern != null) {
+                Matcher fileMatcher = filePattern.matcher(file.getName());
+                if (! fileMatcher.matches()) {
+                    return false;
+                }
+             }
         }
 
         if (_fileExtensions != null) {

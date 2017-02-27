@@ -9,6 +9,7 @@ import uk.co.nickthecoder.jguifier.ChoiceParameter;
 import uk.co.nickthecoder.jguifier.EnumParameter;
 import uk.co.nickthecoder.jguifier.FileParameter;
 import uk.co.nickthecoder.jguifier.IntegerParameter;
+import uk.co.nickthecoder.jguifier.PatternParameter;
 import uk.co.nickthecoder.jguifier.StringParameter;
 import uk.co.nickthecoder.jguifier.Task;
 
@@ -44,6 +45,14 @@ public class FileListerTask extends Task
         .description("List only files with matching file extensions (comma separated, without the dot)")
         .optional().parameter();
 
+    public PatternParameter filePattern = new PatternParameter.Builder("filePattern")
+        .description("Filterfiles by name")
+        .optional().parameter();
+
+    public PatternParameter directoryPattern = new PatternParameter.Builder("directoryPattern")
+        .description("Filter directories by their name")
+        .optional().parameter();
+
     public ChoiceParameter<Comparator<File>> order = new ChoiceParameter.Builder<Comparator<File>>("order")
         .description("Ordering")
         .choice("name", FileLister.NAME_ORDER, "By Filename")
@@ -57,7 +66,8 @@ public class FileListerTask extends Task
         .description("Reverse order")
         .parameter();
 
-    public EnumParameter<FileLister.Sort> sort = new EnumParameter.Builder<FileLister.Sort>(FileLister.Sort.class, "sort")
+    public EnumParameter<FileLister.Sort> sort = new EnumParameter.Builder<FileLister.Sort>(FileLister.Sort.class,
+        "sort")
         .description("How to sort a recursive tree")
         .value(FileLister.Sort.ALL)
         .parameter();
@@ -69,7 +79,8 @@ public class FileListerTask extends Task
     public FileListerTask()
     {
         addParameters(directory,
-            includeFiles, includeDirectories, includeHidden, enterHidden, depth, fileExtensions,
+            includeFiles, includeDirectories, includeHidden, enterHidden, depth,
+            fileExtensions, filePattern, directoryPattern,
             order, reverse, sort, canonical);
     }
 
@@ -83,7 +94,7 @@ public class FileListerTask extends Task
     public FileLister createFileLister()
     {
         FileLister lister = new FileLister();
-        
+
         lister.setIncludeFiles(includeFiles.getValue());
         lister.setIncludeDirectories(includeDirectories.getValue());
         lister.setIncludeHidden(includeHidden.getValue());
@@ -91,8 +102,16 @@ public class FileListerTask extends Task
 
         lister.setDepth(depth.getValue());
 
-        if (! Util.empty(fileExtensions.getValue())) {
+        if (!Util.empty(fileExtensions.getValue())) {
             lister.setFileExtensions(fileExtensions.getValue().split(","));
+        }
+
+        if (filePattern.getValue() != null) {
+            lister.setFilePattern(filePattern.getPattern());
+        }
+
+        if (directoryPattern.getValue() != null) {
+            lister.setDirectoryPattern(directoryPattern.getPattern());
         }
 
         if (reverse.getValue()) {

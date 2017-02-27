@@ -1,5 +1,6 @@
 package uk.co.nickthecoder.jguifier;
 
+import java.awt.Color;
 import java.awt.Dimension;
 
 import javax.swing.JTextField;
@@ -66,6 +67,7 @@ public abstract class TextParameter<T> extends ValueParameter<T>
             }
         });
 
+        textField.setBackground(Color.white);
         textField.setColumns(_columns);
         textField.setMinimumSize(new Dimension(10, textField.getPreferredSize().height));
 

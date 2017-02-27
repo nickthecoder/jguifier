@@ -104,6 +104,9 @@ public class Example extends Task
     private StringChoiceParameter _greeting = new StringChoiceParameter.Builder("greeting")
         .choices("Hello", "Hi", "Watcha").description("Pick a greeting").parameter();
 
+    private PatternParameter _regex = new PatternParameter.Builder( "Regex" )
+        .description( "A regular expression (or a glob)" ).parameter();
+    
     private ChoiceParameter<PrintStream> _output = new ChoiceParameter.Builder<PrintStream>("output")
         .choice("stdout", System.out, "Normal")
         .choice("stderr", System.err, "Error")
@@ -140,7 +143,7 @@ public class Example extends Task
     public Example()
     {
         super();
-        addParameters(_boolean, _integer, _double, _shortString, _longString, _greeting, _output, _file,
+        addParameters(_boolean, _integer, _double, _shortString, _longString, _greeting, _regex, _output, _file,
             _dateFormat, _special);
     }
 
