@@ -8,6 +8,10 @@ BUGS
 New Features
 ============
 
+ChoiceParameter as ToggleButtons and/or radio buttons
+
+MultipleChoiceParameter - pick many from a list of options.
+
 Finish javadocs
 
 Use Geb for web scraping?

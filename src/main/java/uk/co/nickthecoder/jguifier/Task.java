@@ -211,7 +211,9 @@ public abstract class Task implements Runnable
         URL url = obj.getClass().getProtectionDomain().getCodeSource().getLocation();
         File file = new File(url.getPath());
         String name = file.getName();
-        if (name.endsWith(".jar")) {
+
+        // A jar file, or a directory containing .class files
+        if (name.endsWith(".jar") || file.isDirectory()) {
             setName(obj.getClass().getSimpleName());
         } else {
             setName(file.getName());
@@ -796,6 +798,22 @@ public abstract class Task implements Runnable
     public int getExitStatus()
     {
         return exitStatus;
+    }
+
+    public boolean checkParameters()
+    {
+        try {
+            // Check that if all the parameters are present and correct.
+            for (Parameter parameter : _parameters) {
+                parameter.check();
+            }
+            check();
+
+        } catch (ParameterException e) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
