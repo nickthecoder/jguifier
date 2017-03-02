@@ -21,6 +21,8 @@ public class PrintSource implements Source
     @Override
     public void run()
     {
+        //System.out.println( "Started PrintSource" );
         _out.close();
+        //System.out.println( "Ended PrintSource" );
     }
 }

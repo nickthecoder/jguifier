@@ -58,7 +58,7 @@ public class Pipe extends CopySink
     {
         // Run the command that is being pipe TO, it will be up to it's stdin Source
         // to copy the data (which is in the annon inner class above).
-        _target.run();
+        _target.go();
     }
 
 }

@@ -37,7 +37,7 @@ import java.util.Map;
  * </pre>
  * 
  */
-public class Exec
+public class Exec implements Runnable
 {
 
     /**
@@ -552,6 +552,12 @@ public class Exec
         return this;
     }
 
+    public Exec go()
+    {
+        go();
+        return this;
+    }
+
     /**
      * Runs the command. This method will block until the process is complete, so if the process
      * hangs, so will this method call. However, if you set a timeout using {@link #timeout(long)}, then
@@ -559,9 +565,9 @@ public class Exec
      * 
      * @return this
      */
-    public Exec run()
-        throws ExecException
+    public void run()
     {
+        //System.out.println( "Running Exec" );
         _state = State.RUNNING;
 
         try {
@@ -599,8 +605,11 @@ public class Exec
 
             try {
                 if (_state != State.TIMED_OUT) {
+                    //System.out.println( "Waiting for process to end" );
                     _exitStatus = process.waitFor();
+                    //System.out.println( "Waiting for outSink to end" );
                     outSinkThread.join();
+                    //System.out.println( "Waiting for errSink to end" );
                     errSinkThread.join();
                 }
             } catch (InterruptedException e) {
@@ -623,8 +632,8 @@ public class Exec
                 _state = State.COMPLETED;
             }
         }
+        //System.out.println( "Finished Exec" );
 
-        return this;
     }
 
     public int getExitStatus()

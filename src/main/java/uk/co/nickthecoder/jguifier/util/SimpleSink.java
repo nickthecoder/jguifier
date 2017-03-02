@@ -27,6 +27,7 @@ public class SimpleSink implements Sink
     @Override
     public void run()
     {
+        //System.out.println( "Started SimpleSink" );
         try {
             char[] buffer = new char[_bufferSize];
 
@@ -43,6 +44,7 @@ public class SimpleSink implements Sink
                 // Do nothing
             }
         }
+        //System.out.println( "Ended SimpleSink" );
     }
 
     protected void sink(char[] buffer, int len) throws IOException

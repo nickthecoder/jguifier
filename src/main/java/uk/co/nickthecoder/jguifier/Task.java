@@ -8,9 +8,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.lang.reflect.Constructor;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 
 import uk.co.nickthecoder.jguifier.util.Exec;
@@ -33,7 +34,7 @@ import uk.co.nickthecoder.jguifier.util.Util;
  * You should then look at {@link FileLister}, and {@link Exec}, because they are really handy for
  * many scripting tasks.
  */
-public abstract class Task implements Runnable
+public abstract class Task implements Runnable, Cloneable
 {
     /**
      * The exit status when the task completes without error
@@ -126,7 +127,7 @@ public abstract class Task implements Runnable
      */
     public Task()
     {
-        _parameters = new LinkedList<Parameter>();
+        _parameters = new ArrayList<Parameter>();
         _parametersMap = new HashMap<String, Parameter>();
         _metaParametersMap = new HashMap<String, Parameter>();
 
@@ -932,11 +933,38 @@ public abstract class Task implements Runnable
 
     /**
      * Actions performed after {@link #body()} - called in a finally block. Useful to close resources
-     * regardless of whether the body completed succeffuly or not.
+     * regardless of whether the body completed successfully or not.
      */
     public void post()
     {
         // Default implementation does nothing
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    protected Task copy()
+    {
+        try {
+            Class<?> klass = this.getClass();
+            Constructor<?> init = klass.getConstructor(new Class<?>[] {});
+
+            Task result = (Task) init.newInstance();
+            for (Parameter parameter : _parameters) {
+                if (parameter instanceof ValueParameter) {
+                    ValueParameter vp = (ValueParameter) parameter;
+                    ((ValueParameter) result.findParameter(vp.getName())).setValue(vp.getValue());
+                }
+            }
+            return result;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public Task clone()
+    {
+        Task result = copy();
+        return result;
+    }
 }

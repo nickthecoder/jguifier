@@ -54,4 +54,12 @@ public class RunnableTask extends Task
     {
         runnable.run();
     }
+
+    public RunnableTask copy()
+    {
+        RunnableTask result = new RunnableTask();
+        result.action(this.runnable);
+        
+        return result;
+    }
 }
