@@ -83,8 +83,6 @@ public class Exec implements Runnable
 
     private Map<String, String> _env = null;
 
-    private int _exitStatus;
-
     private Source _inSource = new PrintSource();
 
     private Sink _outSink = new SimpleSink();
@@ -461,13 +459,15 @@ public class Exec implements Runnable
 
     public BufferedReader runBuffered()
     {
-        return new BufferedReader( new InputStreamReader( runStreaming() ) );
+        return new BufferedReader(new InputStreamReader(runStreaming()));
     }
-    
+
     public InputStream runStreaming()
     {
         try {
+
             process = Runtime.getRuntime().exec(getCommandArray(), getEnvironment(), _workingDirectory);
+            _state = State.RUNNING;
 
             _inSource.setStream(process.getOutputStream());
             _errSink.setStream(process.getErrorStream());
@@ -482,9 +482,9 @@ public class Exec implements Runnable
 
         return process.getInputStream();
     }
-    
+
     private Process process;
-    
+
     /**
      * Runs the command. This method will block until the process is complete, so if the process
      * hangs, so will this method call. However, if you set a timeout using {@link #timeout(long)}, then
@@ -494,11 +494,11 @@ public class Exec implements Runnable
      */
     public void run()
     {
-        //System.out.println( "Running Exec" );
-        _state = State.RUNNING;
+        // System.out.println( "Running Exec" );
 
         try {
             process = Runtime.getRuntime().exec(getCommandArray(), getEnvironment(), _workingDirectory);
+            _state = State.RUNNING;
 
             if (_timeoutMillis > 0) {
 
@@ -524,21 +524,23 @@ public class Exec implements Runnable
             _errSink.setStream(process.getErrorStream());
 
             new Thread(_inSource).start();
-            
+
             Thread outSinkThread = null;
             outSinkThread = new Thread(_outSink);
             outSinkThread.start();
-            
+
             Thread errSinkThread = new Thread(_errSink);
             errSinkThread.start();
 
+            int _exitStatus = -1;
+
             try {
                 if (_state != State.TIMED_OUT) {
-                    //System.out.println( "Waiting for process to end" );
+                    // System.out.println( "Waiting for process to end" );
                     _exitStatus = process.waitFor();
-                    //System.out.println( "Waiting for outSink to end" );
+                    // System.out.println( "Waiting for outSink to end" );
                     outSinkThread.join();
-                    //System.out.println( "Waiting for errSink to end" );
+                    // System.out.println( "Waiting for errSink to end" );
                     errSinkThread.join();
                 }
             } catch (InterruptedException e) {
@@ -561,17 +563,30 @@ public class Exec implements Runnable
                 _state = State.COMPLETED;
             }
         }
-        //System.out.println( "Finished Exec" );
+        // System.out.println( "Finished Exec" );
 
     }
 
     public int getExitStatus()
     {
-        return _exitStatus;
+        try {
+            return process.waitFor();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public State getState()
     {
+        if (_state == State.RUNNING) {
+            try {
+                process.exitValue();
+                _state = State.COMPLETED;
+            } catch (IllegalThreadStateException e) {
+                // Do nothing
+            }
+        }
+
         return _state;
     }
 
@@ -582,7 +597,7 @@ public class Exec implements Runnable
         return "Exec" +
             "\n  State : " + _state +
             "\n  Command : " + Arrays.asList(getCommandArray()) +
-            ((_state != State.COMPLETED) ? "" : "\n  Exit Status : " + _exitStatus) +
+            ((_state != State.COMPLETED) ? "" : "\n  Exit Status : " + getExitStatus()) +
             "\n  Stdout : " + Util.abbreviate(getStdout().toString()) +
             "\n  Stderr : " + Util.abbreviate(getStderr().toString()) +
             "\n  Env : " + env +
