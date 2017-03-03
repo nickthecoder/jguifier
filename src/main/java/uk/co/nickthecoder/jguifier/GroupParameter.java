@@ -86,7 +86,12 @@ public class GroupParameter
         StringBuffer buffer = new StringBuffer();
 
         for (Parameter parameter : _children) {
-            if (parameter instanceof ValueParameter) {
+            if (parameter instanceof MultipleParameter) {
+                
+                MultipleParameter<?,?> mp = (MultipleParameter<?,?>) parameter;
+                buffer.append( mp.getCommandArguments() );
+                
+            } else if (parameter instanceof ValueParameter) {
                 ValueParameter<?> vp = (ValueParameter<?>) parameter;
                 buffer.append(" --");
                 buffer.append(vp.getName());

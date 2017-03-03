@@ -5,12 +5,27 @@ Current Task
 BUGS
 ====
 
+
 New Features
 ============
+
+Allow one parameter to be set without giving its name
+	e.g. fileLister.groovy --depth=2 /home/nick
+		(where /home/nick will get the value for the --directory parameter.
+	Note: -- is the posix standard for aborting parsing flags, and treats the remainder as regular parameters
+	So 
+		fileLister.groovy --depth=2 -- --depth
+	should list the directory called "--depth"
+
 
 ChoiceParameter as ToggleButtons and/or radio buttons
 
 MultipleChoiceParameter - pick many from a list of options.
+
+MultipleParameter - allow a single parameter to have a LIST of values
+	Command line can look something like :
+		myCommand --foo=abc --foo=def
+	Where parameter foo is given two values, "abc" and "def"
 
 Finish javadocs
 

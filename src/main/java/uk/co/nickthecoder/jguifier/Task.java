@@ -598,7 +598,15 @@ public abstract class Task implements Runnable, Cloneable
                     }
                     if (parameter instanceof ValueParameter) {
                         if (!metaOnly || _metaParametersMap.containsKey(name)) {
-                            ((ValueParameter<?>) parameter).setStringValue(value);
+                            
+                            if (parameter instanceof MultipleParameter) {
+
+                                ((MultipleParameter<?,?>) parameter).setSingleStringValue(value);
+                                
+                            } else {
+                            
+                                ((ValueParameter<?>) parameter).setStringValue(value);
+                            }
                         }
                     } else {
                         throw new TaskException("Parameter cannot hold a value : " + name);

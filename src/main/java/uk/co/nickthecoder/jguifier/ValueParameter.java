@@ -5,7 +5,7 @@ package uk.co.nickthecoder.jguifier;
  * @param <T>
  *            The Type of value, for example Double for DoubleParameters
  */
-public abstract class ValueParameter<T> extends Parameter
+public abstract class ValueParameter<T> extends Parameter implements Cloneable
 {
 
     private T _value;
@@ -165,6 +165,20 @@ public abstract class ValueParameter<T> extends Parameter
 
         return null;
     }
+    
+    @SuppressWarnings("unchecked")
+    public ValueParameter<T> clone()
+    {
+        ValueParameter<T> result;
+        try {
+            result = (ValueParameter<T>) super.clone();
+            return result;
+            
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+        
+    }
 
     @Override
     public String toString()
@@ -200,5 +214,12 @@ public abstract class ValueParameter<T> extends Parameter
             making.setRequired(false);
             return me();
         }
+        
+        public MultipleParameter<P,T> multipleParameter()
+        {
+            return new MultipleParameter<P,T>( making, making.getName() );
+        }
+        
+
     }
 }
