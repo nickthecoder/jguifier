@@ -1,7 +1,10 @@
 package uk.co.nickthecoder.jguifier.util;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -72,110 +75,6 @@ public class Exec implements Runnable
         return new Exec("bash", "-c", commandString);
     }
 
-    /**
-     * @deprecated
-     *             A bodge because Beanshell currently doesn't support varargs
-     */
-    @Deprecated
-    public static Exec create(String program)
-    {
-        return new Exec(new String[] { program });
-    }
-
-    /**
-     * @deprecated
-     *             A bodge because Beanshell currently doesn't support varargs
-     */
-    @Deprecated
-    public static Exec create(String program, String arg1)
-    {
-        return new Exec(new String[] { program, arg1 });
-    }
-
-    /**
-     * @deprecated
-     *             A bodge because Beanshell currently doesn't support varargs
-     */
-    @Deprecated
-    public static Exec create(String program, String arg1, String arg2)
-    {
-        return new Exec(new String[] { program, arg1, arg2 });
-    }
-
-    /**
-     * @deprecated
-     *             A bodge because Beanshell currently doesn't support varargs
-     */
-    @Deprecated
-    public static Exec create(String program, String arg1, String arg2, String arg3)
-    {
-        return new Exec(new String[] { program, arg1, arg2, arg3 });
-    }
-
-    /**
-     * @deprecated
-     *             A bodge because Beanshell currently doesn't support varargs
-     */
-    @Deprecated
-    public static Exec create(String program, String arg1, String arg2, String arg3, String arg4)
-    {
-        return new Exec(new String[] { program, arg1, arg2, arg3, arg4 });
-    }
-
-    /**
-     * @deprecated
-     *             A bodge because Beanshell currently doesn't support varargs
-     */
-    @Deprecated
-    public static Exec create(String program, String arg1, String arg2, String arg3, String arg4, String arg5)
-    {
-        return new Exec(new String[] { program, arg1, arg2, arg3, arg4, arg5 });
-    }
-
-    /**
-     * @deprecated
-     *             A bodge because Beanshell currently doesn't support varargs
-     */
-    @Deprecated
-    public static Exec create(String program, String arg1, String arg2, String arg3, String arg4, String arg5,
-        String arg6)
-    {
-        return new Exec(new String[] { program, arg1, arg2, arg3, arg4, arg5, arg6 });
-    }
-
-    /**
-     * @deprecated
-     *             A bodge because Beanshell currently doesn't support varargs
-     */
-    @Deprecated
-    public static Exec create(String program, String arg1, String arg2, String arg3, String arg4, String arg5,
-        String arg6, String arg7)
-    {
-        return new Exec(new String[] { program, arg1, arg2, arg3, arg4, arg5, arg6, arg7 });
-    }
-
-    /**
-     * @deprecated
-     *             A bodge because Beanshell currently doesn't support varargs
-     */
-    @Deprecated
-    public static Exec create(String program, String arg1, String arg2, String arg3, String arg4, String arg5,
-        String arg6, String arg7, String arg8)
-    {
-        return new Exec(new String[] { program, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8 });
-    }
-
-    /**
-     * @deprecated
-     *             A bodge because Beanshell currently doesn't support varargs
-     */
-    @Deprecated
-    public static Exec create(String program, String arg1, String arg2, String arg3, String arg4, String arg5,
-        String arg6, String arg7, String arg8, String arg9)
-    {
-        return new Exec(new String[] { program, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 });
-    }
-
     private State _state = State.CREATED;
 
     private List<String> _commandArray;
@@ -199,7 +98,9 @@ public class Exec implements Runnable
     {
         _commandArray = new ArrayList<String>(cmdArray.length);
         for (String element : cmdArray) {
-            _commandArray.add(element);
+            if (element != null) {
+                _commandArray.add(element);
+            }
         }
     }
 
@@ -558,6 +459,32 @@ public class Exec implements Runnable
         return this;
     }
 
+    public BufferedReader runBuffered()
+    {
+        return new BufferedReader( new InputStreamReader( runStreaming() ) );
+    }
+    
+    public InputStream runStreaming()
+    {
+        try {
+            process = Runtime.getRuntime().exec(getCommandArray(), getEnvironment(), _workingDirectory);
+
+            _inSource.setStream(process.getOutputStream());
+            _errSink.setStream(process.getErrorStream());
+
+            new Thread(_inSource).start();
+            Thread errSinkThread = new Thread(_errSink);
+            errSinkThread.start();
+
+        } catch (Exception e) {
+            throw new ExecException(this, e);
+        }
+
+        return process.getInputStream();
+    }
+    
+    private Process process;
+    
     /**
      * Runs the command. This method will block until the process is complete, so if the process
      * hangs, so will this method call. However, if you set a timeout using {@link #timeout(long)}, then
@@ -571,7 +498,7 @@ public class Exec implements Runnable
         _state = State.RUNNING;
 
         try {
-            final Process process = Runtime.getRuntime().exec(getCommandArray(), getEnvironment(), _workingDirectory);
+            process = Runtime.getRuntime().exec(getCommandArray(), getEnvironment(), _workingDirectory);
 
             if (_timeoutMillis > 0) {
 
@@ -593,15 +520,17 @@ public class Exec implements Runnable
             }
 
             _inSource.setStream(process.getOutputStream());
-
             _outSink.setStream(process.getInputStream());
             _errSink.setStream(process.getErrorStream());
 
             new Thread(_inSource).start();
-            Thread outSinkThread = new Thread(_outSink);
+            
+            Thread outSinkThread = null;
+            outSinkThread = new Thread(_outSink);
+            outSinkThread.start();
+            
             Thread errSinkThread = new Thread(_errSink);
             errSinkThread.start();
-            outSinkThread.start();
 
             try {
                 if (_state != State.TIMED_OUT) {
