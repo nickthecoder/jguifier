@@ -54,7 +54,7 @@ public class ParametersPanel extends JPanel implements ParameterHolder
     private void addParameters(GroupParameter group, Container container)
     {
         for (Parameter parameter : group.getChildren()) {
-            
+
             JLabel parameterErrorLabel = createErrorLabel();
             _parameterErrorLabels.put(parameter.getName(), parameterErrorLabel);
             parameterErrorLabel.setVisible(false);
@@ -88,12 +88,11 @@ public class ParametersPanel extends JPanel implements ParameterHolder
                 }
                 container.add(row);
                 container.add(parameterErrorLabel);
-                
+
                 String desc = parameter.getDescription();
-                if (desc != null ) {
+                if (desc != null) {
                     label.setToolTipText(desc);
                 }
-                
 
             }
 
@@ -135,5 +134,28 @@ public class ParametersPanel extends JPanel implements ParameterHolder
             label.setText("");
             label.setVisible(false);
         }
+    }
+
+    public boolean check(Task task)
+    {
+        boolean result = true;
+        
+        for (Parameter parameter : task.getParameters().children()) {
+            try {
+                parameter.check();
+            } catch (ParameterException e) {
+                setError(parameter, e.getMessage());
+                result = false;
+            }
+        }
+        
+        try {
+            task.check();
+        } catch (ParameterException e) {
+            setError(e.getParameter(), e.getMessage());
+            result = false;
+        }
+
+        return result;
     }
 }

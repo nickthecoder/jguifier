@@ -1,6 +1,13 @@
 Current Task
 ============
 
+MultiParameter
+	Use json for the String representation. i.e. ["one","two","three"]
+	Don't allow in the form --myParam abc def
+	because it would cause problems with values beginning with "--"
+	However, when combined with the (as yet unwritten) default parameter, then you can specify it without the --myParam
+	
+
 
 BUGS
 ====

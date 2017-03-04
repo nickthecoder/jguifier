@@ -17,7 +17,6 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -264,30 +263,7 @@ public class TaskPrompter
 
     public void onOk()
     {
-        for (Parameter parameter : getTask().getParameters().children()) {
-            JLabel errorLabel = _parametersPanel.getErrorLabel(parameter);
-            if (errorLabel.isVisible()) {
-                return;
-            }
-        }
-
-        boolean errors = false;
-        for (Parameter parameter : getTask().getParameters().children()) {
-            try {
-                parameter.check();
-            } catch (ParameterException e) {
-                _parametersPanel.setError(parameter, e.getMessage());
-                errors = true;
-            }
-        }
-        if (errors) {
-            return;
-        }
-
-        try {
-            getTask().check();
-        } catch (ParameterException e) {
-            _parametersPanel.setError(e.getParameter(), e.getMessage());
+        if (!_parametersPanel.check(getTask())) {
             return;
         }
 

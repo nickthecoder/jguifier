@@ -98,6 +98,16 @@ public abstract class ValueParameter<T> extends Parameter implements Cloneable
     }
 
     /**
+     * Sets the value of the parameter, without testing if it is valid, and without firing any change events.
+     * 
+     * @param value
+     */
+    public void setDefaultValue(T value)
+    {
+        _value = value;
+    }
+
+    /**
      * Set the value of the parameter.
      * The parameter is checked, throwing a ParameterException when invalid.
      * However, the value is set even when an exception is thrown. This allows parameters to be set to
@@ -165,7 +175,7 @@ public abstract class ValueParameter<T> extends Parameter implements Cloneable
 
         return null;
     }
-    
+
     @SuppressWarnings("unchecked")
     public ValueParameter<T> clone()
     {
@@ -173,11 +183,11 @@ public abstract class ValueParameter<T> extends Parameter implements Cloneable
         try {
             result = (ValueParameter<T>) super.clone();
             return result;
-            
+
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
         }
-        
+
     }
 
     @Override
@@ -199,7 +209,7 @@ public abstract class ValueParameter<T> extends Parameter implements Cloneable
     {
         public B value(T value)
         {
-            making.setValue(value);
+            making.setDefaultValue(value);
             return me();
         }
 
@@ -214,12 +224,11 @@ public abstract class ValueParameter<T> extends Parameter implements Cloneable
             making.setRequired(false);
             return me();
         }
-        
-        public MultipleParameter<P,T> multipleParameter()
+
+        public MultipleParameter<P, T> multipleParameter()
         {
-            return new MultipleParameter<P,T>( making, making.getName() );
+            return new MultipleParameter<P, T>(making, making.getName());
         }
-        
 
     }
 }
