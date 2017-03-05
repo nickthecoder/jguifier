@@ -160,6 +160,19 @@ public class Util
         return '"' + value.replaceAll("\"", "\\\\\"") + '"';
     }
 
+    public static String csvQuote(String value)
+    {
+        return '"' + value.replaceAll("\"", "\"\"") + '"';
+    }
+
+    public static String uncsvQuote( String value )
+    {
+        if ( value.startsWith("\"")) {
+            return value.substring(1, value.length() -1).replaceAll( "\"\"", "\"" );
+        } else {
+            return value;
+        }
+    }
     /**
      * Simpler version of {{@link #uncamel(String, String, boolean)},
      * where <code>sep = ' '</code> and <code>first = true</code>.
