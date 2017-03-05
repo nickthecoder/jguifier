@@ -505,7 +505,16 @@ public abstract class Task implements Runnable, Cloneable
      */
     public String getCommandString()
     {
-        return getName() + _root.getCommandString();
+        return getCommandString(true);
+    }
+    /**
+     * @return The command line string for this command, including all of the parameter arguments.
+     * @priority 4
+     */
+
+    public String getCommandString(boolean includeHidden)
+    {
+        return getName() + _root.getCommandString(includeHidden);
     }
 
     /**

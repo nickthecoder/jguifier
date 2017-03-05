@@ -81,31 +81,30 @@ public class GroupParameter
         return panel;
     }
 
-    public String getCommandString()
+    public String getCommandString(boolean includeHidden)
     {
         StringBuffer buffer = new StringBuffer();
 
-        for (Parameter parameter : _children) {
+        for (ValueParameter<?> parameter : allValueParameters()) {
             if (parameter instanceof MultipleParameter) {
 
                 MultipleParameter<?, ?> mp = (MultipleParameter<?, ?>) parameter;
                 buffer.append(mp.getCommandArguments());
 
-            } else if (parameter instanceof ValueParameter) {
-                ValueParameter<?> vp = (ValueParameter<?>) parameter;
-                buffer.append(" --");
-                buffer.append(vp.getName());
-                buffer.append("=");
-                String text = vp.getStringValue();
-                if (text != null) {
-                    if (text.matches("[a-zA-Z0-9./]*")) {
-                        buffer.append(text);
-                    } else {
-                        buffer.append(Util.quote(text));
+            } else {
+                if ( includeHidden || parameter.visible) {
+                    buffer.append(" --");
+                    buffer.append(parameter.getName());
+                    buffer.append("=");
+                    String text = parameter.getStringValue();
+                    if (text != null) {
+                        if (text.matches("[a-zA-Z0-9./]*")) {
+                            buffer.append(text);
+                        } else {
+                            buffer.append(Util.quote(text));
+                        }
                     }
                 }
-            } else if (parameter instanceof GroupParameter) {
-                buffer.append(((GroupParameter) parameter).getCommandString());
             }
         }
         return buffer.toString();
