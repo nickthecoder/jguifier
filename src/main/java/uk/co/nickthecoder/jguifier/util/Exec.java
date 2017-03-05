@@ -567,6 +567,14 @@ public class Exec implements Runnable
 
     }
 
+    /**
+     * Attempts to end the command by calling {@link Process#destroy()}.
+     */
+    public void stop()
+    {
+        process.destroy();
+    }
+
     public int getExitStatus()
     {
         try {

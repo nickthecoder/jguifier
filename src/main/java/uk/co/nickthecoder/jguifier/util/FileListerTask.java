@@ -13,8 +13,10 @@ import uk.co.nickthecoder.jguifier.PatternParameter;
 import uk.co.nickthecoder.jguifier.StringParameter;
 import uk.co.nickthecoder.jguifier.Task;
 
-public class FileListerTask extends Task
-{
+public class FileListerTask extends Task implements Stoppable
+{    
+    private FileLister lister;
+
     public List<File> results = null;
 
     public FileParameter directory = new FileParameter.Builder("directory").directory().mustExist()
@@ -90,10 +92,17 @@ public class FileListerTask extends Task
 
         results = fileLister.listFiles(directory.getValue());
     }
-
+    
+    public void stop()
+    {
+        if (lister != null) {
+            lister.stop();
+        }
+    }
+    
     public FileLister createFileLister()
     {
-        FileLister lister = new FileLister();
+        lister = new FileLister();
 
         lister.setIncludeFiles(includeFiles.getValue());
         lister.setIncludeDirectories(includeDirectories.getValue());

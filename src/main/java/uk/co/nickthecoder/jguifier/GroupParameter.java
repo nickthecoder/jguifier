@@ -87,10 +87,10 @@ public class GroupParameter
 
         for (Parameter parameter : _children) {
             if (parameter instanceof MultipleParameter) {
-                
-                MultipleParameter<?,?> mp = (MultipleParameter<?,?>) parameter;
-                buffer.append( mp.getCommandArguments() );
-                
+
+                MultipleParameter<?, ?> mp = (MultipleParameter<?, ?>) parameter;
+                buffer.append(mp.getCommandArguments());
+
             } else if (parameter instanceof ValueParameter) {
                 ValueParameter<?> vp = (ValueParameter<?>) parameter;
                 buffer.append(" --");
@@ -152,4 +152,31 @@ public class GroupParameter
 
     }
 
+    public List<Parameter> allParameters()
+    {
+        List<Parameter> result = new ArrayList<Parameter>();
+        collectParameters( result );
+        return result;
+    }
+    
+    public List<ValueParameter<?>> allValueParameters()
+    {
+        List<ValueParameter<?>> result = new ArrayList<ValueParameter<?>>();
+        for ( Parameter parameter : allParameters() ) {
+            if ( parameter instanceof ValueParameter ) {
+                result.add( (ValueParameter<?>) parameter );
+            }
+        }
+        return result;
+    }
+
+    private void collectParameters(List<Parameter> list)
+    {
+        for (Parameter parameter : children()) {
+            list.add(parameter);
+            if ( parameter instanceof GroupParameter ) {
+                ((GroupParameter) parameter).collectParameters(list);
+            }
+        }
+    }
 }

@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
  *
  */
 public class FileLister
-    implements FileFilter
+    implements FileFilter, Stoppable
 {
     /**
      * Compares files based on their path, ignoring case, so that "B" and "b" are both greater than "A" and "a".
@@ -169,6 +169,8 @@ public class FileLister
 
     private PrintWriter _errors = new PrintWriter(_errorWriter);
 
+    private boolean stopping = false;
+    
     /**
      * Constructor
      */
@@ -539,52 +541,48 @@ public class FileLister
         return _fileExtensions;
     }
 
-    public FileLister filterFiles( Pattern pattern )
+    public FileLister filterFiles(Pattern pattern)
     {
         setFilePattern(pattern);
         return this;
     }
 
-    
-    
     private Pattern filePattern;
-    
-    public void setFilePattern( Pattern pattern )
+
+    public void setFilePattern(Pattern pattern)
     {
         filePattern = pattern;
     }
-    
+
     public Pattern getFilePattern()
     {
         return filePattern;
     }
 
-    public FileLister filePattern( Pattern pattern )
+    public FileLister filePattern(Pattern pattern)
     {
-        setFilePattern( pattern );
+        setFilePattern(pattern);
         return this;
     }
-    
+
     private Pattern directoryPattern;
-    
-    
-    public void setDirectoryPattern( Pattern pattern )
+
+    public void setDirectoryPattern(Pattern pattern)
     {
         directoryPattern = pattern;
     }
-    
+
     public Pattern getDirectoryPattern()
     {
         return directoryPattern;
     }
-    
-    public FileLister directoryPattern( Pattern pattern )
+
+    public FileLister directoryPattern(Pattern pattern)
     {
-        setDirectoryPattern( pattern );
+        setDirectoryPattern(pattern);
         return this;
     }
 
-    
     /**
      * A fluent version of {@link #setCustomFilter(FileFilter)}.
      * If this is called twice, the filter from the first call will be ignored. However, future versions of this library
@@ -649,6 +647,8 @@ public class FileLister
      */
     public List<File> listFiles(File directory)
     {
+        stopping = false;
+        
         List<File> results = new ArrayList<File>();
 
         if (_includeBase) {
@@ -679,9 +679,13 @@ public class FileLister
      */
     private void listFiles(List<File> results, File directory, int depth)
     {
+        if ( stopping ) {
+            return;
+        }
+        
         File[] files = directory.listFiles(this);
         if (files == null) {
-            _errors.println( "Failed to list directory " + directory);
+            _errors.println("Failed to list directory " + directory);
             return;
         }
 
@@ -693,7 +697,7 @@ public class FileLister
                 try {
                     file = file.getCanonicalFile();
                 } catch (Exception e) {
-                    _errors.println( e );
+                    _errors.println(e);
                 }
             }
             results.add(file);
@@ -737,22 +741,22 @@ public class FileLister
                 return false;
             }
             if (directoryPattern != null) {
-               Matcher directoryMatcher = directoryPattern.matcher(file.getName());
-               if (! directoryMatcher.matches()) {
-                   return false;
-               }
+                Matcher directoryMatcher = directoryPattern.matcher(file.getName());
+                if (!directoryMatcher.matches()) {
+                    return false;
+                }
             }
-            
+
         } else {
             if (!_includeHidden && file.isHidden()) {
                 return false;
             }
             if (filePattern != null) {
                 Matcher fileMatcher = filePattern.matcher(file.getName());
-                if (! fileMatcher.matches()) {
+                if (!fileMatcher.matches()) {
                     return false;
                 }
-             }
+            }
         }
 
         if (_fileExtensions != null) {
@@ -799,6 +803,12 @@ public class FileLister
             return true;
         }
 
+    }
+
+    @Override
+    public void stop()
+    {
+        stopping = true;
     }
 
 }
