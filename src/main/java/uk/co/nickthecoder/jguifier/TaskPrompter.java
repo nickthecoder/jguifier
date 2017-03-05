@@ -274,7 +274,7 @@ public class TaskPrompter
             // Do nothing.
         } catch (Exception e) {
             try {
-                System.err.println(e);
+                e.printStackTrace();
                 getTask().exit(Task.EXIT_TASK_FAILED);
             } catch (Exception e2) {
                 // Do nothing
