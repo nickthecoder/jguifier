@@ -125,25 +125,39 @@ public class DoubleParameter
     @Override
     public Component createComponent(final ParameterHolder holder)
     {
+        Component component;
+        JTextField textField;
         Double value = getValue();
-        if (value == null) {
-            value = 0.0;
-        }
-        if (value < getMinimumValue()) {
-            value = getMinimumValue();
-        }
-        if (value > getMaximumValue()) {
-            value = getMaximumValue();
-        }
-        // If value has been changed, then update the parameter's, to prevent "Required" error message,
-        // when the default was not set.
-        setValue(value);
 
-        final SpinnerNumberModel model = new SpinnerNumberModel(value, (Double) getMinimumValue(),
-            (Double) getMaximumValue(), (Double) 1.0);
-        final JSpinner component = new JSpinner(model);
-        final JSpinner.DefaultEditor editor = (JSpinner.DefaultEditor) component.getEditor();
-        final JTextField textField = editor.getTextField();
+        if (isRequired()) {
+            if (value == null) {
+                value = 0.0;
+            }
+            if (value < getMinimumValue()) {
+                value = getMinimumValue();
+            }
+            if (value > getMaximumValue()) {
+                value = getMaximumValue();
+            }
+            // If value has been changed, then update the parameter's, to prevent "Required" error message,
+            // when the default was not set.
+            setValue(value);
+
+            SpinnerNumberModel model = new SpinnerNumberModel(value, (Double) getMinimumValue(),
+                (Double) getMaximumValue(), (Double) 1.0);
+            JSpinner spinner = new JSpinner(model);
+            
+            JSpinner.DefaultEditor editor = (JSpinner.DefaultEditor) spinner.getEditor();
+            component = spinner;
+            textField = editor.getTextField();
+
+        } else {
+            // Optional DoubleParameters cannot use a JSpinner, because it doesn't allow the number to be blank.
+            // Could implement my own version of JSpinner
+            textField = new JTextField();
+            textField.setText(getValue() == null ? "" : getStringValue());
+            component = textField;
+        }
 
         textField(textField, holder);
 

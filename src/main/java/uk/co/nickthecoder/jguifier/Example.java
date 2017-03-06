@@ -13,10 +13,12 @@ public class Example extends Task
 {
     private BooleanParameter _boolean = new BooleanParameter.Builder("boolean").value(true).required().parameter();
 
-    private IntegerParameter _integer = new IntegerParameter.Builder("integer").range(1, 10).description("One to ten")
+    private IntegerParameter _integer = new IntegerParameter.Builder("integer").range(1, 10)
+        .description("One to ten")
         .parameter();
 
-    private DoubleParameter _double = new DoubleParameter.Builder("double").range(1.0, 10.0).parameter();
+    private DoubleParameter _double = new DoubleParameter.Builder("double").range(1.0, 10.0)
+        .parameter();
 
     private StringParameter _shortString = new StringParameter.Builder("shortString")
         .maxLength(10).description("A short string").parameter();
@@ -91,10 +93,11 @@ public class Example extends Task
 {
     private BooleanParameter _boolean = new BooleanParameter.Builder("boolean").value(true).required().parameter();
 
-    private IntegerParameter _integer = new IntegerParameter.Builder("integer").range(1, 10).description("One to ten")
-        .parameter();
+    private IntegerParameter _integer = new IntegerParameter.Builder("integer").range(1, 10).optional()
+        .description("One to ten").parameter();
 
-    private DoubleParameter _double = new DoubleParameter.Builder("double").range(1.0, 10.0).parameter();
+    private DoubleParameter _double = new DoubleParameter.Builder("double").range(1.0, 10.0).optional()
+        .parameter();
 
     private StringParameter _shortString = new StringParameter.Builder("shortString")
         .maxLength(10).description("A short string").parameter();
@@ -104,9 +107,9 @@ public class Example extends Task
     private StringChoiceParameter _greeting = new StringChoiceParameter.Builder("greeting")
         .choices("Hello", "Hi", "Watcha").description("Pick a greeting").parameter();
 
-    private PatternParameter _regex = new PatternParameter.Builder( "Regex" )
-        .description( "A regular expression (or a glob)" ).parameter();
-    
+    private PatternParameter _regex = new PatternParameter.Builder("Regex")
+        .description("A regular expression (or a glob)").parameter();
+
     private ChoiceParameter<PrintStream> _output = new ChoiceParameter.Builder<PrintStream>("output")
         .choice("stdout", System.out, "Normal")
         .choice("stderr", System.err, "Error")
@@ -115,18 +118,18 @@ public class Example extends Task
     private FileParameter _file = new FileParameter.Builder("file").file().mustExist().parameter();
 
     // Choose one of the given date formats, or type your own format string
-    private SpecialParameter<StringParameter, String> _dateFormat = new SpecialParameter.Builder<StringParameter, String>(
-        "dateFormat")
-        .prefix("")
-        .choice("dd-MM-yyyy hh:mm")
-        .choice("dd-MMM-yyyy hh:mm")
-        .choice("yyyy-MMM-dd hh:mm")
-        .choice("yyyy-MM-dd hh:mm")
-        .regular(new StringParameter.Builder("dateFormat")
-            .value(new SimpleDateFormat().toPattern())
-            .parameter()
-        )
-        .parameter();
+    private SpecialParameter<StringParameter, String> _dateFormat =
+        new SpecialParameter.Builder<StringParameter, String>("dateFormat")
+            .prefix("")
+            .choice("dd-MM-yyyy hh:mm")
+            .choice("dd-MMM-yyyy hh:mm")
+            .choice("yyyy-MMM-dd hh:mm")
+            .choice("yyyy-MM-dd hh:mm")
+            .regular(new StringParameter.Builder("dateFormat")
+                .value(new SimpleDateFormat().toPattern()).optional()
+                .parameter()
+            )
+            .parameter();
 
     // Choose System.out or System.err, or enter any File
     private ExtraSpecialParameter<PrintStream, FileParameter, File> _special =
@@ -156,7 +159,7 @@ public class Example extends Task
 
         out.println(_greeting.getValue() + " " + _shortString.getValue());
         out.println(_longString.getValue());
-        
+
         out.close();
     }
 

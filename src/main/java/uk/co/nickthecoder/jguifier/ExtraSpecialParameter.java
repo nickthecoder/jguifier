@@ -3,6 +3,7 @@ package uk.co.nickthecoder.jguifier;
 import java.awt.BorderLayout;
 import java.awt.Component;
 
+import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
 import uk.co.nickthecoder.jguifier.util.Util;
@@ -178,7 +179,7 @@ public class ExtraSpecialParameter<S, P extends ValueParameter<T>, T>
     {
         assert (_regularParameter != null);
 
-        JPanel both = new JPanel();
+        final JPanel both = new JPanel();
         both.setLayout(new BorderLayout());
 
         // We need to forward the setError and clearError messages to the real holder using THIS parameter, rather than
@@ -198,20 +199,21 @@ public class ExtraSpecialParameter<S, P extends ValueParameter<T>, T>
             }
         };
 
-        final Component specialComponent = super.createComponent(holder);
+        final JComboBox<?> specialComponent = (JComboBox<?>) super.createComponent(holder);
         final Component regularComponent = _regularParameter.createComponent(forward);
 
         both.add(specialComponent, BorderLayout.WEST);
         both.add(regularComponent, BorderLayout.CENTER);
 
-        regularComponent.setVisible(getValue() == null);
+        regularComponent.setVisible(specialComponent.getSelectedIndex() == 0);
 
         addListener(new ParameterListener()
         {
             @Override
             public void changed(Parameter source)
             {
-                regularComponent.setVisible(getValue() == null);
+                regularComponent.setVisible(specialComponent.getSelectedIndex() == 0);
+                both.doLayout();
             }
         });
 
