@@ -358,7 +358,7 @@ public abstract class Task implements Runnable, Cloneable
     public File getDefaultsFile()
     {
         return Util.createFile(
-            new File(System.getProperty("user.home")), ".local", "jguifier", getName() + ".defaults");
+            new File(System.getProperty("user.home")), ".config", "jguifier", getName() + ".defaults");
     }
 
     /**
