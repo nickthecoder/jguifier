@@ -15,6 +15,7 @@ import java.util.Map;
 
 /**
  * Runs an operating system command. This is a high level abstraction around Runtime.exec.
+ * (Actually, it now uses ProcessBuilder, but ProcessBuilder wasn't available when this was first written).
  * It handles the input and output stream of the process, in a simple way for the client.
  * <p>
  * In a typical use case, you will set up the command, run the command and then do something with the output, or exit
@@ -91,6 +92,10 @@ public class Exec implements Runnable
     private long _timeoutMillis;
 
     private boolean _throwOnError = false;
+
+    private Process process;
+
+    private boolean mergeStderr = false;
 
     public Exec(String... cmdArray)
     {
@@ -192,6 +197,17 @@ public class Exec implements Runnable
     {
         _outSink = sink;
         return this;
+    }
+
+    public Exec mergeStderr(boolean value)
+    {
+        mergeStderr = value;
+        return this;
+    }
+
+    public Exec mergeStderr()
+    {
+        return mergeStderr(true);
     }
 
     public Exec stderr(Sink sink)
@@ -470,11 +486,16 @@ public class Exec implements Runnable
             _state = State.RUNNING;
 
             _inSource.setStream(process.getOutputStream());
-            _errSink.setStream(process.getErrorStream());
+            if (!mergeStderr) {
+                _errSink.setStream(process.getErrorStream());
+            }
 
             new Thread(_inSource).start();
-            Thread errSinkThread = new Thread(_errSink);
-            errSinkThread.start();
+
+            if (!mergeStderr) {
+                Thread errSinkThread = new Thread(_errSink);
+                errSinkThread.start();
+            }
 
         } catch (Exception e) {
             throw new ExecException(this, e);
@@ -482,8 +503,6 @@ public class Exec implements Runnable
 
         return process.getInputStream();
     }
-
-    private Process process;
 
     /**
      * Runs the command. This method will block until the process is complete, so if the process
@@ -497,7 +516,16 @@ public class Exec implements Runnable
         // System.out.println( "Running Exec" );
 
         try {
-            process = Runtime.getRuntime().exec(getCommandArray(), getEnvironment(), _workingDirectory);
+            ProcessBuilder processBuilder = new ProcessBuilder(getCommandArray());
+            if (_env != null) {
+                processBuilder.environment().putAll(_env);
+            }
+            if (_workingDirectory != null) {
+                processBuilder.directory(_workingDirectory);
+            }
+            processBuilder.redirectErrorStream(mergeStderr);
+
+            process = processBuilder.start();
             _state = State.RUNNING;
 
             if (_timeoutMillis > 0) {
@@ -521,7 +549,9 @@ public class Exec implements Runnable
 
             _inSource.setStream(process.getOutputStream());
             _outSink.setStream(process.getInputStream());
-            _errSink.setStream(process.getErrorStream());
+            if (!mergeStderr) {
+                _errSink.setStream(process.getErrorStream());
+            }
 
             new Thread(_inSource).start();
 
@@ -529,8 +559,11 @@ public class Exec implements Runnable
             outSinkThread = new Thread(_outSink);
             outSinkThread.start();
 
-            Thread errSinkThread = new Thread(_errSink);
-            errSinkThread.start();
+            Thread errSinkThread = null;
+            if (!mergeStderr) {
+                errSinkThread = new Thread(_errSink);
+                errSinkThread.start();
+            }
 
             int _exitStatus = -1;
 
@@ -541,7 +574,9 @@ public class Exec implements Runnable
                     // System.out.println( "Waiting for outSink to end" );
                     outSinkThread.join();
                     // System.out.println( "Waiting for errSink to end" );
-                    errSinkThread.join();
+                    if (errSinkThread != null) {
+                        errSinkThread.join();
+                    }
                 }
             } catch (InterruptedException e) {
                 // Do nothing

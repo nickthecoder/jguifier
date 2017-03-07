@@ -1,6 +1,6 @@
 Current Task
 ============
- 
+
 MultiParameter
 	Use json for the String representation. i.e. ["one","two","three"]
 	Don't allow in the form --myParam abc def
