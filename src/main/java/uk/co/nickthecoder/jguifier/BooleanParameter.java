@@ -80,6 +80,13 @@ public class BooleanParameter
     public Component createComponent(final ParameterHolder holder)
     {
         final JCheckBox component = new JCheckBox();
+        if (super.getDescription() != null) {
+            component.setText(super.getDescription());
+        } else {
+            component.setText( getName() );
+        }
+        enableFocusColorChange(component);
+        
         if (Boolean.TRUE == getValue()) {
             component.setSelected(true);
         } else if (getValue() == null) {

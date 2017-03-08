@@ -91,7 +91,8 @@ public class Example extends Task
 
 public class Example extends Task
 {
-    private BooleanParameter _boolean = new BooleanParameter.Builder("boolean").value(true).required().parameter();
+    private BooleanParameter _boolean = new BooleanParameter.Builder("boolean").value(true).required()
+        .description("Tick for goodies").parameter();
 
     private IntegerParameter _integer = new IntegerParameter.Builder("integer").range(1, 10).optional()
         .description("One to ten").parameter();

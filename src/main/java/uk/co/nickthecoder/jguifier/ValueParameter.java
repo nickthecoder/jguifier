@@ -1,5 +1,11 @@
 package uk.co.nickthecoder.jguifier;
 
+import java.awt.Color;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+
+import javax.swing.JComponent;
+
 /**
  * 
  * @param <T>
@@ -7,6 +13,7 @@ package uk.co.nickthecoder.jguifier;
  */
 public abstract class ValueParameter<T> extends Parameter implements Cloneable
 {
+    public static final Color HIGHLIGHT_BACKGROUND_COLOR = new Color(200, 200, 255);
 
     private T _value;
 
@@ -194,6 +201,30 @@ public abstract class ValueParameter<T> extends Parameter implements Cloneable
     public String toString()
     {
         return super.toString() + " = " + (_value == null ? "null" : _value.toString());
+    }
+
+    public void enableFocusColorChange(final JComponent component)
+    {
+
+        component.addFocusListener(new FocusListener()
+        {
+            private Color oldColor;
+
+            @Override
+            public void focusGained(FocusEvent e)
+            {
+                oldColor = component.getBackground();
+                component.setBackground(HIGHLIGHT_BACKGROUND_COLOR);
+            }
+
+            @Override
+            public void focusLost(FocusEvent e)
+            {
+                component.setBackground(oldColor);
+            }
+
+        });
+        component.setOpaque(true);
     }
 
     /**

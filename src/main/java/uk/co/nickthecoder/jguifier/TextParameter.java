@@ -118,12 +118,13 @@ public abstract class TextParameter<T> extends ValueParameter<T>
             {
                 int oldPosition = textField.getCaretPosition();
                 if (oldPosition > 0) {
-                    textField.setCaretPosition(oldPosition-1);
+                    textField.setCaretPosition(oldPosition - 1);
                     textField.setCaretPosition(oldPosition);
                 }
             }
         });
 
+        enableFocusColorChange(textField);
     }
 
     public abstract static class Builder<B extends Builder<B, P, T>, P extends TextParameter<T>, T>

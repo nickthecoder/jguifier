@@ -1,13 +1,15 @@
 package uk.co.nickthecoder.jguifier;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.util.regex.Pattern;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JTextField;
-import javax.swing.JToggleButton;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
@@ -24,10 +26,6 @@ import uk.co.nickthecoder.jguifier.util.Util;
  */
 public class PatternParameter extends TextParameter<String>
 {
-    public static Color regexColor = new Color(255, 255, 200);
-
-    public static Color globColor = new Color(240, 255, 255);
-
     private String globOrRegex;
 
     private boolean isRegex;
@@ -190,21 +188,41 @@ public class PatternParameter extends TextParameter<String>
 
         private JTextField textField;
 
-        private JToggleButton button;
+        private JRadioButton regexButton;
+        private JRadioButton globButton;
 
         public RegexComponent(ParameterHolder holderX)
         {
             this.holder = holderX;
 
             textField = new JTextField(globOrRegex);
-            textField.setBackground(isRegex ? regexColor : globColor);
 
-            button = new JToggleButton("RegEx");
-            button.setSelected(isRegex);
+            regexButton = new JRadioButton("RegEx");
+            globButton = new JRadioButton("Glob");
+            
+            ButtonGroup buttonGroup = new ButtonGroup();
+            buttonGroup.add(regexButton);
+            buttonGroup.add(globButton);
+            
+            globButton.setSelected(!isRegex);
+            regexButton.setSelected(isRegex);
 
-            setLayout(new BorderLayout());
-            add(textField, BorderLayout.CENTER);
-            add(button, BorderLayout.EAST);
+            JPanel buttonPanel = new JPanel();
+            buttonPanel.setLayout(new BorderLayout());
+            buttonPanel.add(regexButton, BorderLayout.CENTER);
+            buttonPanel.add(globButton, BorderLayout.SOUTH);
+            
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.weightx = 1;
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            setLayout(new GridBagLayout());
+            add(textField, gbc);
+            gbc.gridx = 1;
+            gbc.weightx = 0;
+            //gbc.fill = GridBagConstraints.NONE;
+            add(buttonPanel, gbc);
 
             addListener(new ParameterListener()
             {
@@ -213,7 +231,8 @@ public class PatternParameter extends TextParameter<String>
                 {
                     if (!inNotification) {
                         textField.setText(globOrRegex);
-                        button.setSelected(isRegex);
+                        regexButton.setSelected(isRegex);
+                        globButton.setSelected(!isRegex);
                     }
                 }
             });
@@ -240,14 +259,14 @@ public class PatternParameter extends TextParameter<String>
 
             });
 
-            button.addChangeListener(new ChangeListener()
+            regexButton.addChangeListener(new ChangeListener()
             {
                 @Override
                 public void stateChanged(ChangeEvent event)
                 {
                     inNotification = true;
                     try {
-                        setValue(textField.getText(), button.isSelected());
+                        setValue(textField.getText(), regexButton.isSelected());
                         textField.requestFocusInWindow();
                         holder.clearError(PatternParameter.this);
                     } catch (Exception e) {
@@ -255,17 +274,16 @@ public class PatternParameter extends TextParameter<String>
                     } finally {
                         inNotification = false;
                     }
-                    textField.setBackground(isRegex ? regexColor : globColor);
                 }
             });
-
+            textField(textField, holder);
         }
 
         private void checkValue()
         {
             inNotification = true;
             try {
-                setValue(textField.getText(), button.isSelected());
+                setValue(textField.getText(), regexButton.isSelected());
                 holder.clearError(PatternParameter.this);
             } catch (Exception e) {
                 holder.setError(PatternParameter.this, e.getMessage());
