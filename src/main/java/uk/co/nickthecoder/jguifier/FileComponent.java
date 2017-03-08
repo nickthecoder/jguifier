@@ -20,7 +20,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import uk.co.nickthecoder.jguifier.guiutil.JScrollPopupMenu;
+import uk.co.nickthecoder.jguifier.guiutil.FilteredPopupMenu;
 import uk.co.nickthecoder.jguifier.util.FileLister;
 
 /**
@@ -130,7 +130,7 @@ public class FileComponent extends JPanel
 
     private void createPopupMenu()
     {
-        _popupMenu = new JScrollPopupMenu();
+        _popupMenu = FilteredPopupMenu.create();
 
         File value = _fileParameter.getValue();
         if (value == null) {

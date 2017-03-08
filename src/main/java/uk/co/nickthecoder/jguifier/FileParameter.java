@@ -31,8 +31,7 @@ import javax.swing.JTextField;
  * 
  * @see Builder
  */
-public class FileParameter
-    extends TextParameter<File>
+public class FileParameter extends TextParameter<File>
 {
     private TriState _exists = TriState.MAYBE;
 
