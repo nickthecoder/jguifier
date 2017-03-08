@@ -16,6 +16,10 @@ BUGS
 New Features
 ============
 
+Text editor parameter, for editing chunks of code (such as groovy scripts, xml, json etc)
+	http://bobbylight.github.io/RSyntaxTextArea/
+	(or maybe code it in wrkfoo only, because it might not be sensible for jguifier to use it)???
+
 Allow one parameter to be set without giving its name
 	e.g. fileLister.groovy --depth=2 /home/nick
 		(where /home/nick will get the value for the --directory parameter.

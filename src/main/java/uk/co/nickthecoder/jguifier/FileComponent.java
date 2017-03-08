@@ -57,7 +57,7 @@ public class FileComponent extends JPanel
     {
         _fileParameter = fileParameter;
         _textField = new JTextField(text);
-
+        
         _completeButton = new JButton("\u2193");
         _completeButton.addActionListener(new ActionListener()
         {

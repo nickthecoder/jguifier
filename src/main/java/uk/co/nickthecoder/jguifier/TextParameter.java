@@ -2,6 +2,8 @@ package uk.co.nickthecoder.jguifier;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
@@ -71,7 +73,7 @@ public abstract class TextParameter<T> extends ValueParameter<T>
         textField.setColumns(_columns);
         textField.setMinimumSize(new Dimension(10, textField.getPreferredSize().height));
 
-        textField.getDocument().addDocumentListener(new DocumentListener()
+        DocumentListener documentListener = new DocumentListener()
         {
             @Override
             public void changedUpdate(DocumentEvent e)
@@ -103,7 +105,25 @@ public abstract class TextParameter<T> extends ValueParameter<T>
                     inNotification = false;
                 }
             }
+        };
+        textField.getDocument().addDocumentListener(documentListener);
+
+        // A horrible bodge to get around a bug. If the text field is smaller than the length of the text,
+        // then when the textfield receives focus, it isn't scrolled to the caret position, so you see the start of
+        // the text, but the caret is at the end (and is not visible).
+        textField.addFocusListener(new FocusAdapter()
+        {
+            @Override
+            public void focusGained(FocusEvent e)
+            {
+                int oldPosition = textField.getCaretPosition();
+                if (oldPosition > 0) {
+                    textField.setCaretPosition(oldPosition-1);
+                    textField.setCaretPosition(oldPosition);
+                }
+            }
         });
+
     }
 
     public abstract static class Builder<B extends Builder<B, P, T>, P extends TextParameter<T>, T>
