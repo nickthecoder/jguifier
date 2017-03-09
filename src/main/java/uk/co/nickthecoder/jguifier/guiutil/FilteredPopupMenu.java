@@ -19,9 +19,37 @@ public class FilteredPopupMenu extends JScrollPopupMenu
 
     private JMenuItem filterComponent;
 
-    public static FilteredPopupMenu create()
+    private MenuItemFilter filter;
+
+    private String filterText;
+
+    public static FilteredPopupMenu createStartWith()
     {
-        final FilteredPopupMenu result = new FilteredPopupMenu();
+        return create(new MenuItemFilter()
+        {
+            @Override
+            public boolean accept(JMenuItem menuItem, String filterText)
+            {
+                return menuItem.getText().toLowerCase().startsWith(filterText.toLowerCase());
+            }
+        });
+    }
+
+    public static FilteredPopupMenu createContains()
+    {
+        return create(new MenuItemFilter()
+        {
+            @Override
+            public boolean accept(JMenuItem menuItem, String filterText)
+            {
+                return menuItem.getText().toLowerCase().contains(filterText.toLowerCase());
+            }
+        });
+    }
+
+    public static FilteredPopupMenu create(MenuItemFilter filter)
+    {
+        final FilteredPopupMenu result = new FilteredPopupMenu(filter);
 
         result.addMenuKeyListener(new MenuKeyListener()
         {
@@ -46,11 +74,15 @@ public class FilteredPopupMenu extends JScrollPopupMenu
             }
 
         });
+        result.setFilterText("");
+
         return result;
     }
 
-    public FilteredPopupMenu()
+    public FilteredPopupMenu(MenuItemFilter filter)
     {
+        this.filter = filter;
+
         filterComponent = new JMenuItem("");
         filterComponent.setEnabled(false);
         add(filterComponent);
@@ -61,34 +93,43 @@ public class FilteredPopupMenu extends JScrollPopupMenu
     private void editFilter(KeyEvent e)
     {
         char c = e.getKeyChar();
-        String text = filterComponent.getText();
 
         if (c >= 32) {
-            filter(text + c);
+            setFilterText(filterText + c);
         }
 
     }
 
     private void delFilter()
     {
-        String text = filterComponent.getText();
-
-        if (text.length() > 0) {
-            filter(text.substring(0, text.length() - 1));
+        if (filterText.length() > 0) {
+            setFilterText(filterText.substring(0, filterText.length() - 1));
         }
     }
 
-    private void filter(String string)
+    public void setFilterText(String string)
     {
-        filterComponent.setText(string);
+        filterText = string == null ? "" : string;
 
+        boolean found = false;
         for (int i = 0; i < getComponentCount(); i++) {
             Component component = getComponent(i);
+            if (component == filterComponent) {
+                continue;
+            }
             if (component instanceof JMenuItem) {
                 JMenuItem menuItem = (JMenuItem) component;
-                menuItem.setVisible(accept(menuItem, string));
+                boolean accept = accept(menuItem, filterText);
+                found |= accept;
+                menuItem.setVisible(accept);
             }
         }
+        if (filterText.length() == 0) {
+            filterComponent.setText("<type to filter>");
+        } else {
+            filterComponent.setText(found ? filterText : filterText + " <no matches>");
+        }
+
         this.pack();
         super.show(invoker, x, y);
     }
@@ -109,9 +150,9 @@ public class FilteredPopupMenu extends JScrollPopupMenu
         super.show(invoker, x, y);
     }
 
-    public boolean accept(JMenuItem menuItem, String filter)
+    public boolean accept(JMenuItem menuItem, String filterText)
     {
-        return menuItem.getText().toLowerCase().startsWith(filter.toLowerCase());
+        return filter.accept(menuItem, filterText);
     }
 
 }

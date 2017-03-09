@@ -130,7 +130,7 @@ public class FileComponent extends JPanel
 
     private void createPopupMenu()
     {
-        _popupMenu = FilteredPopupMenu.create();
+        _popupMenu = FilteredPopupMenu.createStartWith();
 
         File value = _fileParameter.getValue();
         if (value == null) {
