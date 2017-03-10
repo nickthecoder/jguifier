@@ -19,7 +19,12 @@ public class StringParameter
     public int maxLength = Integer.MAX_VALUE;
 
     public boolean multiLine;
-    
+
+    /**
+     * Only used for multi-line. See {@link Builder#multiLine()}.
+     */
+    public Dimension size;
+
     /**
      * @see ValueParameter#ValueParameter(String)
      */
@@ -36,21 +41,21 @@ public class StringParameter
         setValue(value);
     }
 
-    public void setMaxLength( int value )
+    public void setMaxLength(int value)
     {
         this.maxLength = value;
-        if ( value <= 30 ) {
-            setColumns( value );
+        if (value <= 30) {
+            setColumns(value);
         }
     }
-    
+
     @Override
     public String valid(String value)
     {
         if (isRequired() && (Util.empty(value))) {
             return super.valid(null);
         }
-        if ((value != null) && (value.length() > maxLength) ) {
+        if ((value != null) && (value.length() > maxLength)) {
             return "Too long. Maximum of " + maxLength + " characters";
         }
         return null;
@@ -59,15 +64,16 @@ public class StringParameter
     @Override
     public Component createComponent(final ParameterHolder holder)
     {
-        if ( multiLine ) {
+        if (multiLine) {
             JTextArea textArea = new JTextArea(getValue() == null ? "" : getValue());
             textField(textArea, holder);
-            
+
             JScrollPane scrollPane = new JScrollPane(textArea);
-            scrollPane.setPreferredSize(new Dimension(200, 200));
-            
+
+            scrollPane.setPreferredSize(size == null ? new Dimension(300, 100) : size);
+
             return scrollPane;
-            
+
         } else {
             JTextField component = new JTextField(getValue() == null ? "" : getValue());
             textField(component, holder);
@@ -87,8 +93,8 @@ public class StringParameter
             making.setStretchy(true);
             return this;
         }
-        
-        public Builder maxLength( int maxLength )
+
+        public Builder maxLength(int maxLength)
         {
             making.setMaxLength(maxLength);
             return this;
@@ -97,6 +103,12 @@ public class StringParameter
         public Builder multiLine()
         {
             making.multiLine = true;
+            return this;
+        }
+
+        public Builder size(int width, int height)
+        {
+            making.size = new Dimension(width, height);
             return this;
         }
     }
