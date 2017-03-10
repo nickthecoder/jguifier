@@ -8,6 +8,7 @@ import java.awt.event.FocusEvent;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.JTextComponent;
 
 /**
  * Parameters which have a text field (where the user can type the value), such as strings, integers, doubles, files.
@@ -56,7 +57,7 @@ public abstract class TextParameter<T> extends ValueParameter<T>
 
     protected boolean inNotification = false;
 
-    protected void textField(final JTextField textField, final ParameterHolder holder)
+    protected void textField(final JTextComponent textField, final ParameterHolder holder)
     {
         addListener(new ParameterListener()
         {
@@ -70,7 +71,9 @@ public abstract class TextParameter<T> extends ValueParameter<T>
         });
 
         textField.setBackground(Color.white);
-        textField.setColumns(_columns);
+        if (textField instanceof JTextField) {
+            ((JTextField) textField).setColumns(_columns);
+        }
         textField.setMinimumSize(new Dimension(10, textField.getPreferredSize().height));
 
         DocumentListener documentListener = new DocumentListener()

@@ -1,7 +1,10 @@
 package uk.co.nickthecoder.jguifier;
 
 import java.awt.Component;
+import java.awt.Dimension;
 
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import uk.co.nickthecoder.jguifier.util.Util;
@@ -15,6 +18,8 @@ public class StringParameter
 {
     public int maxLength = Integer.MAX_VALUE;
 
+    public boolean multiLine;
+    
     /**
      * @see ValueParameter#ValueParameter(String)
      */
@@ -54,10 +59,20 @@ public class StringParameter
     @Override
     public Component createComponent(final ParameterHolder holder)
     {
-        final JTextField component = new JTextField(getValue() == null ? "" : getValue());
-        textField(component, holder);
-
-        return component;
+        if ( multiLine ) {
+            JTextArea textArea = new JTextArea(getValue() == null ? "" : getValue());
+            textField(textArea, holder);
+            
+            JScrollPane scrollPane = new JScrollPane(textArea);
+            scrollPane.setPreferredSize(new Dimension(200, 200));
+            
+            return scrollPane;
+            
+        } else {
+            JTextField component = new JTextField(getValue() == null ? "" : getValue());
+            textField(component, holder);
+            return component;
+        }
     }
 
     public static final class Builder extends TextParameter.Builder<Builder, StringParameter, String>
@@ -79,5 +94,10 @@ public class StringParameter
             return this;
         }
 
+        public Builder multiLine()
+        {
+            making.multiLine = true;
+            return this;
+        }
     }
 }

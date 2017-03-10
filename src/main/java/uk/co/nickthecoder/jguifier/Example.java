@@ -105,6 +105,9 @@ public class Example extends Task
 
     private StringParameter _longString = new StringParameter.Builder("longString").stretch().parameter();
 
+    private StringParameter _multiLineString = new StringParameter.Builder("multiLineString").stretch().multiLine()
+        .parameter();
+
     private StringChoiceParameter _greeting = new StringChoiceParameter.Builder("greeting")
         .choices("Hello", "Hi", "Watcha").description("Pick a greeting").parameter();
 
@@ -147,7 +150,8 @@ public class Example extends Task
     public Example()
     {
         super();
-        addParameters(_boolean, _integer, _double, _shortString, _longString, _greeting, _regex, _output, _file,
+        addParameters(_boolean, _integer, _double,
+            _shortString, _longString, _multiLineString, _greeting, _regex, _output, _file,
             _dateFormat, _special);
     }
 
