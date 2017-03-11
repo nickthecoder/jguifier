@@ -82,8 +82,6 @@ public class BooleanParameter
         final JCheckBox component = new JCheckBox();
         if (super.getDescription() != null) {
             component.setText(super.getDescription());
-        } else {
-            component.setText( getName() );
         }
         enableFocusColorChange(component);
         

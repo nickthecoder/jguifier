@@ -6,6 +6,7 @@ import java.io.File;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
@@ -18,25 +19,32 @@ public class Util
 {
     public static String DEFAULT_LOOK_AND_FEEL = "GTK+"; // "GTK"; // "Nimbus"
 
-    public static boolean equals( Object o1, Object o2 )
+    public static boolean equals(Object o1, Object o2)
     {
         if (o1 == o2) {
             return true;
         }
-        
+
         if (o1 == null) {
             return false;
         }
-        
+
         return o1.equals(o2);
     }
-    
+
     public static boolean empty(String value)
     {
         if (value == null) {
             return true;
         }
         return value.equals("");
+    }
+
+    public static void assertIsEDT()
+    {
+        if (!SwingUtilities.isEventDispatchThread()) {
+            throw new RuntimeException("Not in the event dispatch thread");
+        }
     }
 
     public static void defaultLookAndFeel()
@@ -65,7 +73,7 @@ public class Util
      *            If the image couldn't be loaded, then use this text instead.
      * @return
      */
-    public static JButton createIconButton(Class<?> klass, String resource, String fallbackText )
+    public static JButton createIconButton(Class<?> klass, String resource, String fallbackText)
     {
         JButton result = new JButton();
         try {
@@ -165,14 +173,15 @@ public class Util
         return '"' + value.replaceAll("\"", "\"\"") + '"';
     }
 
-    public static String uncsvQuote( String value )
+    public static String uncsvQuote(String value)
     {
-        if ( value.startsWith("\"")) {
-            return value.substring(1, value.length() -1).replaceAll( "\"\"", "\"" );
+        if (value.startsWith("\"")) {
+            return value.substring(1, value.length() - 1).replaceAll("\"\"", "\"");
         } else {
             return value;
         }
     }
+
     /**
      * Simpler version of {{@link #uncamel(String, String, boolean)},
      * where <code>sep = ' '</code> and <code>first = true</code>.
