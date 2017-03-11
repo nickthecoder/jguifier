@@ -71,7 +71,7 @@ public class PatternParameter extends TextParameter<String>
     {
         super(name);
         setStretchy(true);
-        setValue("", true);
+        setDefaultValue("");
     }
 
     @Override
@@ -135,8 +135,8 @@ public class PatternParameter extends TextParameter<String>
     @Override
     public String valid(String value)
     {
-        if (value == null) {
-            return super.valid(value);
+        if (("".equals(value) || "/".equals(value)) && isRequired()) {
+            return ParameterException.REQUIRED_MESSAGE;
         }
 
         boolean isRegex = value.startsWith("/");
@@ -199,11 +199,11 @@ public class PatternParameter extends TextParameter<String>
 
             regexButton = new JRadioButton("RegEx");
             globButton = new JRadioButton("Glob");
-            
+
             ButtonGroup buttonGroup = new ButtonGroup();
             buttonGroup.add(regexButton);
             buttonGroup.add(globButton);
-            
+
             globButton.setSelected(!isRegex);
             regexButton.setSelected(isRegex);
 
@@ -211,7 +211,7 @@ public class PatternParameter extends TextParameter<String>
             buttonPanel.setLayout(new BorderLayout());
             buttonPanel.add(regexButton, BorderLayout.CENTER);
             buttonPanel.add(globButton, BorderLayout.SOUTH);
-            
+
             GridBagConstraints gbc = new GridBagConstraints();
             gbc.fill = GridBagConstraints.HORIZONTAL;
             gbc.weightx = 1;
@@ -221,7 +221,7 @@ public class PatternParameter extends TextParameter<String>
             add(textField, gbc);
             gbc.gridx = 1;
             gbc.weightx = 0;
-            //gbc.fill = GridBagConstraints.NONE;
+            // gbc.fill = GridBagConstraints.NONE;
             add(buttonPanel, gbc);
 
             addListener(new ParameterListener()
