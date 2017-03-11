@@ -161,17 +161,22 @@ public class PatternParameter extends TextParameter<String>
         return null;
     }
 
+    public String getRegex()
+    {
+        if (isRegex) {
+            return globOrRegex;
+        } else {
+            return globToRegex(globOrRegex);
+        }
+    }
+
     public Pattern getPattern()
     {
         if (Util.empty(globOrRegex)) {
             return null;
         }
 
-        if (isRegex()) {
-            return Pattern.compile(globOrRegex);
-        } else {
-            return Pattern.compile(globToRegex(globOrRegex));
-        }
+        return Pattern.compile(getRegex());
     }
 
     @Override
