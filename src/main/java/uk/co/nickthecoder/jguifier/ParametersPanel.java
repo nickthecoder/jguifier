@@ -51,6 +51,8 @@ public class ParametersPanel extends JPanel implements ParameterHolder
         addParameters(group, this);
     }
 
+    public boolean leftAlignBooleans = true;
+
     private void addParameters(GroupParameter group, Container container)
     {
         for (Parameter parameter : group.getChildren()) {
@@ -71,28 +73,38 @@ public class ParametersPanel extends JPanel implements ParameterHolder
 
             } else {
 
-                JPanel row = new JPanel();
-                RowLayoutManager rlm = new RowLayoutManager(row, _tlm);
-                row.setLayout(rlm);
-
-                JLabel label = new JLabel(parameter.getLabel());
-                rlm.add(label);
-                label.setBackground(Color.BLUE);
-
                 Component component = parameter.createComponent(this);
-                rlm.add(component);
-                rlm.setStretchy(parameter.isStretchy());
 
-                if (!parameter.visible) {
-                    row.setVisible(false);
+                if ((leftAlignBooleans) && (parameter instanceof BooleanParameter)) {
+
+                    container.add(component);
+
+                } else {
+                    JPanel row = new JPanel();
+                    RowLayoutManager rlm = new RowLayoutManager(row, _tlm);
+                    row.setLayout(rlm);
+
+                    JLabel label = parameter instanceof BooleanParameter ? new JLabel()
+                        : new JLabel(parameter.getLabel());
+                    
+                    rlm.add(label);
+                    label.setBackground(Color.BLUE);
+
+                    rlm.add(component);
+                    rlm.setStretchy(parameter.isStretchy());
+
+                    if (!parameter.visible) {
+                        row.setVisible(false);
+                    }
+                    String desc = parameter.getDescription();
+                    if (desc != null) {
+                        label.setToolTipText(desc);
+                    }
+
+                    container.add(row);
                 }
-                container.add(row);
+
                 container.add(parameterErrorLabel);
-
-                String desc = parameter.getDescription();
-                if (desc != null) {
-                    label.setToolTipText(desc);
-                }
 
             }
 
@@ -139,7 +151,7 @@ public class ParametersPanel extends JPanel implements ParameterHolder
     public boolean check(Task task)
     {
         boolean result = true;
-        
+
         for (Parameter parameter : task.getParameters().children()) {
             try {
                 parameter.check();
@@ -148,7 +160,7 @@ public class ParametersPanel extends JPanel implements ParameterHolder
                 result = false;
             }
         }
-        
+
         try {
             task.check();
         } catch (ParameterException e) {

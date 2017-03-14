@@ -79,9 +79,9 @@ public class BooleanParameter
     @Override
     public Component createComponent(final ParameterHolder holder)
     {
-        final JCheckBox component = new JCheckBox();
+        final JCheckBox component = new JCheckBox(getLabel());
         if (super.getDescription() != null) {
-            component.setText(super.getDescription());
+            component.setToolTipText(super.getDescription());
         }
         enableFocusColorChange(component);
         
