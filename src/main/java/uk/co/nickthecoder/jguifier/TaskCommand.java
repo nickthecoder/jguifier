@@ -94,27 +94,6 @@ public class TaskCommand implements TaskListener
     }
 
     /**
-     * Either exits the JVM using {@link System#exit(int)}, or throws a {@link ExitException}.
-     * 
-     * @param exitStatus
-     *            Use positive numbers, and avoid anything over 200, because negative numbers are used by jguifier uses
-     *            these, such as {@link #EXIT_CANCELLED}.
-     *            Note, under Linux exit status appear to be limited to 0..255, however the javadocs for System.exit
-     *            has nothing to say on the allowed values.
-     * @see #neverExit()
-     * @priority 2
-     */
-    void exit(int exitStatus)
-    {
-        task.exitStatus = exitStatus;
-        if (allowExit) {
-            System.exit(exitStatus);
-        } else {
-            throw new ExitException(exitStatus);
-        }
-    }
-
-    /**
      * Finds a Parameter by its name. Looks in the Task's regular parameters, and also the meta-parameters, such as
      * "prompt", "debug" etc, which are common to all Tasks.
      * 
@@ -406,16 +385,22 @@ public class TaskCommand implements TaskListener
     public void ended(Task task, boolean normally)
     {
         if (normally) {
-            System.exit(task.getExitStatus());
+            exit(task.getExitStatus());
         } else {
-            System.exit(EXIT_TASK_FAILED);
+            exit(EXIT_TASK_FAILED);
         }
     }
 
     @Override
     public void aborted(Task task)
     {
-        System.exit(EXIT_CANCELLED);
+        exit(EXIT_CANCELLED);
     }
 
+    public void exit(int status)
+    {
+        if (allowExit) {
+            System.exit(status);
+        }
+    }
 }
