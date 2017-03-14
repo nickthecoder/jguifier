@@ -39,7 +39,7 @@ import uk.co.nickthecoder.jguifier.util.Util;
  * You should then look at {@link FileLister}, and {@link Exec}, because they are really handy for
  * many scripting tasks.
  */
-public abstract class Task implements Runnable, Cloneable
+public abstract class Task implements Runnable
 {
     /**
      * The exit status when the task is still running, or has not even started.
@@ -619,7 +619,7 @@ public abstract class Task implements Runnable, Cloneable
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    protected Task copy()
+    public Task copy()
     {
         try {
             Class<?> klass = this.getClass();
@@ -640,9 +640,4 @@ public abstract class Task implements Runnable, Cloneable
         }
     }
 
-    public Task clone()
-    {
-        Task result = copy();
-        return result;
-    }
 }
