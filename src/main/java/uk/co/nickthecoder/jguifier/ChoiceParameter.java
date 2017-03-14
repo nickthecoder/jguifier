@@ -244,7 +244,7 @@ public class ChoiceParameter<T> extends ValueParameter<T>
     public void autocomplete(String cur)
     {
         for (String possible : _keys) {
-            Task.autocompleteFilter(possible, cur);
+            TaskCommand.autocompleteFilter(possible, cur);
         }
     }
 

@@ -153,10 +153,10 @@ public class BooleanParameter
     @Override
     public void autocomplete(String cur)
     {
-        Task.autocompleteFilter("0", cur);
-        Task.autocompleteFilter("1", cur);
-        Task.autocompleteFilter("true", cur);
-        Task.autocompleteFilter("false", cur);
+        TaskCommand.autocompleteFilter("0", cur);
+        TaskCommand.autocompleteFilter("1", cur);
+        TaskCommand.autocompleteFilter("true", cur);
+        TaskCommand.autocompleteFilter("false", cur);
     }
 
     public static final class Builder extends

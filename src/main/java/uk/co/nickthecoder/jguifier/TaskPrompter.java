@@ -39,8 +39,8 @@ public class TaskPrompter
 {
     private static final long serialVersionUID = 1;
 
-    private static final int MAX_TABLE_HEIGHT =
-        GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().height / 2;
+    private static final int MAX_TABLE_HEIGHT = GraphicsEnvironment.getLocalGraphicsEnvironment()
+        .getMaximumWindowBounds().height / 2;
 
     private Task _task;
 
@@ -52,10 +52,18 @@ public class TaskPrompter
 
     private JTextField _commandLabel;
 
+    private boolean _showCommandLine;
+
     public TaskPrompter(Task task)
+    {
+        this(task, false);
+    }
+
+    public TaskPrompter(Task task, boolean showCommandLine)
     {
         super(task.getName());
         _task = task;
+        _showCommandLine = showCommandLine;
     }
 
     public Task getTask()
@@ -80,27 +88,30 @@ public class TaskPrompter
         _detailsPanel = new JPanel();
         _detailsPanel.setVisible(false);
         _detailsPanel.setLayout(new BorderLayout());
-        JPanel commandPanel = new JPanel();
-        commandPanel.setLayout(new BorderLayout());
-        commandPanel.setBorder(BorderFactory.createTitledBorder("Command"));
-        _commandLabel = new JTextField(getTask().getCommandString());
-        // _commandLabel.setColumns(30);
-        _commandLabel.setEditable(false);
-        commandPanel.add(_commandLabel, BorderLayout.CENTER);
-        _detailsPanel.add(commandPanel, BorderLayout.NORTH);
 
-        // Copy Button
-        JButton copyCommandButton = Util.createIconButton(getClass(), "editcopy.png", "Copy");
-        copyCommandButton.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
+        if (_showCommandLine) {
+            JPanel commandPanel = new JPanel();
+            commandPanel.setLayout(new BorderLayout());
+            commandPanel.setBorder(BorderFactory.createTitledBorder("Command"));
+            _commandLabel = new JTextField(getTask().getCommandString());
+            // _commandLabel.setColumns(30);
+            _commandLabel.setEditable(false);
+            commandPanel.add(_commandLabel, BorderLayout.CENTER);
+            _detailsPanel.add(commandPanel, BorderLayout.NORTH);
+
+            // Copy Button
+            JButton copyCommandButton = Util.createIconButton(getClass(), "editcopy.png", "Copy");
+            copyCommandButton.addActionListener(new ActionListener()
             {
-                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                clipboard.setContents(new StringSelection(_commandLabel.getText()), null);
-            }
-        });
-        commandPanel.add(copyCommandButton, BorderLayout.WEST);
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                    clipboard.setContents(new StringSelection(_commandLabel.getText()), null);
+                }
+            });
+            commandPanel.add(copyCommandButton, BorderLayout.WEST);
+        }
 
         // Defaults File
         _defaultsPanel = new JPanel();
@@ -196,7 +207,6 @@ public class TaskPrompter
         buttonsPanel.add(rightButtonsPanel, BorderLayout.EAST);
         buttonsPanel.add(leftButtonsPanel, BorderLayout.WEST);
 
-        
         // Ok Button
         JButton okButton = new JButton("OK");
         Dimension buttonSize = new Dimension(100, okButton.getPreferredSize().height);
@@ -268,28 +278,13 @@ public class TaskPrompter
         }
 
         dispose();
-        try {
-            getTask().run();
-        } catch (ExitException e) {
-            // Do nothing.
-        } catch (Exception e) {
-            try {
-                e.printStackTrace();
-                getTask().exit(Task.EXIT_TASK_FAILED);
-            } catch (Exception e2) {
-                // Do nothing
-            }
-        }
+        getTask().run();
     }
 
     public void onCancel()
     {
         dispose();
-        try {
-            getTask().exit(Task.EXIT_CANCELLED);
-        } catch (Exception e) {
-            // Do nothing
-        }
+        getTask().fireAborted();
     }
 
     @Override
