@@ -1,4 +1,6 @@
-package uk.co.nickthecoder.jguifier;
+package uk.co.nickthecoder.jguifier.parameter;
+
+import uk.co.nickthecoder.jguifier.ValueParameter;
 
 /**
  * Like {@link ExtraSpecialParameter}, but the types of the special values, are the same as the regular values.

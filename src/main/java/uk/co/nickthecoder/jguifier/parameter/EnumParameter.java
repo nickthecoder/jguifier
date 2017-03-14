@@ -1,4 +1,6 @@
-package uk.co.nickthecoder.jguifier;
+package uk.co.nickthecoder.jguifier.parameter;
+
+import uk.co.nickthecoder.jguifier.ParameterException;
 
 public class EnumParameter<E extends Enum<E>> extends ChoiceParameter<E>
 {

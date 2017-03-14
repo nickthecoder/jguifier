@@ -2,6 +2,10 @@ package uk.co.nickthecoder.jguifier;
 
 import java.util.HashMap;
 
+import uk.co.nickthecoder.jguifier.parameter.BooleanParameter;
+import uk.co.nickthecoder.jguifier.parameter.MultipleParameter;
+import uk.co.nickthecoder.jguifier.parameter.Parameter;
+
 public class TaskCommand implements TaskListener
 {
     /**

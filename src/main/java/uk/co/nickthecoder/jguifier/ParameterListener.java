@@ -1,5 +1,7 @@
 package uk.co.nickthecoder.jguifier;
 
+import uk.co.nickthecoder.jguifier.parameter.Parameter;
+
 /**
  * A listener, which is notified when a parameter changes its value.
  * This can be used for one parameter to have an effect on another parameter before the Task is run.

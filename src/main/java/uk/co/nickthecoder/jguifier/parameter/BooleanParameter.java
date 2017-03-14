@@ -1,4 +1,4 @@
-package uk.co.nickthecoder.jguifier;
+package uk.co.nickthecoder.jguifier.parameter;
 
 import java.awt.Component;
 import java.util.Arrays;
@@ -8,6 +8,11 @@ import java.util.Set;
 import javax.swing.JCheckBox;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
+import uk.co.nickthecoder.jguifier.ParameterHolder;
+import uk.co.nickthecoder.jguifier.ParameterListener;
+import uk.co.nickthecoder.jguifier.TaskCommand;
+import uk.co.nickthecoder.jguifier.ValueParameter;
 
 /**
  * A parameter holding values true, false or null (if the parameter is {@link #optional()}).

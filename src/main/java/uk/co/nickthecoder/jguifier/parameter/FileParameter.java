@@ -1,10 +1,16 @@
-package uk.co.nickthecoder.jguifier;
+package uk.co.nickthecoder.jguifier.parameter;
 
 import java.awt.Component;
 import java.io.File;
 import java.util.Arrays;
 
 import javax.swing.JTextField;
+
+import uk.co.nickthecoder.jguifier.ParameterException;
+import uk.co.nickthecoder.jguifier.ParameterHolder;
+import uk.co.nickthecoder.jguifier.TaskPrompter;
+import uk.co.nickthecoder.jguifier.ValueParameter;
+import uk.co.nickthecoder.jguifier.guiutil.FileComponent;
 
 /**
  * A {@link Parameter} for a file or directory.

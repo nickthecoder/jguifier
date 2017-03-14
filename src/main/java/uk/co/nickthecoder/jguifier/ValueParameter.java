@@ -6,6 +6,9 @@ import java.awt.event.FocusListener;
 
 import javax.swing.JComponent;
 
+import uk.co.nickthecoder.jguifier.parameter.MultipleParameter;
+import uk.co.nickthecoder.jguifier.parameter.Parameter;
+
 /**
  * 
  * @param <T>

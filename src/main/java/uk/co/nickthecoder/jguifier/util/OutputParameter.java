@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 
-import uk.co.nickthecoder.jguifier.ExtraSpecialParameter;
-import uk.co.nickthecoder.jguifier.FileParameter;
+import uk.co.nickthecoder.jguifier.parameter.ExtraSpecialParameter;
+import uk.co.nickthecoder.jguifier.parameter.FileParameter;
 
 /**
  * A customised parameter, suitable as an "output" parameter, with a special value for System.out (with key

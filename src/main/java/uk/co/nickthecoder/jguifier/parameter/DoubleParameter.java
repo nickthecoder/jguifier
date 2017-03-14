@@ -1,4 +1,4 @@
-package uk.co.nickthecoder.jguifier;
+package uk.co.nickthecoder.jguifier.parameter;
 
 import java.awt.Component;
 
@@ -6,6 +6,9 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 
+import uk.co.nickthecoder.jguifier.ParameterException;
+import uk.co.nickthecoder.jguifier.ParameterHolder;
+import uk.co.nickthecoder.jguifier.ValueParameter;
 import uk.co.nickthecoder.jguifier.util.Util;
 
 /**

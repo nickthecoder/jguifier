@@ -15,6 +15,9 @@ import javax.swing.border.EmptyBorder;
 
 import uk.co.nickthecoder.jguifier.guiutil.RowLayoutManager;
 import uk.co.nickthecoder.jguifier.guiutil.TableLayoutManager;
+import uk.co.nickthecoder.jguifier.parameter.BooleanParameter;
+import uk.co.nickthecoder.jguifier.parameter.GroupParameter;
+import uk.co.nickthecoder.jguifier.parameter.Parameter;
 
 /**
  * Holds a set of Parameters' GUI components in a panel.

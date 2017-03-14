@@ -1,5 +1,5 @@
 /**
- * {@link uk.co.nickthecoder.jguifier.Task} is at the heart of jguifier, and requires {@link uk.co.nickthecoder.jguifier.Parameter} and its
+ * {@link uk.co.nickthecoder.jguifier.Task} is at the heart of jguifier, and requires {@link uk.co.nickthecoder.jguifier.parameter.Parameter} and its
  * sub-classes.
  * <p>
  * You can see example code in {@link uk.co.nickthecoder.jguifier.Example} and {@link uk.co.nickthecoder.jguifier.RunnableTask}.

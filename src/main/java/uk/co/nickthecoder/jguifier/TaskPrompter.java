@@ -27,6 +27,7 @@ import javax.swing.border.EmptyBorder;
 import uk.co.nickthecoder.jguifier.guiutil.MaxJScrollPane;
 import uk.co.nickthecoder.jguifier.guiutil.ScrollablePanel;
 import uk.co.nickthecoder.jguifier.guiutil.VerticalStretchLayout;
+import uk.co.nickthecoder.jguifier.parameter.Parameter;
 import uk.co.nickthecoder.jguifier.util.Util;
 
 /**

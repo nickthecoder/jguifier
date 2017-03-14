@@ -1,4 +1,4 @@
-package uk.co.nickthecoder.jguifier;
+package uk.co.nickthecoder.jguifier.parameter;
 
 /**
  * Three states, true, false and maybe.

@@ -4,14 +4,14 @@ import java.io.File;
 import java.util.Comparator;
 import java.util.List;
 
-import uk.co.nickthecoder.jguifier.BooleanParameter;
-import uk.co.nickthecoder.jguifier.ChoiceParameter;
-import uk.co.nickthecoder.jguifier.EnumParameter;
-import uk.co.nickthecoder.jguifier.FileParameter;
-import uk.co.nickthecoder.jguifier.IntegerParameter;
-import uk.co.nickthecoder.jguifier.PatternParameter;
-import uk.co.nickthecoder.jguifier.StringParameter;
 import uk.co.nickthecoder.jguifier.Task;
+import uk.co.nickthecoder.jguifier.parameter.BooleanParameter;
+import uk.co.nickthecoder.jguifier.parameter.ChoiceParameter;
+import uk.co.nickthecoder.jguifier.parameter.EnumParameter;
+import uk.co.nickthecoder.jguifier.parameter.FileParameter;
+import uk.co.nickthecoder.jguifier.parameter.IntegerParameter;
+import uk.co.nickthecoder.jguifier.parameter.PatternParameter;
+import uk.co.nickthecoder.jguifier.parameter.StringParameter;
 
 public class FileListerTask extends Task implements Stoppable
 {    

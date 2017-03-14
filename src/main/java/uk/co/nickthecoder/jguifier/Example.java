@@ -4,6 +4,17 @@ import java.io.File;
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 
+import uk.co.nickthecoder.jguifier.parameter.BooleanParameter;
+import uk.co.nickthecoder.jguifier.parameter.ChoiceParameter;
+import uk.co.nickthecoder.jguifier.parameter.DoubleParameter;
+import uk.co.nickthecoder.jguifier.parameter.ExtraSpecialParameter;
+import uk.co.nickthecoder.jguifier.parameter.FileParameter;
+import uk.co.nickthecoder.jguifier.parameter.IntegerParameter;
+import uk.co.nickthecoder.jguifier.parameter.PatternParameter;
+import uk.co.nickthecoder.jguifier.parameter.SpecialParameter;
+import uk.co.nickthecoder.jguifier.parameter.StringChoiceParameter;
+import uk.co.nickthecoder.jguifier.parameter.StringParameter;
+
 /**
  * Here's example code, showing how to create a simple Task, with a different types of parameters.
  * 

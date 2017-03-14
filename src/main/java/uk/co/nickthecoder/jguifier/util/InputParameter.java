@@ -5,8 +5,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import uk.co.nickthecoder.jguifier.ExtraSpecialParameter;
-import uk.co.nickthecoder.jguifier.FileParameter;
+import uk.co.nickthecoder.jguifier.parameter.ExtraSpecialParameter;
+import uk.co.nickthecoder.jguifier.parameter.FileParameter;
 
 /**
  * A customised parameter, suitable as an "input" parameter, with a special value for System.in (with key

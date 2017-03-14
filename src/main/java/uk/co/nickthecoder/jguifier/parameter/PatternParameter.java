@@ -1,4 +1,4 @@
-package uk.co.nickthecoder.jguifier;
+package uk.co.nickthecoder.jguifier.parameter;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -15,6 +15,9 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import uk.co.nickthecoder.jguifier.ParameterException;
+import uk.co.nickthecoder.jguifier.ParameterHolder;
+import uk.co.nickthecoder.jguifier.ParameterListener;
 import uk.co.nickthecoder.jguifier.util.Util;
 
 /**

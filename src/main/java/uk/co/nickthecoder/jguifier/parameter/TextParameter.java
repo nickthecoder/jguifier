@@ -1,4 +1,4 @@
-package uk.co.nickthecoder.jguifier;
+package uk.co.nickthecoder.jguifier.parameter;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -9,6 +9,10 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
+
+import uk.co.nickthecoder.jguifier.ParameterHolder;
+import uk.co.nickthecoder.jguifier.ParameterListener;
+import uk.co.nickthecoder.jguifier.ValueParameter;
 
 /**
  * Parameters which have a text field (where the user can type the value), such as strings, integers, doubles, files.

@@ -1,5 +1,6 @@
-package uk.co.nickthecoder.jguifier;
+package uk.co.nickthecoder.jguifier.parameter;
 
+import uk.co.nickthecoder.jguifier.ValueParameter;
 
 public class TriStateParameter extends ChoiceParameter<TriState>
 {

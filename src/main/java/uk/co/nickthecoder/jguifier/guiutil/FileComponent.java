@@ -1,4 +1,4 @@
-package uk.co.nickthecoder.jguifier;
+package uk.co.nickthecoder.jguifier.guiutil;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -20,7 +20,8 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import uk.co.nickthecoder.jguifier.guiutil.FilteredPopupMenu;
+import uk.co.nickthecoder.jguifier.parameter.FileParameter;
+import uk.co.nickthecoder.jguifier.parameter.TriState;
 import uk.co.nickthecoder.jguifier.util.FileLister;
 
 /**
