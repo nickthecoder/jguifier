@@ -194,10 +194,16 @@ public class TaskCommand implements TaskListener
         }
     }
 
+    public void prompt(boolean showDetails)
+    {
+        TaskPrompter prompter = new TaskPrompter(task);
+        prompter.prompt(true);
+    }
+
     public void prompt()
     {
-        TaskPrompter prompter = new TaskPrompter(task, true);
-        prompter.prompt();
+        TaskPrompter prompter = new TaskPrompter(task);
+        prompter.prompt(true);
     }
 
     public boolean parseArgs(String[] argv, boolean metaOnly)

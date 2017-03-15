@@ -16,7 +16,7 @@ import java.io.IOException;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JFrame;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -36,7 +36,7 @@ import uk.co.nickthecoder.jguifier.util.Util;
  * @priority 4
  */
 public class TaskPrompter
-    extends JFrame implements ParameterListener
+    extends JDialog implements ParameterListener
 {
     private static final long serialVersionUID = 1;
 
@@ -53,18 +53,10 @@ public class TaskPrompter
 
     private JTextField _commandLabel;
 
-    private boolean _showCommandLine;
-
     public TaskPrompter(Task task)
     {
-        this(task, false);
-    }
-
-    public TaskPrompter(Task task, boolean showCommandLine)
-    {
-        super(task.getName());
+        super(null, task.getName(), ModalityType.MODELESS);
         _task = task;
-        _showCommandLine = showCommandLine;
     }
 
     public Task getTask()
@@ -72,7 +64,7 @@ public class TaskPrompter
         return _task;
     }
 
-    public void prompt()
+    public void prompt(boolean showDetails)
     {
         Util.defaultLookAndFeel();
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -85,12 +77,12 @@ public class TaskPrompter
         _parametersPanel.addParameters(getTask().getRootParameter());
         getTask().getRootParameter().addListener(this);
 
-        // Details
-        _detailsPanel = new JPanel();
-        _detailsPanel.setVisible(false);
-        _detailsPanel.setLayout(new BorderLayout());
+        if (showDetails) {
+            // Details
+            _detailsPanel = new JPanel();
+            _detailsPanel.setVisible(false);
+            _detailsPanel.setLayout(new BorderLayout());
 
-        if (_showCommandLine) {
             JPanel commandPanel = new JPanel();
             commandPanel.setLayout(new BorderLayout());
             commandPanel.setBorder(BorderFactory.createTitledBorder("Command"));
@@ -112,57 +104,60 @@ public class TaskPrompter
                 }
             });
             commandPanel.add(copyCommandButton, BorderLayout.WEST);
+
+            // Defaults File
+            _defaultsPanel = new JPanel();
+            _defaultsPanel.setVisible(false);
+            _defaultsPanel.setLayout(new BorderLayout());
+            _defaultsPanel.setBorder(BorderFactory.createTitledBorder("Defaults"));
+            JTextField defaultsFileLabel = new JTextField(getTask().getDefaultsFile().getPath());
+            defaultsFileLabel.setEditable(false);
+            _defaultsPanel.add(defaultsFileLabel, BorderLayout.CENTER);
+
+            // Defaults Folder Icon
+            JButton defaultsFolderButton = Util.createIconButton(getClass(), "fileopen.png", "Open");
+
+            defaultsFolderButton.addActionListener(new ActionListener()
+            {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    try {
+                        Desktop.getDesktop().open(getTask().getDefaultsFile().getParentFile());
+                    } catch (IOException e1) {
+                        // Do nothing
+                    }
+                }
+            });
+            _defaultsPanel.add(defaultsFolderButton, BorderLayout.WEST);
+
+            // Save Defaults Button
+            JButton saveDefaultsButton = Util.createIconButton(getClass(), "filesave.png", "Save");
+            saveDefaultsButton.addActionListener(new ActionListener()
+            {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    try {
+                        getTask().saveDefaults();
+                    } catch (Exception e1) {
+                        JOptionPane.showMessageDialog(null, "Save Failed\n\n" + e1);
+                    }
+                }
+            });
+            _defaultsPanel.add(saveDefaultsButton, BorderLayout.EAST);
         }
-
-        // Defaults File
-        _defaultsPanel = new JPanel();
-        _defaultsPanel.setVisible(false);
-        _defaultsPanel.setLayout(new BorderLayout());
-        _defaultsPanel.setBorder(BorderFactory.createTitledBorder("Defaults"));
-        JTextField defaultsFileLabel = new JTextField(getTask().getDefaultsFile().getPath());
-        defaultsFileLabel.setEditable(false);
-        _defaultsPanel.add(defaultsFileLabel, BorderLayout.CENTER);
-
-        // Defaults Folder Icon
-        JButton defaultsFolderButton = Util.createIconButton(getClass(), "fileopen.png", "Open");
-
-        defaultsFolderButton.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                try {
-                    Desktop.getDesktop().open(getTask().getDefaultsFile().getParentFile());
-                } catch (IOException e1) {
-                    // Do nothing
-                }
-            }
-        });
-        _defaultsPanel.add(defaultsFolderButton, BorderLayout.WEST);
-
-        // Save Defaults Button
-        JButton saveDefaultsButton = Util.createIconButton(getClass(), "filesave.png", "Save");
-        saveDefaultsButton.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                try {
-                    getTask().saveDefaults();
-                } catch (Exception e1) {
-                    JOptionPane.showMessageDialog(null, "Save Failed\n\n" + e1);
-                }
-            }
-        });
-        _defaultsPanel.add(saveDefaultsButton, BorderLayout.EAST);
 
         // Scrolling Panel
         ScrollablePanel scrollablePanel = new ScrollablePanel();
         scrollablePanel.setScrollableTracksViewportWidth(true);
         scrollablePanel.setLayout(new BoxLayout(scrollablePanel, BoxLayout.Y_AXIS));
         scrollablePanel.add(_parametersPanel);
-        scrollablePanel.add(_detailsPanel);
-        scrollablePanel.add(_defaultsPanel);
+        
+        if (showDetails) {
+            scrollablePanel.add(_detailsPanel);
+            scrollablePanel.add(_defaultsPanel);
+        }
 
         // Scroll
         MaxJScrollPane scrollPane = new MaxJScrollPane(
@@ -238,19 +233,21 @@ public class TaskPrompter
             }
         });
 
-        // Details button
-        final JButton detailsButton = new JButton("Details >>>");
-        detailsButton.setPreferredSize(buttonSize);
-        leftButtonsPanel.add(detailsButton);
-        detailsButton.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
+        if (showDetails) {
+            // Details button
+            final JButton detailsButton = new JButton("Details >>>");
+            detailsButton.setPreferredSize(buttonSize);
+            leftButtonsPanel.add(detailsButton);
+            detailsButton.addActionListener(new ActionListener()
             {
-                boolean showing = toggleDetails();
-                detailsButton.setText(showing ? "Details <<<" : "Details >>>");
-            }
-        });
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    boolean showing = toggleDetails();
+                    detailsButton.setText(showing ? "Details <<<" : "Details >>>");
+                }
+            });
+        }
 
         // Complete the layout of the frame
         pack();

@@ -536,7 +536,7 @@ public abstract class Task implements Runnable
             public void run()
             {
                 TaskPrompter taskPrompter = new TaskPrompter(Task.this);
-                taskPrompter.prompt();
+                taskPrompter.prompt(false);
             }
         });
     }
