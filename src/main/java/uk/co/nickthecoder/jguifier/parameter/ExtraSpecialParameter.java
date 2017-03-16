@@ -123,7 +123,7 @@ public class ExtraSpecialParameter<S, P extends ValueParameter<T>, T>
 
     public boolean isStretchy()
     {
-        return _regularParameter == null ? false : _regularParameter.isStretchy();
+        return true;
     }
 
     public P getRegularParameter()
@@ -205,6 +205,7 @@ public class ExtraSpecialParameter<S, P extends ValueParameter<T>, T>
         };
 
         final JComboBox<?> specialComponent = (JComboBox<?>) super.createComponent(holder);
+        
         final Component regularComponent = _regularParameter.createComponent(forward);
 
         both.add(specialComponent, BorderLayout.WEST);

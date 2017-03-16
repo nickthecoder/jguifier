@@ -208,7 +208,6 @@ public abstract class ValueParameter<T> extends Parameter implements Cloneable
 
     public void enableFocusColorChange(final JComponent component)
     {
-
         component.addFocusListener(new FocusListener()
         {
             private Color oldColor;

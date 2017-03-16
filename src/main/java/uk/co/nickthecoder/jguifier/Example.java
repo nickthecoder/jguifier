@@ -171,7 +171,7 @@ public class Example extends Task
     public Example()
     {
         super();
-        addParameters(_boolean, _integer, _double,
+        addParameters( _boolean, _integer, _double,
             _shortString, _longString, _multiLineString, _greeting, _regex, _output, _file,
             _dateFormat, _special);
     }

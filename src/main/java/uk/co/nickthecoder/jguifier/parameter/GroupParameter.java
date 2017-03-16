@@ -42,9 +42,14 @@ public class GroupParameter
         return _children;
     }
 
+    public void addParameter(int position, Parameter parameter)
+    {
+        addChildren(position, parameter);
+    }
+
     public void addParameter(Parameter parameter)
     {
-        addChildren(parameter);
+        addChildren(_children.size(), parameter);
     }
 
     public List<Parameter> getChildren()
@@ -54,9 +59,15 @@ public class GroupParameter
 
     public void addChildren(Parameter... parameters)
     {
+        addChildren(_children.size(), parameters);
+    }
+
+    public void addChildren(int position, Parameter... parameters)
+    {
         for (Parameter parameter : parameters) {
-            _children.add(parameter);
+            _children.add(position, parameter);
             parameter.addListener(this);
+            position++;
         }
     }
 
@@ -97,7 +108,7 @@ public class GroupParameter
                 buffer.append(mp.getCommandArguments());
 
             } else {
-                if ( includeHidden || parameter.visible) {
+                if (includeHidden || parameter.visible) {
                     buffer.append(" --");
                     buffer.append(parameter.getName());
                     buffer.append("=");
@@ -144,7 +155,7 @@ public class GroupParameter
 
         public Builder child(Parameter parameter)
         {
-            making.addChildren(parameter);
+            making.addParameter(parameter);
             return this;
         }
 
@@ -159,16 +170,16 @@ public class GroupParameter
     public List<Parameter> allParameters()
     {
         List<Parameter> result = new ArrayList<Parameter>();
-        collectParameters( result );
+        collectParameters(result);
         return result;
     }
-    
+
     public List<ValueParameter<?>> allValueParameters()
     {
         List<ValueParameter<?>> result = new ArrayList<ValueParameter<?>>();
-        for ( Parameter parameter : allParameters() ) {
-            if ( parameter instanceof ValueParameter ) {
-                result.add( (ValueParameter<?>) parameter );
+        for (Parameter parameter : allParameters()) {
+            if (parameter instanceof ValueParameter) {
+                result.add((ValueParameter<?>) parameter);
             }
         }
         return result;
@@ -178,7 +189,7 @@ public class GroupParameter
     {
         for (Parameter parameter : children()) {
             list.add(parameter);
-            if ( parameter instanceof GroupParameter ) {
+            if (parameter instanceof GroupParameter) {
                 ((GroupParameter) parameter).collectParameters(list);
             }
         }

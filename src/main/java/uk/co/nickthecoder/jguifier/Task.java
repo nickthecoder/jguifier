@@ -256,6 +256,20 @@ public abstract class Task implements Runnable
         return this;
     }
 
+    public void insertParameters(int position, Parameter... parameters)
+    {
+        for (Parameter parameter : parameters) {
+            insertParameter(position, parameter);
+            position++;
+        }
+    }
+
+    public void insertParameter(int position, Parameter parameter)
+    {
+        _root.addParameter(position, parameter);
+        addParameterToCollections(parameter);
+    }
+
     private void addParameterToCollections(Parameter parameter)
     {
         assert !this._parametersMap.containsKey(parameter.getName()) : "Duplicate parameter name";

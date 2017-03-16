@@ -50,12 +50,12 @@ public class ChoiceParameter<T> extends ValueParameter<T>
     /**
      * Maps keys to values. Used to convert a key into its corresponding value.
      */
-    protected Map<String, T> _mapping = new HashMap<String, T>();
+    protected Map<String, T> _mapping = new HashMap<>();
 
     /**
      * Maps keys to labels. Used to store the labels used by the GUI.
      */
-    protected Map<String, String> _labelMapping = new HashMap<String, String>();
+    protected Map<String, String> _labelMapping = new HashMap<>();
 
     /**
      * A list of the possible keys. This is needed to order the options correctly (Maps are not ordered).
@@ -64,18 +64,32 @@ public class ChoiceParameter<T> extends ValueParameter<T>
 
     private JComboBox<String> _comboBox;
 
+    protected boolean _stretchy = false;
+
     /**
      * @see ValueParameter#ValueParameter(String)
      */
     public ChoiceParameter(String name)
     {
         super(name);
-        _mapping = new HashMap<String, T>();
-        _labelMapping = new HashMap<String, String>();
-        _keys = new ArrayList<String>();
+        _mapping = new HashMap<>();
+        _labelMapping = new HashMap<>();
+        _keys = new ArrayList<>();
         _comboBox = null;
     }
 
+
+    @Override
+    public boolean isStretchy()
+    {
+        return _stretchy;
+    }
+
+    public void setStretchy(boolean value)
+    {
+        _stretchy = value;
+    }
+    
     /**
      * Removes all choices (rarely used).
      */
@@ -132,6 +146,7 @@ public class ChoiceParameter<T> extends ValueParameter<T>
     /**
      * Checks that the value is one of the choice values.
      */
+    @Override
     public String valid(T value)
     {
         if (!_mapping.values().contains(value)) {
@@ -174,8 +189,9 @@ public class ChoiceParameter<T> extends ValueParameter<T>
      */
     @Override
     public Component createComponent(final ParameterHolder holder)
-    {
-        _comboBox = new JComboBox<String>();
+    {        
+        _comboBox = new JComboBox<>();
+        
         updateComboBox();
 
         _comboBox.addActionListener(new ActionListener()
@@ -186,7 +202,11 @@ public class ChoiceParameter<T> extends ValueParameter<T>
                 inNotification = true;
                 try {
                     int index = _comboBox.getSelectedIndex();
-                    setStringValue(_keys.get(index));
+                    String key = _keys.get(index);
+                    setStringValue(key);
+                    if (isStretchy()) {
+                        _comboBox.setToolTipText(_labelMapping.get(key));
+                    }
                     holder.clearError(ChoiceParameter.this);
 
                 } catch (Exception e) {
@@ -208,7 +228,7 @@ public class ChoiceParameter<T> extends ValueParameter<T>
                 }
             }
         });
-
+        
         return _comboBox;
     }
 
@@ -220,13 +240,16 @@ public class ChoiceParameter<T> extends ValueParameter<T>
 
         _comboBox.removeAllItems();
         String stringValue = getStringValue();
-
+        
         for (String key : _keys) {
             String label = _labelMapping.get(key);
             _comboBox.addItem(label);
             if (key.equals(stringValue)) {
                 _comboBox.setSelectedIndex(_comboBox.getItemCount() - 1);
             }
+        }
+        if (isStretchy()) {
+            _comboBox.setToolTipText(_comboBox.getSelectedItem().toString());
         }
 
         /*
@@ -286,7 +309,13 @@ public class ChoiceParameter<T> extends ValueParameter<T>
     {
         public Builder(String name)
         {
-            making = new ChoiceParameter<T2>(name);
+            making = new ChoiceParameter<>(name);
+        }
+        
+        public Builder<T2> stretchy( boolean value )
+        {
+            making.setStretchy(value);
+            return this;
         }
     }
 
