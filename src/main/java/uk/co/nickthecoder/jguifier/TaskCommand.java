@@ -51,6 +51,8 @@ public class TaskCommand implements TaskListener
     public TaskCommand(Task task)
     {
         this.task = task;
+        this.task.fromCommandLine = true;
+
         _metaParametersMap = new HashMap<String, Parameter>();
 
         _helpParameter = new BooleanParameter("help", false);
@@ -394,11 +396,6 @@ public class TaskCommand implements TaskListener
     @Override
     public void ended(Task task, boolean normally)
     {
-        if (normally) {
-            exit(task.getExitStatus());
-        } else {
-            exit(EXIT_TASK_FAILED);
-        }
     }
 
     @Override

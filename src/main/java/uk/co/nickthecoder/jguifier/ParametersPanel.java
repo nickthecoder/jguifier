@@ -60,6 +60,10 @@ public class ParametersPanel extends JPanel implements ParameterHolder
     {
         for (Parameter parameter : group.getChildren()) {
 
+            if (!parameter.visible) {
+                continue;
+            }
+            
             JLabel parameterErrorLabel = createErrorLabel();
             _parameterErrorLabels.put(parameter.getName(), parameterErrorLabel);
             parameterErrorLabel.setVisible(false);
@@ -96,9 +100,6 @@ public class ParametersPanel extends JPanel implements ParameterHolder
                     rlm.add(component);
                     rlm.setStretchy(parameter.isStretchy());
 
-                    if (!parameter.visible) {
-                        row.setVisible(false);
-                    }
                     String desc = parameter.getDescription();
                     if (desc != null) {
                         label.setToolTipText(desc);

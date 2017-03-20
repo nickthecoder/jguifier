@@ -83,6 +83,14 @@ public abstract class Task implements Runnable
     protected List<TaskListener> listeners = new ArrayList<TaskListener>();
 
     /**
+     * Some tasks have duel roles, as a command line task, which outputs text, and as a small cog in a larger
+     * program, where the output is structure java objects, such as a a List of Files.
+     * fromCommandLine is set to true from {@link TaskCommand}, and hints to the Task, that it should output
+     * text. Many Tasks, will ignore this attribute.
+     */
+    protected boolean fromCommandLine = false;
+
+    /**
      * Create a new Task, initially without any Parameters.
      * 
      * @priority 1

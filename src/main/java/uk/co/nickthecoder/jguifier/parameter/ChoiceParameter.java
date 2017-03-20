@@ -78,7 +78,6 @@ public class ChoiceParameter<T> extends ValueParameter<T>
         _comboBox = null;
     }
 
-
     @Override
     public boolean isStretchy()
     {
@@ -89,7 +88,7 @@ public class ChoiceParameter<T> extends ValueParameter<T>
     {
         _stretchy = value;
     }
-    
+
     /**
      * Removes all choices (rarely used).
      */
@@ -189,9 +188,9 @@ public class ChoiceParameter<T> extends ValueParameter<T>
      */
     @Override
     public Component createComponent(final ParameterHolder holder)
-    {        
+    {
         _comboBox = new JComboBox<>();
-        
+
         updateComboBox();
 
         _comboBox.addActionListener(new ActionListener()
@@ -228,7 +227,7 @@ public class ChoiceParameter<T> extends ValueParameter<T>
                 }
             }
         });
-        
+
         return _comboBox;
     }
 
@@ -240,7 +239,7 @@ public class ChoiceParameter<T> extends ValueParameter<T>
 
         _comboBox.removeAllItems();
         String stringValue = getStringValue();
-        
+
         for (String key : _keys) {
             String label = _labelMapping.get(key);
             _comboBox.addItem(label);
@@ -248,10 +247,6 @@ public class ChoiceParameter<T> extends ValueParameter<T>
                 _comboBox.setSelectedIndex(_comboBox.getItemCount() - 1);
             }
         }
-        if (isStretchy()) {
-            _comboBox.setToolTipText(_comboBox.getSelectedItem().toString());
-        }
-
         /*
          * It seems that JCombobox cannot be displayed such that no item is selected
          * (I don't want to have a JComboBox with text entry), then I guess we need to update
@@ -266,6 +261,10 @@ public class ChoiceParameter<T> extends ValueParameter<T>
                 }
             }
         }
+        if (isStretchy() && (_comboBox.getSelectedItem() != null)) {
+            _comboBox.setToolTipText(_comboBox.getSelectedItem().toString());
+        }
+
     }
 
     @Override
@@ -311,8 +310,8 @@ public class ChoiceParameter<T> extends ValueParameter<T>
         {
             making = new ChoiceParameter<>(name);
         }
-        
-        public Builder<T2> stretchy( boolean value )
+
+        public Builder<T2> stretchy(boolean value)
         {
             making.setStretchy(value);
             return this;
