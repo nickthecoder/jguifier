@@ -185,9 +185,13 @@ public class FileComponent extends JPanel
         List<File> children;
 
         FileLister fileLister = new FileLister().directoriesFirst().includeDirectories();
-        if (_fileParameter.getIsDirectory() == TriState.TRUE) {
-            fileLister.excludeFiles();
+        // Never exclude hidden files if we have a prefix (as on *nix, this tells us if it is hidden or not).
+        if (prefix.equals("")) {
+            fileLister.setIncludeHidden( _fileParameter.getIncludeHidden() );
+        } else {
+            fileLister.setIncludeHidden( true );
         }
+        
         children = fileLister.listFiles(directory);
 
         for (File child : children) {
@@ -197,17 +201,10 @@ public class FileComponent extends JPanel
 
             if (child.getName().startsWith(prefix)) {
 
-                if (child.isHidden()) {
-                    if (child.isDirectory()) {
-                        if ((!_fileParameter.getIncludeHidden()) && (!_fileParameter.getEnterHidden())) {
-                            // Skip over hidden directories
-                            continue;
-                        }
-                    } else {
-                        if (!_fileParameter.getIncludeHidden()) {
-                            // Skip over hidden files.
-                            continue;
-                        }
+                if (child.isDirectory()) {
+                    if (child.isHidden() && (!_fileParameter.getEnterHidden())) {
+                        // Skip over hidden directories
+                        continue;
                     }
                 }
                 if (_fileParameter.autocompleteMatches(child)) {

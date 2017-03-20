@@ -217,6 +217,10 @@ public class FileParameter extends TextParameter<File>
             return "Already exists";
         }
 
+        if ((!_includeHidden) && value.isHidden()) {
+            return "Hidden files not allowed";
+        }
+
         if (exists) {
 
             // Directory/File?
