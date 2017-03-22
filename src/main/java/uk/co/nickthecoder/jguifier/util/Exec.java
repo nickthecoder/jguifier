@@ -504,6 +504,11 @@ public class Exec implements Runnable
         return process.getInputStream();
     }
 
+    public Process getProcess()
+    {
+        return process;
+    }
+
     /**
      * Runs the command. This method will block until the process is complete, so if the process
      * hangs, so will this method call. However, if you set a timeout using {@link #timeout(long)}, then
