@@ -394,6 +394,11 @@ public class TaskCommand implements TaskListener
     }
 
     @Override
+    public void started(Task task)
+    {
+    }
+
+    @Override
     public void ended(Task task, boolean normally)
     {
     }
@@ -410,4 +415,5 @@ public class TaskCommand implements TaskListener
             System.exit(status);
         }
     }
+
 }

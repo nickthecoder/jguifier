@@ -583,6 +583,7 @@ public abstract class Task implements Runnable
      */
     public void run()
     {
+        fireStarted();
         try {
             pre();
             body();
@@ -614,6 +615,13 @@ public abstract class Task implements Runnable
     public void post()
     {
         // Default implementation does nothing
+    }
+
+    public void fireStarted()
+    {
+        for (TaskListener listener : listeners) {
+            listener.started(this);
+        }
     }
 
     public void fireEnded(boolean normally)
