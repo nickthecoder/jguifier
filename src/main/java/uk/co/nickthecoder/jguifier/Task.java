@@ -513,14 +513,6 @@ public abstract class Task implements Runnable
     }
 
     /**
-     * Has the Task finished running?
-     */
-    public boolean isFinished()
-    {
-        return this.exitStatus != EXIT_RUNNING;
-    }
-
-    /**
      * 
      * @return The exit status or {@link #EXIT_RUNNING} if the Task has not finished.
      * @priority 3
@@ -575,6 +567,13 @@ public abstract class Task implements Runnable
         // Default does nothing
     }
 
+    private boolean running = false;
+
+    public boolean isRunning()
+    {
+        return running;
+    }
+
     /**
      * This is where the Task's processing happens. Calls {@link #pre(), {@link #body()} and the {@link #post()}.
      * {@link TaskListener}s will be notified at completion by {@link TaskListener#ended(Task, boolean)}.
@@ -583,6 +582,7 @@ public abstract class Task implements Runnable
      */
     public void run()
     {
+        running = true;
         fireStarted();
         try {
             pre();
@@ -594,6 +594,8 @@ public abstract class Task implements Runnable
             } catch (Exception e) {
                 fireEnded(false);
                 throw e;
+            } finally {
+                running = false;
             }
         }
     }
