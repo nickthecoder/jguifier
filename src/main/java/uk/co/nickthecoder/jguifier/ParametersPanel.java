@@ -49,6 +49,17 @@ public class ParametersPanel extends JPanel implements ParameterHolder
 
     }
 
+    public void addParameter(Parameter parameter)
+    {
+        Component component = parameter.createComponent(this);
+        addParameter(parameter, component);
+    }
+
+    public void addParameter(Parameter parameter, Component component)
+    {
+        addParameter(parameter, this, component);
+    }
+
     public void addParameters(GroupParameter group)
     {
         addParameters(group, this);
@@ -59,58 +70,60 @@ public class ParametersPanel extends JPanel implements ParameterHolder
     private void addParameters(GroupParameter group, Container container)
     {
         for (Parameter parameter : group.getChildren()) {
-
             if (!parameter.visible) {
                 continue;
             }
-            
-            JLabel parameterErrorLabel = createErrorLabel();
-            _parameterErrorLabels.put(parameter.getName(), parameterErrorLabel);
-            parameterErrorLabel.setVisible(false);
-            parameterErrorLabel.setHorizontalAlignment(SwingConstants.LEFT);
 
-            if (parameter instanceof GroupParameter) {
-                GroupParameter subGroup = (GroupParameter) parameter;
+            Component component = parameter.createComponent(this);
+            addParameter(parameter, container, component);
+        }
+    }
 
-                Container subContainer = (Container) subGroup.createComponent(this);
-                subContainer.setLayout(_tlm);
-                container.add(subContainer);
+    private void addParameter(Parameter parameter, Container container, Component component)
+    {
+        JLabel parameterErrorLabel = createErrorLabel();
+        _parameterErrorLabels.put(parameter.getName(), parameterErrorLabel);
+        parameterErrorLabel.setVisible(false);
+        parameterErrorLabel.setHorizontalAlignment(SwingConstants.LEFT);
 
-                addParameters(subGroup, subContainer);
+        if (parameter instanceof GroupParameter) {
+            GroupParameter subGroup = (GroupParameter) parameter;
+
+            Container subContainer = (Container) component;
+            subContainer.setLayout(_tlm);
+            container.add(subContainer);
+
+            addParameters(subGroup, subContainer);
+
+        } else {
+
+            if ((leftAlignBooleans) && (parameter instanceof BooleanParameter)) {
+
+                container.add(component);
 
             } else {
+                JPanel row = new JPanel();
+                RowLayoutManager rlm = new RowLayoutManager(row, _tlm);
+                row.setLayout(rlm);
 
-                Component component = parameter.createComponent(this);
+                JLabel label = parameter instanceof BooleanParameter ? new JLabel()
+                    : new JLabel(parameter.getLabel());
 
-                if ((leftAlignBooleans) && (parameter instanceof BooleanParameter)) {
+                rlm.add(label);
+                label.setBackground(Color.BLUE);
 
-                    container.add(component);
+                rlm.add(component);
+                rlm.setStretchy(parameter.isStretchy());
 
-                } else {
-                    JPanel row = new JPanel();
-                    RowLayoutManager rlm = new RowLayoutManager(row, _tlm);
-                    row.setLayout(rlm);
-
-                    JLabel label = parameter instanceof BooleanParameter ? new JLabel()
-                        : new JLabel(parameter.getLabel());
-                    
-                    rlm.add(label);
-                    label.setBackground(Color.BLUE);
-
-                    rlm.add(component);
-                    rlm.setStretchy(parameter.isStretchy());
-
-                    String desc = parameter.getDescription();
-                    if (desc != null) {
-                        label.setToolTipText(desc);
-                    }
-
-                    container.add(row);
+                String desc = parameter.getDescription();
+                if (desc != null) {
+                    label.setToolTipText(desc);
                 }
 
-                container.add(parameterErrorLabel);
-
+                container.add(row);
             }
+
+            container.add(parameterErrorLabel);
 
         }
 

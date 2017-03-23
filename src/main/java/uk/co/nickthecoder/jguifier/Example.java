@@ -4,12 +4,15 @@ import java.io.File;
 import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 
+import javax.swing.SwingUtilities;
+
 import uk.co.nickthecoder.jguifier.parameter.BooleanParameter;
 import uk.co.nickthecoder.jguifier.parameter.ChoiceParameter;
 import uk.co.nickthecoder.jguifier.parameter.DoubleParameter;
 import uk.co.nickthecoder.jguifier.parameter.ExtraSpecialParameter;
 import uk.co.nickthecoder.jguifier.parameter.FileParameter;
 import uk.co.nickthecoder.jguifier.parameter.IntegerParameter;
+import uk.co.nickthecoder.jguifier.parameter.MultipleParameter;
 import uk.co.nickthecoder.jguifier.parameter.PatternParameter;
 import uk.co.nickthecoder.jguifier.parameter.SpecialParameter;
 import uk.co.nickthecoder.jguifier.parameter.StringChoiceParameter;
@@ -168,12 +171,16 @@ public class Example extends Task
                 new FileParameter.Builder("specialFile").writable().parameter())
             .parameter();
 
+    private MultipleParameter<IntegerParameter, Integer> manyInts = new IntegerParameter.Builder("")
+        .value(1).range(0, 100).description("lots of integers")
+        .multipleParameter("manyInts");
+
     public Example()
     {
         super();
-        addParameters( _boolean, _integer, _double,
+        addParameters(_boolean, _integer, _double,
             _shortString, _longString, _multiLineString, _greeting, _regex, _output, _file,
-            _dateFormat, _special);
+            _dateFormat, _special, manyInts);
     }
 
     @Override
@@ -185,17 +192,25 @@ public class Example extends Task
 
         out.println(_greeting.getValue() + " " + _shortString.getValue());
         out.println(_longString.getValue());
-
+        
         out.close();
     }
 
-    public static void main(String[] argv)
+    public static void main(final String[] argv)
     {
-        Example example = new Example();
-        // When using a groovy script, the task's name will be automatically assigned. See Task.guessName()
-        // However, if you are calling java code from a shell script, then you should explicitly set the name of the
-        // shell script like so :
-        example.setName("example.sh");
-        new TaskCommand(example).go(argv);
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            public void run()
+            {
+                Example example = new Example();
+                // When using a groovy script, the task's name will be automatically assigned. See Task.guessName()
+                // However, if you are calling java code from a shell script, then you should explicitly set the name of
+                // the
+                // shell script like so :
+                example.setName("example.sh");
+                new TaskCommand(example).go(argv);
+
+            }
+        });
     }
 }

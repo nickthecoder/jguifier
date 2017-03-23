@@ -258,9 +258,9 @@ public abstract class ValueParameter<T> extends Parameter implements Cloneable
             return me();
         }
 
-        public MultipleParameter<P, T> multipleParameter()
+        public MultipleParameter<P, T> multipleParameter( String name )
         {
-            return new MultipleParameter<P, T>(making, making.getName());
+            return new MultipleParameter<P, T>(making, name);
         }
 
     }
