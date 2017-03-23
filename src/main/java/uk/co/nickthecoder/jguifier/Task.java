@@ -587,34 +587,36 @@ public abstract class Task implements Runnable
         try {
             pre();
             body();
+            fireEnded(true);
+        } catch (Exception e) {
+            fireEnded(false);
+            throw new RuntimeException(e);
         } finally {
             try {
                 post();
-                fireEnded(true);
             } catch (Exception e) {
-                fireEnded(false);
-                throw e;
+                throw new RuntimeException(e);
             } finally {
                 running = false;
             }
         }
     }
 
-    public abstract void body();
-
     /**
      * Actions performed before {@link #body()}
      */
-    public void pre()
+    public void pre() throws Exception
     {
         // Default implementation does nothing
     }
+
+    public abstract void body() throws Exception;
 
     /**
      * Actions performed after {@link #body()} - called in a finally block. Useful to close resources
      * regardless of whether the body completed successfully or not.
      */
-    public void post()
+    public void post() throws Exception
     {
         // Default implementation does nothing
     }
