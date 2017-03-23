@@ -84,7 +84,7 @@ public class Exec implements Runnable
 
     private Map<String, String> _env = null;
 
-    private Source _inSource = new PrintSource();
+    private Source _inSource = new NullSource();
 
     private Sink _outSink = new SimpleSink();
     private Sink _errSink = new SimpleSink();
@@ -98,7 +98,6 @@ public class Exec implements Runnable
     private boolean _mergeStderr = false;
 
     private Thread _outSinkThread;
-    private Thread _inSourceThread;
     private Thread _errSinkThread;
 
     public Exec(String... cmdArray)
@@ -184,13 +183,14 @@ public class Exec implements Runnable
 
     public Exec stdin(final String input)
     {
-        _inSource = new PrintSource()
+        _inSource = new SimplePrintSource()
         {
             @Override
-            public void run()
+            public void setStream(OutputStream os)
             {
-                _out.print(input);
-                _out.close();
+                super.setStream(os);
+                out.print(input);
+                out.close();
             }
         };
 
@@ -586,8 +586,6 @@ public class Exec implements Runnable
             _outSinkThread.start();
         }
         _inSource.setStream(_process.getOutputStream());
-        _inSourceThread = new Thread(_inSource);
-        _inSourceThread.start();
 
         if (!_mergeStderr) {
             _errSink.setStream(_process.getErrorStream());

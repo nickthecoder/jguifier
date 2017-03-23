@@ -6,7 +6,6 @@ import java.io.OutputStream;
 
 /**
  * Copies the data from an OutputStream to an InputSteam.
- * Used as the basis for {@link CopySink}, and {@link Pipe}.
  * 
  * @priority 4
  */

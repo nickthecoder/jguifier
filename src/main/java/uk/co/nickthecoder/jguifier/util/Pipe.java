@@ -29,36 +29,29 @@ public class Pipe extends CopySink
     public void setStream(InputStream is)
     {
         super.setStream(is);
+        
         _target.stdin(new Source()
         {
-
             @Override
             public void setStream(OutputStream os)
             {
                 Pipe.this.setStream(os);
             }
-
-            @Override
-            public void run()
-            {
-                // Get CopySink to copy the data from one process to another
-                Pipe.super.run();
-                try {
-                    _out.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
         });
     }
 
     @Override
     public void run()
     {
-        // Run the command that is being pipe TO, it will be up to it's stdin Source
-        // to copy the data (which is in the annon inner class above).
-        _target.go();
+        try {
+            try {
+                _target.runWithoutWaiting();
+            } catch (Exception e) {
+            }
+            _out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }
