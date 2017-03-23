@@ -64,6 +64,21 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
         setValue(new ArrayList<T>());
     }
 
+    public void setValues(Iterable<T> values)
+    {
+        getValue().clear();
+        for (T value : values) {
+            getValue().add(value);
+        }
+        fireChangeEvent();
+    }
+
+    public void addValue(T value)
+    {
+        getValue().add(value);
+        fireChangeEvent();
+    }
+
     @Override
     public String getStringValue()
     {
