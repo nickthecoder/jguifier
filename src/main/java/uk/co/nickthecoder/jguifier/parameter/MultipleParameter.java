@@ -1,29 +1,23 @@
 package uk.co.nickthecoder.jguifier.parameter;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.BoxLayout;
-import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
-import uk.co.nickthecoder.jguifier.ParameterException;
+import uk.co.nickthecoder.jguifier.AbstractParameterPanel;
 import uk.co.nickthecoder.jguifier.ParameterHolder;
 import uk.co.nickthecoder.jguifier.ParameterListener;
-import uk.co.nickthecoder.jguifier.Task;
 import uk.co.nickthecoder.jguifier.ValueParameter;
 import uk.co.nickthecoder.jguifier.guiutil.TableLayoutManager;
 import uk.co.nickthecoder.jguifier.util.Util;
@@ -238,17 +232,17 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
      * values of the same type of Parameter.
      * It does not have labels, not the bottom margin that ParametersPanel has.
      */
-    public class MultiplePanel extends JPanel implements ParameterHolder
+    public class MultiplePanel extends AbstractParameterPanel
     {
         private static final long serialVersionUID = 1L;
 
-        private Map<String, JLabel> _parameterErrorLabels;
-
+        // We don't really need the power of TableLayoutManager, because we only have one column,
+        // but I've kept it, to keep consistent with ParametersPanel.
         TableLayoutManager _tlm;
 
         public MultiplePanel()
         {
-            _parameterErrorLabels = new HashMap<String, JLabel>();
+            super();
 
             // A table of all of the task's parameters
             _tlm = new TableLayoutManager(this, 1);
@@ -264,35 +258,8 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
             _tlm = new TableLayoutManager(this, 2);
         }
 
-        public void addParameter(Parameter parameter)
-        {
-            Component component = parameter.createComponent(this);
-            addParameter(parameter, component);
-        }
-
-        public void addParameter(Parameter parameter, Component component)
-        {
-            addParameter(parameter, this, component);
-        }
-
-        public void addParameters(GroupParameter group)
-        {
-            addParameters(group, this);
-        }
-
-        private void addParameters(GroupParameter group, Container container)
-        {
-            for (Parameter parameter : group.getChildren()) {
-                if (!parameter.visible) {
-                    continue;
-                }
-
-                Component component = parameter.createComponent(this);
-                addParameter(parameter, container, component);
-            }
-        }
-
-        private void addParameter(Parameter parameter, Container container, Component component)
+        @Override
+        protected void addParameter(Parameter parameter, Container container, Component component)
         {
             JLabel parameterErrorLabel = createErrorLabel();
             _parameterErrorLabels.put(parameter.getName(), parameterErrorLabel);
@@ -302,65 +269,5 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
             container.add(component);
             container.add(parameterErrorLabel);
         }
-
-        private JLabel createErrorLabel()
-        {
-            Icon icon = UIManager.getIcon("OptionPane.errorIcon");
-            JLabel result = new JLabel(icon);
-            result.setForeground(Color.RED);
-
-            return result;
-        }
-
-        public JLabel getErrorLabel(Parameter parameter)
-        {
-            return _parameterErrorLabels.get(parameter.getName());
-        }
-
-        public void setError(Parameter parameter, String message)
-        {
-            if (message == null) {
-                clearError(parameter);
-            }
-
-            JLabel label = _parameterErrorLabels.get(parameter.getName());
-            if (label != null) {
-                label.setText(message);
-                label.setVisible(true);
-            }
-        }
-
-        public void clearError(Parameter parameter)
-        {
-            JLabel label = _parameterErrorLabels.get(parameter.getName());
-            if (label != null) {
-                label.setText("");
-                label.setVisible(false);
-            }
-        }
-
-        public boolean check(Task task)
-        {
-            boolean result = true;
-
-            for (Parameter parameter : task.getParameters().children()) {
-                try {
-                    parameter.check();
-                } catch (ParameterException e) {
-                    setError(parameter, e.getMessage());
-                    result = false;
-                }
-            }
-
-            try {
-                task.check();
-            } catch (ParameterException e) {
-                setError(e.getParameter(), e.getMessage());
-                result = false;
-            }
-
-            return result;
-        }
     }
-
 }

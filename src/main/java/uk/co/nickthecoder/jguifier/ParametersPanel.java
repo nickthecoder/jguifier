@@ -3,14 +3,10 @@ package uk.co.nickthecoder.jguifier;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
-import java.util.HashMap;
-import java.util.Map;
 
-import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
 import uk.co.nickthecoder.jguifier.guiutil.RowLayoutManager;
@@ -29,18 +25,16 @@ import uk.co.nickthecoder.jguifier.parameter.Parameter;
  *
  * @priority 4
  */
-public class ParametersPanel extends JPanel implements ParameterHolder
+public class ParametersPanel extends AbstractParameterPanel
 {
     private static final long serialVersionUID = 1L;
-
-    private Map<String, JLabel> _parameterErrorLabels;
 
     TableLayoutManager _tlm;
 
     public ParametersPanel()
     {
-        _parameterErrorLabels = new HashMap<String, JLabel>();
-
+        super();
+        
         // A table of all of the task's parameters
         _tlm = new TableLayoutManager(this, 2);
         _tlm.getColumn(1).stretchFactor = 1;
@@ -49,37 +43,10 @@ public class ParametersPanel extends JPanel implements ParameterHolder
 
     }
 
-    public void addParameter(Parameter parameter)
-    {
-        Component component = parameter.createComponent(this);
-        addParameter(parameter, component);
-    }
-
-    public void addParameter(Parameter parameter, Component component)
-    {
-        addParameter(parameter, this, component);
-    }
-
-    public void addParameters(GroupParameter group)
-    {
-        addParameters(group, this);
-    }
-
     public boolean leftAlignBooleans = true;
 
-    private void addParameters(GroupParameter group, Container container)
-    {
-        for (Parameter parameter : group.getChildren()) {
-            if (!parameter.visible) {
-                continue;
-            }
-
-            Component component = parameter.createComponent(this);
-            addParameter(parameter, container, component);
-        }
-    }
-
-    private void addParameter(Parameter parameter, Container container, Component component)
+    @Override
+    protected void addParameter(Parameter parameter, Container container, Component component)
     {
         JLabel parameterErrorLabel = createErrorLabel();
         _parameterErrorLabels.put(parameter.getName(), parameterErrorLabel);
@@ -129,62 +96,4 @@ public class ParametersPanel extends JPanel implements ParameterHolder
 
     }
 
-    private JLabel createErrorLabel()
-    {
-        Icon icon = UIManager.getIcon("OptionPane.errorIcon");
-        JLabel result = new JLabel(icon);
-        result.setForeground(Color.RED);
-
-        return result;
-    }
-
-    public JLabel getErrorLabel(Parameter parameter)
-    {
-        return _parameterErrorLabels.get(parameter.getName());
-    }
-
-    public void setError(Parameter parameter, String message)
-    {
-        if (message == null) {
-            clearError(parameter);
-        }
-
-        JLabel label = _parameterErrorLabels.get(parameter.getName());
-        if (label != null) {
-            label.setText(message);
-            label.setVisible(true);
-        }
-    }
-
-    public void clearError(Parameter parameter)
-    {
-        JLabel label = _parameterErrorLabels.get(parameter.getName());
-        if (label != null) {
-            label.setText("");
-            label.setVisible(false);
-        }
-    }
-
-    public boolean check(Task task)
-    {
-        boolean result = true;
-
-        for (Parameter parameter : task.getParameters().children()) {
-            try {
-                parameter.check();
-            } catch (ParameterException e) {
-                setError(parameter, e.getMessage());
-                result = false;
-            }
-        }
-
-        try {
-            task.check();
-        } catch (ParameterException e) {
-            setError(e.getParameter(), e.getMessage());
-            result = false;
-        }
-
-        return result;
-    }
 }
