@@ -172,7 +172,7 @@ public class FileComponent extends JPanel
         menuItem.addActionListener(new ActionListener()
         {
             @Override
-            public void actionPerformed(ActionEvent e)
+            public void actionPerformed(ActionEvent event)
             {
                 _textField.setText(file.getPath());
             }

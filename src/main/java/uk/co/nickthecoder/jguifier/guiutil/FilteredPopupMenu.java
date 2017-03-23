@@ -21,7 +21,7 @@ public class FilteredPopupMenu extends JScrollPopupMenu
 
     private MenuItemFilter filter;
 
-    private String filterText;
+    private String filterText = "";
 
     public static FilteredPopupMenu createStartWith()
     {
@@ -50,7 +50,7 @@ public class FilteredPopupMenu extends JScrollPopupMenu
     public static FilteredPopupMenu create(MenuItemFilter filter)
     {
         final FilteredPopupMenu result = new FilteredPopupMenu(filter);
-
+        
         result.addMenuKeyListener(new MenuKeyListener()
         {
 
@@ -74,8 +74,7 @@ public class FilteredPopupMenu extends JScrollPopupMenu
             }
 
         });
-        result.setFilterText("");
-
+        
         return result;
     }
 
@@ -108,7 +107,7 @@ public class FilteredPopupMenu extends JScrollPopupMenu
     }
 
     public void setFilterText(String string)
-    {
+    {       
         filterText = string == null ? "" : string;
 
         boolean found = false;
@@ -140,8 +139,9 @@ public class FilteredPopupMenu extends JScrollPopupMenu
 
     /*
      * Remembers the values, and reuses them whenever the filter changes, so that the menu stays by the component that
-     * invoked it. Wihout this, a long menu can end up stranded higher up the screen than the invoking component.
+     * invoked it. Without this, a long menu can end up stranded higher up the screen than the invoking component.
      */
+    @Override
     public void show(Component invoker, int x, int y)
     {
         this.invoker = invoker;
