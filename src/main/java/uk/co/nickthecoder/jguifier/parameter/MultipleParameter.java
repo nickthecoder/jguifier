@@ -70,7 +70,7 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
         StringBuffer buffer = new StringBuffer();
         boolean first = true;
         for (T value : getValue()) {
-            prototypeParameter.setValue(value);
+            prototypeParameter.setDefaultValue(value);
             buffer.append(prototypeParameter.getStringValue());
             if (first) {
                 first = false;
@@ -109,7 +109,7 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
         StringBuffer buffer = new StringBuffer();
 
         for (T value : getValue()) {
-            prototypeParameter.setValue(value);
+            prototypeParameter.setDefaultValue(value);
             String text = prototypeParameter.getStringValue();
 
             buffer.append(" --");
@@ -190,7 +190,7 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
 
             @SuppressWarnings("unchecked")
             final P parameter = (P) prototypeParameter.clone();
-            parameter.setValue(value);
+            parameter.setDefaultValue(value);
 
             parameter.addListener(new ParameterListener()
             {
