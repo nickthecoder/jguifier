@@ -27,6 +27,9 @@ public class SimpleSink implements Sink
     @Override
     public void run()
     {
+        if (_reader == null) {
+            return;
+        }
         //System.out.println( "Started SimpleSink" );
         try {
             char[] buffer = new char[_bufferSize];

@@ -93,9 +93,13 @@ public class Exec implements Runnable
 
     private boolean _throwOnError = false;
 
-    private Process process;
+    private Process _process;
 
-    private boolean mergeStderr = false;
+    private boolean _mergeStderr = false;
+
+    private Thread _outSinkThread;
+    private Thread _inSourceThread;
+    private Thread _errSinkThread;
 
     public Exec(String... cmdArray)
     {
@@ -201,7 +205,7 @@ public class Exec implements Runnable
 
     public Exec mergeStderr(boolean value)
     {
-        mergeStderr = value;
+        _mergeStderr = value;
         return this;
     }
 
@@ -473,68 +477,39 @@ public class Exec implements Runnable
         return this;
     }
 
-    public BufferedReader runBuffered()
+    public BufferedReader runBuffered() throws IOException
     {
         return new BufferedReader(new InputStreamReader(runStreaming()));
     }
 
-    public InputStream runStreaming()
+    public InputStream runStreaming() throws IOException
     {
-        try {
+        _outSink = null;
+        runWithoutWaiting();
 
-            process = Runtime.getRuntime().exec(getCommandArray(), getEnvironment(), _workingDirectory);
-            _state = State.RUNNING;
-
-            _inSource.setStream(process.getOutputStream());
-            if (!mergeStderr) {
-                _errSink.setStream(process.getErrorStream());
-            }
-
-            new Thread(_inSource).start();
-
-            if (!mergeStderr) {
-                Thread errSinkThread = new Thread(_errSink);
-                errSinkThread.start();
-            }
-
-        } catch (Exception e) {
-            throw new ExecException(this, e);
-        }
-
-        return process.getInputStream();
+        return _process.getInputStream();
     }
 
     public Process getProcess()
     {
-        return process;
+        return _process;
     }
 
     /**
      * Runs the command. This method will block until the process is complete, so if the process
      * hangs, so will this method call. However, if you set a timeout using {@link #timeout(long)}, then
      * a hung process will not hand this method call.
-     * 
-     * @return this
      */
     public void run()
     {
         // System.out.println( "Running Exec" );
 
         try {
-            ProcessBuilder processBuilder = new ProcessBuilder(getCommandArray());
-            if (_env != null) {
-                processBuilder.environment().putAll(_env);
-            }
-            if (_workingDirectory != null) {
-                processBuilder.directory(_workingDirectory);
-            }
-            processBuilder.redirectErrorStream(mergeStderr);
+            int _exitStatus = -1;
 
-            process = processBuilder.start();
-            _state = State.RUNNING;
+            runWithoutWaiting();
 
             if (_timeoutMillis > 0) {
-
                 new Thread()
                 {
                     @Override
@@ -546,41 +521,20 @@ public class Exec implements Runnable
                         }
                         if (_state == Exec.State.RUNNING) {
                             _state = Exec.State.TIMED_OUT;
-                            process.destroy();
+                            _process.destroy();
                         }
                     }
                 }.start();
             }
 
-            _inSource.setStream(process.getOutputStream());
-            _outSink.setStream(process.getInputStream());
-            if (!mergeStderr) {
-                _errSink.setStream(process.getErrorStream());
-            }
-
-            new Thread(_inSource).start();
-
-            Thread outSinkThread = null;
-            outSinkThread = new Thread(_outSink);
-            outSinkThread.start();
-
-            Thread errSinkThread = null;
-            if (!mergeStderr) {
-                errSinkThread = new Thread(_errSink);
-                errSinkThread.start();
-            }
-
-            int _exitStatus = -1;
-
             try {
                 if (_state != State.TIMED_OUT) {
-                    // System.out.println( "Waiting for process to end" );
-                    _exitStatus = process.waitFor();
-                    // System.out.println( "Waiting for outSink to end" );
-                    outSinkThread.join();
-                    // System.out.println( "Waiting for errSink to end" );
-                    if (errSinkThread != null) {
-                        errSinkThread.join();
+                    _exitStatus = _process.waitFor();
+                    if (_outSinkThread != null) {
+                        _outSinkThread.join();
+                    }
+                    if (_errSinkThread != null) {
+                        _errSinkThread.join();
                     }
                 }
             } catch (InterruptedException e) {
@@ -603,8 +557,45 @@ public class Exec implements Runnable
                 _state = State.COMPLETED;
             }
         }
-        // System.out.println( "Finished Exec" );
 
+    }
+
+    /**
+     * Runs the command, without waiting for it to finish.
+     * 
+     * @return The process
+     * @throws IOException
+     */
+    public Process runWithoutWaiting() throws IOException
+    {
+        ProcessBuilder processBuilder = new ProcessBuilder(getCommandArray());
+        if (_env != null) {
+            processBuilder.environment().putAll(_env);
+        }
+        if (_workingDirectory != null) {
+            processBuilder.directory(_workingDirectory);
+        }
+        processBuilder.redirectErrorStream(_mergeStderr);
+
+        _process = processBuilder.start();
+        _state = State.RUNNING;
+
+        if (_outSink != null) {
+            _outSink.setStream(_process.getInputStream());
+            _outSinkThread = new Thread(_outSink);
+            _outSinkThread.start();
+        }
+        _inSource.setStream(_process.getOutputStream());
+        _inSourceThread = new Thread(_inSource);
+        _inSourceThread.start();
+
+        if (!_mergeStderr) {
+            _errSink.setStream(_process.getErrorStream());
+            _errSinkThread = new Thread(_errSink);
+            _errSinkThread.start();
+        }
+
+        return _process;
     }
 
     /**
@@ -612,13 +603,13 @@ public class Exec implements Runnable
      */
     public void stop()
     {
-        process.destroy();
+        _process.destroy();
     }
 
     public int getExitStatus()
     {
         try {
-            return process.waitFor();
+            return _process.waitFor();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -628,7 +619,7 @@ public class Exec implements Runnable
     {
         if (_state == State.RUNNING) {
             try {
-                process.exitValue();
+                _process.exitValue();
                 _state = State.COMPLETED;
             } catch (IllegalThreadStateException e) {
                 // Do nothing
