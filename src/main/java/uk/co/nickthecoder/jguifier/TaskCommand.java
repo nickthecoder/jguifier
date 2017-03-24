@@ -116,7 +116,7 @@ public class TaskCommand implements TaskListener
         }
         return _metaParametersMap.get(name);
     }
-    
+
     /**
      * Ignores the user defaults file. A fluent API, which returns this.
      * 
@@ -211,9 +211,39 @@ public class TaskCommand implements TaskListener
     public boolean parseArgs(String[] argv, boolean metaOnly)
         throws TaskException
     {
+        // Are we done with the --name=value type parameters and into the unnamed arguments?
+        boolean trailing = false;
+        ValueParameter<?> trailingParameter = task.getTrailingParameter();
 
         for (int i = 0; i < argv.length; i++) {
             String arg = argv[i];
+
+            if ((!trailing) && arg.equals("--") && (trailingParameter != null)) {
+                trailing = true;
+                continue;
+            }
+
+            if (trailing || !arg.startsWith("--")) {
+                if (trailingParameter == null) {
+                    throw new TaskException("Unexpected trailing parameter " + arg );
+                }
+                trailing = true;
+
+                if (metaOnly) {
+                    break;
+                }
+
+                if (trailingParameter instanceof MultipleParameter) {
+                    ((MultipleParameter<?, ?>) trailingParameter).addStringValue(arg);
+                    continue;
+                } else {
+                    trailingParameter.setStringValue(arg);
+                    if (i < argv.length - 1) {
+                        throw new TaskException("Expected only a single trailing parameter");
+                    }
+                    break;
+                }
+            }
 
             if (arg.startsWith("--")) {
 
@@ -237,7 +267,7 @@ public class TaskCommand implements TaskListener
 
                             if (parameter instanceof MultipleParameter) {
 
-                                ((MultipleParameter<?, ?>) parameter).setSingleStringValue(value);
+                                ((MultipleParameter<?, ?>) parameter).addStringValue(value);
 
                             } else {
 

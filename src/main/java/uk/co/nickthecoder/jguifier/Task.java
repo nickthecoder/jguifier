@@ -256,6 +256,11 @@ public abstract class Task implements Runnable
         }
     }
 
+    public ValueParameter<?> getTrailingParameter()
+    {
+        return null;
+    }
+    
     /**
      * Every command can have user defined default values. Each command stores these values in a separate file.
      * On Linux, this is <code>~/.local/jguifier/TASK-NAME.defaults</code>, where TASK-NAME is the name returned by

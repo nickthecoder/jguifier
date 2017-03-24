@@ -1,21 +1,6 @@
 Current Task
 ============
 
-Insert button next to remove button for MultiParameter
-
-Multiparam
-    on change, clear the error, and re-validate
-
-OrParameter
-    (x) Command Line  | bash --login |
-    ( ) Command List 
-
-    ( ) Command Line 
-    (x) Command List   - | bash    |
-                       - | --login |
-                       
-    In a box, with a label, like GroupParameter
-
 Allow one parameter to be set without giving its name
     e.g. fileLister.groovy --depth=2 /home/nick
         (where /home/nick will get the value for the --directory parameter.
@@ -27,11 +12,25 @@ Allow one parameter to be set without giving its name
 BUGS
 ====
 
+Multiparam
+    on change, clear the error, and re-validate
+
 StringChoiceParameters .choice is annoying, as the two parameter version doesn't set the label
 	and the 3 parameter version, you end up repeating the code twice.  
 
 New Features
 ============
+
+
+OrParameter
+    (x) Command Line  | bash --login |
+    ( ) Command List 
+
+    ( ) Command Line 
+    (x) Command List   - | bash    |
+                       - | --login |
+                       
+    In a box, with a label, like GroupParameter
 
 Text editor parameter, for editing chunks of code (such as groovy scripts, xml, json etc)
 	http://bobbylight.github.io/RSyntaxTextArea/
@@ -43,6 +42,3 @@ ChoiceParameter as ToggleButtons and/or radio buttons
 MultipleChoiceParameter - pick many from a list of options.
 
 Finish javadocs
-
-Use Geb for web scraping?
-

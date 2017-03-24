@@ -149,7 +149,7 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
         }
     }
 
-    public void setSingleStringValue(String value)
+    public void addStringValue(String value)
     {
         List<T> list = getValue();
         prototypeParameter.setStringValue(value);
