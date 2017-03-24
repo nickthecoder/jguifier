@@ -134,7 +134,7 @@ public class ChoiceParameter<T> extends ValueParameter<T>
      */
     public void addChoice(String key, T value)
     {
-        addChoice(key, value, key);
+        addChoice(key, value, Util.uncamel(key));
     }
 
     public void addChoice(T value)
