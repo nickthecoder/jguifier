@@ -342,20 +342,6 @@ public class Exec implements Runnable
     }
 
     /**
-     * Similar to stdout(), but combines the contents of stdout and stderr into a single buffer.
-     * 
-     * @return this
-     */
-    public Exec combineStdoutStderr()
-    {
-        StringBuffer buffer = new StringBuffer();
-        _outSink = new StringBufferSink(buffer);
-        _errSink = new StringBufferSink(buffer);
-
-        return this;
-    }
-
-    /**
      * The Sink for stdout. If you buffered the output using {@link #stdout()}, then the easiest way to get the
      * output is : <code><pre>
      *      myExec.getStdout().toString();
