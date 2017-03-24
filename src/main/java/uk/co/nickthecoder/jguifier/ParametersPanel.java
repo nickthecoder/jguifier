@@ -57,8 +57,20 @@ public class ParametersPanel extends AbstractParameterPanel
 
     public boolean leftAlignBooleans = true;
 
-    @Override
-    protected void addParameter(Parameter parameter, AbstractParameterPanel container, Component component)
+
+    public void addParameters(GroupParameter group)
+    {
+        for (Parameter parameter : group.getChildren()) {
+            if (!parameter.visible) {
+                continue;
+            }
+
+            Component component = parameter.createComponent(this);
+            addParameter(parameter, component);
+        }
+    }
+
+    private void addParameter(Parameter parameter, Component component)
     {
         JLabel parameterErrorLabel = createErrorLabel();
         _parameterErrorLabels.put(parameter.getName(), parameterErrorLabel);
@@ -67,19 +79,19 @@ public class ParametersPanel extends AbstractParameterPanel
 
         if (parameter instanceof GroupParameter) {
 
-            container.add(component);
+            this.add(component);
 
         } else {
 
             if ((leftAlignBooleans) && (parameter instanceof BooleanParameter)) {
 
-                container.add(component);
+                this.add(component);
 
             } else if (parameter instanceof MultipleParameter) {
                 // MultipleParameters don't need a label, as they are in a panel which includes
                 // the label.
 
-                container.add(component);
+                this.add(component);
 
             } else {
                 JPanel row = new JPanel();
@@ -99,10 +111,10 @@ public class ParametersPanel extends AbstractParameterPanel
                     label.setToolTipText(desc);
                 }
 
-                container.add(row);
+                this.add(row);
             }
 
-            container.add(parameterErrorLabel);
+            this.add(parameterErrorLabel);
 
         }
 

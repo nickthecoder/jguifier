@@ -58,11 +58,23 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
      */
     private P prototypeParameter;
 
+    private int minimumValues = 0;
+
+    private int maximumValues = Integer.MAX_VALUE;
+
     public MultipleParameter(P prototype, String name)
     {
         super(name);
         this.prototypeParameter = prototype;
         setValue(new ArrayList<T>());
+    }
+
+    public void addValues(@SuppressWarnings("unchecked") T... values)
+    {
+        for (T value : values) {
+            getValue().add(value);
+        }
+        fireChangeEvent();
     }
 
     public void setValues(Iterable<T> values)
@@ -80,14 +92,42 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
         fireChangeEvent();
     }
 
+    public MultipleParameter<P, T> minimumValues(int value)
+    {
+        this.minimumValues = value;
+        return this;
+    }
+
+    public MultipleParameter<P, T> maximumValues(int value)
+    {
+        this.maximumValues = value;
+        return this;
+    }
+
+    @Override
+    public String valid(List<T> values)
+    {
+        if ((minimumValues > 0) && (getValue().size() < minimumValues)) {
+            return "Require at least " + minimumValues + " values";
+        }
+
+        if ((getValue() != null) && (getValue().size() > maximumValues)) {
+            return "Require at most " + maximumValues + " values";
+        }
+
+        return super.valid(values);
+    }
+
     @Override
     public String getStringValue()
     {
+        ValueParameter<T> param = prototypeParameter.clone();
+        
         StringBuffer buffer = new StringBuffer();
         boolean first = true;
         for (T value : getValue()) {
-            prototypeParameter.setDefaultValue(value);
-            buffer.append(prototypeParameter.getStringValue());
+            param.setDefaultValue(value);
+            buffer.append(param.getStringValue());
             if (first) {
                 first = false;
             } else {
@@ -123,10 +163,11 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
     public String getCommandArguments()
     {
         StringBuffer buffer = new StringBuffer();
-
+        ValueParameter<T> param = prototypeParameter.clone();
+        
         for (T value : getValue()) {
-            prototypeParameter.setDefaultValue(value);
-            String text = prototypeParameter.getStringValue();
+            param.setDefaultValue(value);
+            String text = param.getStringValue();
 
             buffer.append(" --");
             buffer.append(getName());
@@ -149,13 +190,31 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
         return new MultipleParameterComponent(holder);
     }
 
+    private void addValue()
+    {
+        Util.assertIsEDT();
+
+        T value = prototypeParameter.getValue();
+        getValue().add(value);
+        fireChangeEvent();
+    }
+
+    private void insertValue( int index )
+    {
+        Util.assertIsEDT();
+
+        T value = prototypeParameter.getValue();
+        getValue().add(index, value);
+        fireChangeEvent();
+    }
+
     class MultipleParameterComponent extends JPanel
     {
         public MultiplePanel parametersPanel;
 
         private static final long serialVersionUID = 1L;
 
-        public MultipleParameterComponent(ParameterHolder holder)
+        public MultipleParameterComponent(final ParameterHolder holder)
         {
             Util.assertIsEDT();
 
@@ -176,7 +235,7 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    newValue();
+                    addValue();
                 }
             });
 
@@ -184,31 +243,24 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
             {
 
                 @Override
-                public void changed(Parameter source)
+                public void changed(final Parameter source)
                 {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
+                    SwingUtilities.invokeLater(new Runnable()
+                    {
+                        public void run()
+                        {
                             parametersPanel.clear();
                             addComponents();
 
                             // I had trouble with redrawing, and this fixed it. Bad, I know...
                             parametersPanel.setVisible(false);
                             parametersPanel.setVisible(true);
-                            
+                            holder.clearError(source);
                         }
                     });
                 }
 
             });
-        }
-
-        private void newValue()
-        {
-            Util.assertIsEDT();
-
-            T value = prototypeParameter.getValue();
-            getValue().add(value);
-            fireChangeEvent();
         }
 
         private void addComponents()
@@ -239,7 +291,7 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
 
             Component component = parameter.createComponent(parametersPanel);
 
-            parametersPanel.addParameter(parameter, component);
+            parametersPanel.addParameter(parameter, component, index);
         }
     }
 
@@ -276,9 +328,7 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
             this.removeAll();
         }
 
-        @Override
-        protected void addParameter(final Parameter parameter, final AbstractParameterPanel container,
-            Component component)
+        protected void addParameter(final Parameter parameter, Component component, final int index)
         {
             JLabel parameterErrorLabel = createErrorLabel();
             _parameterErrorLabels.put(parameter.getName(), parameterErrorLabel);
@@ -289,7 +339,7 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
             RowLayoutManager rlm = new RowLayoutManager(row, _tlm);
             row.setLayout(rlm);
 
-            JButton removeButton = new JButton(" - ");
+            JButton removeButton = new JButton("  -  ");
             removeButton.addActionListener(new ActionListener()
             {
                 @Override
@@ -300,12 +350,26 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
                 }
             });
 
-            rlm.add(removeButton);
+            JButton insertButton = new JButton(" + ");
+            insertButton.addActionListener(new ActionListener()
+            {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    insertValue( index );
+                }
+            });
+
+            JPanel buttons = new JPanel();
+            buttons.add(removeButton);
+            buttons.add(insertButton);
+
+            rlm.add(buttons);
             rlm.add(component);
             rlm.setStretchy(parameter.isStretchy());
 
-            container.add(row);
-            container.add(parameterErrorLabel);
+            this.add(row);
+            this.add(parameterErrorLabel);
         }
     }
 }

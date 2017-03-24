@@ -1,7 +1,6 @@
 package uk.co.nickthecoder.jguifier;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,7 +9,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 
-import uk.co.nickthecoder.jguifier.parameter.GroupParameter;
 import uk.co.nickthecoder.jguifier.parameter.Parameter;
 
 public abstract class AbstractParameterPanel extends JPanel implements ParameterHolder
@@ -23,37 +21,7 @@ public abstract class AbstractParameterPanel extends JPanel implements Parameter
     {
         _parameterErrorLabels = new HashMap<String, JLabel>();
     }
-
-    public void addParameter(Parameter parameter)
-    {
-        Component component = parameter.createComponent(this);
-        addParameter(parameter, component);
-    }
-
-    public void addParameter(Parameter parameter, Component component)
-    {
-        addParameter(parameter, this, component);
-    }
-
-    public void addParameters(GroupParameter group)
-    {
-        addParameters(group, this);
-    }
-
-    protected void addParameters(GroupParameter group, AbstractParameterPanel container)
-    {
-        for (Parameter parameter : group.getChildren()) {
-            if (!parameter.visible) {
-                continue;
-            }
-
-            Component component = parameter.createComponent(this);
-            addParameter(parameter, container, component);
-        }
-    }
-
-    protected abstract void addParameter(Parameter parameter, AbstractParameterPanel container, Component component);
-
+    
     protected JLabel createErrorLabel()
     {
         Icon icon = UIManager.getIcon("OptionPane.errorIcon");
