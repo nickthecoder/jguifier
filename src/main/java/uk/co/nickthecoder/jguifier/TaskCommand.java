@@ -46,14 +46,14 @@ public class TaskCommand implements TaskListener
     /**
      * Parameters used by all Tasks, such as "--prompt", "--help", "--description", "--taskName" etc.
      */
-    private HashMap<String, Parameter> _metaParametersMap;
+    private HashMap<String, ValueParameter<?>> _metaParametersMap;
 
     public TaskCommand(Task task)
     {
         this.task = task;
         this.task.fromCommandLine = true;
 
-        _metaParametersMap = new HashMap<String, Parameter>();
+        _metaParametersMap = new HashMap<String, ValueParameter<?>>();
 
         _helpParameter = new BooleanParameter("help", false);
         _autoCompleteParameter = new BooleanParameter("autocomplete", false);
@@ -69,9 +69,9 @@ public class TaskCommand implements TaskListener
         task.addTaskListener(this);
     }
 
-    private void addMetaParameters(Parameter... parameters)
+    private void addMetaParameters(ValueParameter<?>... parameters)
     {
-        for (Parameter parameter : parameters) {
+        for (ValueParameter<?> parameter : parameters) {
             _metaParametersMap.put(parameter.getName(), parameter);
 
             if (parameter instanceof BooleanParameter) {
@@ -107,16 +107,16 @@ public class TaskCommand implements TaskListener
      * @return The parameter with the given name, or null if no Parameter has that name.
      * @priority 3
      */
-    public Parameter findParameter(String name)
+    public ValueParameter<?> findParameter(String name)
     {
-        Parameter result = task.findParameter(name);
+        ValueParameter<?> result = task.findParameter(name);
 
         if (result != null) {
             return result;
         }
         return _metaParametersMap.get(name);
     }
-
+    
     /**
      * Ignores the user defaults file. A fluent API, which returns this.
      * 
@@ -162,13 +162,13 @@ public class TaskCommand implements TaskListener
             }
 
             task.debug.println("Parameters : ");
-            for (Parameter parameter : task._parameters) {
+            for (ValueParameter<?> parameter : task.valueParameters()) {
                 task.debug.println(parameter);
             }
 
             try {
                 // Check that if all the parameters are present and correct.
-                for (Parameter parameter : task._parameters) {
+                for (Parameter parameter : task.valueParameters()) {
                     parameter.check();
                 }
                 task.check();
@@ -369,7 +369,7 @@ public class TaskCommand implements TaskListener
                 parameter.autocomplete(cur);
             }
         } else {
-            for (Parameter parameter : task._parameters) {
+            for (Parameter parameter : task.valueParameters()) {
                 autocompleteFilter("--" + parameter.getName(), cur);
             }
         }

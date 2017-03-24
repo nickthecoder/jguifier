@@ -118,6 +118,23 @@ public abstract class ValueParameter<T> extends Parameter implements Cloneable
     }
 
     /**
+     * Tries to set the value, firing a change event, but if the parameter is not valid,
+     * no error is thrown. The parameter will have the new value, which means it can be
+     * in a error state.
+     * 
+     * @param value
+     *            The new value
+     */
+    public void setValueSafely(T value)
+    {
+        try {
+            setValue(value);
+        } catch (Exception e) {
+            _value = value;
+        }
+    }
+
+    /**
      * Set the value of the parameter.
      * The parameter is checked, throwing a ParameterException when invalid.
      * However, the value is set even when an exception is thrown. This allows parameters to be set to
@@ -258,7 +275,7 @@ public abstract class ValueParameter<T> extends Parameter implements Cloneable
             return me();
         }
 
-        public MultipleParameter<P, T> multipleParameter( String name )
+        public MultipleParameter<P, T> multipleParameter(String name)
         {
             return new MultipleParameter<P, T>(making, name);
         }

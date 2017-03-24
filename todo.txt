@@ -1,13 +1,8 @@
 Current Task
 ============
 
-MultiParameter
-	Use json for the String representation. i.e. ["one","two","three"]
-	Don't allow in the form --myParam abc def
-	because it would cause problems with values beginning with "--"
-	However, when combined with the (as yet unwritten) default parameter, then you can specify it without the --myParam
-	
-
+List all parameters, including all descendants, not just children.
+Look at Task, and see why it has a list of parameters, and a map.
 
 BUGS
 ====
@@ -34,11 +29,6 @@ Allow one parameter to be set without giving its name
 ChoiceParameter as ToggleButtons and/or radio buttons
 
 MultipleChoiceParameter - pick many from a list of options.
-
-MultipleParameter - allow a single parameter to have a LIST of values
-	Command line can look something like :
-		myCommand --foo=abc --foo=def
-	Where parameter foo is given two values, "abc" and "def"
 
 Finish javadocs
 

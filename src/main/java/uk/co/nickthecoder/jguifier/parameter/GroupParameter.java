@@ -37,9 +37,41 @@ public class GroupParameter
     {
     }
 
-    public List<Parameter> children()
+    public Iterable<Parameter> children()
     {
         return _children;
+    }
+
+    public Iterable<ValueParameter<?>> valueParameters()
+    {
+        List<ValueParameter<?>> all = new ArrayList<>();
+        for (Parameter p : _children) {
+            if (p instanceof ValueParameter<?>) {
+                all.add((ValueParameter<?>) p);
+            }
+            if (p instanceof GroupParameter) {
+                for (ValueParameter<?> p2 : ((GroupParameter) p).valueParameters()) {
+                    all.add(p2);
+                }
+            }
+        }
+
+        return all;
+    }
+    
+    public Iterable<Parameter> parameters()
+    {
+        List<Parameter> all = new ArrayList<>();
+        for (Parameter p : _children) {
+            all.add((ValueParameter<?>) p);
+            if (p instanceof GroupParameter) {
+                for (Parameter p2 : ((GroupParameter) p).parameters()) {
+                    all.add(p2);
+                }
+            }
+        }
+
+        return all;
     }
 
     public void addParameter(int position, Parameter parameter)
@@ -101,7 +133,7 @@ public class GroupParameter
     {
         StringBuffer buffer = new StringBuffer();
 
-        for (ValueParameter<?> parameter : allValueParameters()) {
+        for (ValueParameter<?> parameter : valueParameters()) {
             if (parameter instanceof MultipleParameter) {
 
                 MultipleParameter<?, ?> mp = (MultipleParameter<?, ?>) parameter;
@@ -167,31 +199,4 @@ public class GroupParameter
 
     }
 
-    public List<Parameter> allParameters()
-    {
-        List<Parameter> result = new ArrayList<Parameter>();
-        collectParameters(result);
-        return result;
-    }
-
-    public List<ValueParameter<?>> allValueParameters()
-    {
-        List<ValueParameter<?>> result = new ArrayList<ValueParameter<?>>();
-        for (Parameter parameter : allParameters()) {
-            if (parameter instanceof ValueParameter) {
-                result.add((ValueParameter<?>) parameter);
-            }
-        }
-        return result;
-    }
-
-    private void collectParameters(List<Parameter> list)
-    {
-        for (Parameter parameter : children()) {
-            list.add(parameter);
-            if (parameter instanceof GroupParameter) {
-                ((GroupParameter) parameter).collectParameters(list);
-            }
-        }
-    }
 }

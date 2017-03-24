@@ -96,7 +96,7 @@ public abstract class AbstractParameterPanel extends JPanel implements Parameter
     {
         boolean result = true;
 
-        for (Parameter parameter : task.getParameters().children()) {
+        for (Parameter parameter : task.valueParameters()) {
             try {
                 parameter.check();
             } catch (ParameterException e) {

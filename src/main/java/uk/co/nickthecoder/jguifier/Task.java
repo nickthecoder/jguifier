@@ -53,11 +53,6 @@ public abstract class Task implements Runnable
     private String _description = "";
 
     /**
-     * The list of all parameters is the order which they were added.
-     */
-    protected List<Parameter> _parameters;
-
-    /**
      * The hierarchical list of parameters (groups can have sub-groups).
      */
     protected GroupParameter _root = new GroupParameter("__ROOT");
@@ -97,7 +92,6 @@ public abstract class Task implements Runnable
      */
     public Task()
     {
-        _parameters = new ArrayList<Parameter>();
         _parametersMap = new HashMap<String, Parameter>();
     }
 
@@ -202,32 +196,6 @@ public abstract class Task implements Runnable
     }
 
     /**
-     * The Task's parameters are grouped together using a {@link GroupParameter}. It is a hierarchical structure,
-     * as a GroupPramater may contain other GroupParameters.
-     * 
-     * @return The top-level GroupParameter.
-     * @priority 5
-     */
-    GroupParameter getRootParameter()
-    {
-        return _root;
-    }
-
-    /**
-     * A fluent API for {@link #addParameters(Parameter...)}.
-     * 
-     * @param parameters
-     *            The parameters for this Task.
-     * @return this
-     * @priority 1
-     */
-    public final Task parameters(Parameter... parameters)
-    {
-        addParameters(parameters);
-        return this;
-    }
-
-    /**
      * Adds a list of Parameters. Usually called from the Task's constructor.
      * 
      * @param parameters
@@ -250,18 +218,6 @@ public abstract class Task implements Runnable
     {
         _root.addParameter(parameter);
         addParameterToCollections(parameter);
-    }
-
-    /**
-     * A fluent API for {@link #addParameter(Parameter)}.
-     * 
-     * @param parameter
-     * @return this
-     */
-    public final Task parameter(Parameter parameter)
-    {
-        addParameter(parameter);
-        return this;
     }
 
     public void insertParameters(int position, Parameter... parameters)
@@ -288,7 +244,6 @@ public abstract class Task implements Runnable
                 addParameterToCollections(child);
             }
         } else {
-            this._parameters.add(parameter);
             this._parametersMap.put(parameter.getName(), parameter);
         }
 
@@ -389,31 +344,22 @@ public abstract class Task implements Runnable
             fos = new FileOutputStream(file);
             PrintWriter out = new PrintWriter(fos);
 
-            saveDefaults(out, getRootParameter());
+            for (ValueParameter<?> parameter : valueParameters()) {
+                String value = parameter.getStringValue();
+                if (!Util.empty(value)) {
+                    out.println(parameter.getName() + "=" + parameter.getStringValue());
+                }
+            }
 
             out.flush();
+            out.close();
+
         } finally {
             if (fos != null) {
                 fos.close();
             }
         }
 
-    }
-
-    private void saveDefaults(PrintWriter out, GroupParameter gp)
-    {
-        for (Parameter parameter : _parameters) {
-            if (parameter instanceof ValueParameter) {
-                ValueParameter<?> vp = (ValueParameter<?>) parameter;
-                String value = vp.getStringValue();
-                if (!Util.empty(value)) {
-                    out.println(vp.getName() + "=" + vp.getStringValue());
-                }
-
-            } else if (parameter instanceof GroupParameter) {
-                saveDefaults(out, (GroupParameter) parameter);
-            }
-        }
     }
 
     private void parseDefault(String line)
@@ -460,18 +406,37 @@ public abstract class Task implements Runnable
         return getName() + _root.getCommandString(includeHidden);
     }
 
-    public Parameter findParameter(String name)
+    public ValueParameter<?> findParameter(String name)
     {
-        return _parametersMap.get(name);
+        for (ValueParameter<?> p : valueParameters()) {
+            if (p.getName().equals(name)) {
+                return p;
+            }
+        }
+        return null;
     }
 
     /**
      *
      * @priority 4
      */
-    public GroupParameter getParameters()
+    public Iterable<ValueParameter<?>> valueParameters()
+    {
+        return _root.valueParameters();
+    }
+
+    public GroupParameter getRootParameter()
     {
         return _root;
+    }
+
+    /**
+     *
+     * @priority 4
+     */
+    public Iterable<Parameter> parameters()
+    {
+        return _root.parameters();
     }
 
     /**
@@ -494,7 +459,7 @@ public abstract class Task implements Runnable
         System.out.println(getName());
         System.out.println();
 
-        for (Parameter parameter : _parameters) {
+        for (Parameter parameter : valueParameters()) {
             if (parameter.visible) {
                 System.out.println("    " + parameter.getHelp());
             }
@@ -526,7 +491,7 @@ public abstract class Task implements Runnable
     {
         try {
             // Check that if all the parameters are present and correct.
-            for (Parameter parameter : _parameters) {
+            for (Parameter parameter : valueParameters()) {
                 parameter.check();
             }
             check();
@@ -660,7 +625,7 @@ public abstract class Task implements Runnable
             Constructor<?> init = klass.getConstructor(new Class<?>[] {});
 
             Task result = (Task) init.newInstance();
-            for (Parameter parameter : _parameters) {
+            for (Parameter parameter : valueParameters()) {
                 if (parameter instanceof ValueParameter) {
                     ValueParameter vp = (ValueParameter) parameter;
                     ((ValueParameter) result.findParameter(vp.getName())).setValue(vp.getValue());
