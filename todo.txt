@@ -1,11 +1,10 @@
 Current Task
 ============
 
-List all parameters, including all descendants, not just children.
-Look at Task, and see why it has a list of parameters, and a map.
-
 BUGS
 ====
+
+Command doesn't list multiple values????
 
 StringChoiceParameters .choice is annoying, as the two parameter version doesn't set the label
 	and the 3 parameter version, you end up repeating the code twice.  

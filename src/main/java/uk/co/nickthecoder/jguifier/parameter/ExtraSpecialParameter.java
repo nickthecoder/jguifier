@@ -11,6 +11,7 @@ import uk.co.nickthecoder.jguifier.ParameterHolder;
 import uk.co.nickthecoder.jguifier.ParameterListener;
 import uk.co.nickthecoder.jguifier.Task;
 import uk.co.nickthecoder.jguifier.ValueParameter;
+import uk.co.nickthecoder.jguifier.guiutil.TableLayoutManager;
 import uk.co.nickthecoder.jguifier.util.Util;
 
 /**
@@ -202,10 +203,16 @@ public class ExtraSpecialParameter<S, P extends ValueParameter<T>, T>
             {
                 holder.clearError(ExtraSpecialParameter.this);
             }
+
+            @Override
+            public TableLayoutManager getTableLayoutManager()
+            {
+                return holder.getTableLayoutManager();
+            }
         };
 
         final JComboBox<?> specialComponent = (JComboBox<?>) super.createComponent(holder);
-        
+
         final Component regularComponent = _regularParameter.createComponent(forward);
 
         both.add(specialComponent, BorderLayout.WEST);

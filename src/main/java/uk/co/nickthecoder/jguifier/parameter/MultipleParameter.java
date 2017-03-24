@@ -2,23 +2,24 @@ package uk.co.nickthecoder.jguifier.parameter;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.BoxLayout;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 import uk.co.nickthecoder.jguifier.AbstractParameterPanel;
 import uk.co.nickthecoder.jguifier.ParameterHolder;
 import uk.co.nickthecoder.jguifier.ParameterListener;
 import uk.co.nickthecoder.jguifier.ValueParameter;
+import uk.co.nickthecoder.jguifier.guiutil.RowLayoutManager;
 import uk.co.nickthecoder.jguifier.guiutil.TableLayoutManager;
 import uk.co.nickthecoder.jguifier.util.Util;
 
@@ -145,7 +146,7 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
     @Override
     public Component createComponent(final ParameterHolder holder)
     {
-        return new MultipleParameterComponent();
+        return new MultipleParameterComponent(holder);
     }
 
     class MultipleParameterComponent extends JPanel
@@ -154,11 +155,15 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
 
         private static final long serialVersionUID = 1L;
 
-        public MultipleParameterComponent()
+        public MultipleParameterComponent(ParameterHolder holder)
         {
             Util.assertIsEDT();
 
-            parametersPanel = new MultiplePanel();
+            setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createTitledBorder(getLabel()),
+                BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+
+            parametersPanel = new MultiplePanel(holder);
             addComponents();
 
             setLayout(new BorderLayout());
@@ -174,6 +179,27 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
                     newValue();
                 }
             });
+
+            MultipleParameter.this.addListener(new ParameterListener()
+            {
+
+                @Override
+                public void changed(Parameter source)
+                {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            parametersPanel.clear();
+                            addComponents();
+
+                            // I had trouble with redrawing, and this fixed it. Bad, I know...
+                            parametersPanel.setVisible(false);
+                            parametersPanel.setVisible(true);
+                            
+                        }
+                    });
+                }
+
+            });
         }
 
         private void newValue()
@@ -182,12 +208,7 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
 
             T value = prototypeParameter.getValue();
             getValue().add(value);
-            addComponent(value, getValue().size() - 1);
-
-            // Hmm, I was having redraw problems. validate, doLayout, repaint etc didn't work, but this did.
-            // Yes, I know it's bad, and there is probably a bug somewhere. Soz.
-            parametersPanel.setVisible(false);
-            parametersPanel.setVisible(true);
+            fireChangeEvent();
         }
 
         private void addComponents()
@@ -217,28 +238,8 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
             });
 
             Component component = parameter.createComponent(parametersPanel);
-            JPanel panel = new JPanel();
-            panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-            JButton removeButton = new JButton(" - ");
-            removeButton.addActionListener(new ActionListener()
-            {
-                @Override
-                public void actionPerformed(ActionEvent e)
-                {
-                    getValue().remove(index);
-                    parametersPanel.clear();
-                    addComponents();
 
-                    parametersPanel.setVisible(false);
-                    parametersPanel.setVisible(true);
-
-                }
-            });
-
-            panel.add(removeButton);
-            panel.add(component);
-
-            parametersPanel.addParameter(parameter, panel);
+            parametersPanel.addParameter(parameter, component);
         }
     }
 
@@ -251,37 +252,59 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
     {
         private static final long serialVersionUID = 1L;
 
-        // We don't really need the power of TableLayoutManager, because we only have one column,
-        // but I've kept it, to keep consistent with ParametersPanel.
         TableLayoutManager _tlm;
 
-        public MultiplePanel()
+        public MultiplePanel(ParameterHolder holder)
         {
             super();
 
             // A table of all of the task's parameters
-            _tlm = new TableLayoutManager(this, 1);
-            _tlm.getColumn(0).stretchFactor = 1;
+            _tlm = holder.getTableLayoutManager();
+            _tlm.getColumn(1).stretchFactor = 1;
             setLayout(_tlm);
             setBorder(new EmptyBorder(10, 10, 10, 10));
+        }
+
+        public TableLayoutManager getTableLayoutManager()
+        {
+            return _tlm;
         }
 
         public void clear()
         {
             _parameterErrorLabels.clear();
             this.removeAll();
-            _tlm = new TableLayoutManager(this, 2);
         }
 
         @Override
-        protected void addParameter(Parameter parameter, Container container, Component component)
+        protected void addParameter(final Parameter parameter, final AbstractParameterPanel container,
+            Component component)
         {
             JLabel parameterErrorLabel = createErrorLabel();
             _parameterErrorLabels.put(parameter.getName(), parameterErrorLabel);
             parameterErrorLabel.setVisible(false);
             parameterErrorLabel.setHorizontalAlignment(SwingConstants.LEFT);
 
-            container.add(component);
+            JPanel row = new JPanel();
+            RowLayoutManager rlm = new RowLayoutManager(row, _tlm);
+            row.setLayout(rlm);
+
+            JButton removeButton = new JButton(" - ");
+            removeButton.addActionListener(new ActionListener()
+            {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    getValue().remove(((ValueParameter<?>) parameter).getValue());
+                    fireChangeEvent();
+                }
+            });
+
+            rlm.add(removeButton);
+            rlm.add(component);
+            rlm.setStretchy(parameter.isStretchy());
+
+            container.add(row);
             container.add(parameterErrorLabel);
         }
     }

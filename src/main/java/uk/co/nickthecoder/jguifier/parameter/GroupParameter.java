@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.JPanel;
 
 import uk.co.nickthecoder.jguifier.ParameterException;
 import uk.co.nickthecoder.jguifier.ParameterHolder;
 import uk.co.nickthecoder.jguifier.ParameterListener;
+import uk.co.nickthecoder.jguifier.ParametersPanel;
 import uk.co.nickthecoder.jguifier.TaskPrompter;
 import uk.co.nickthecoder.jguifier.ValueParameter;
 import uk.co.nickthecoder.jguifier.util.Util;
@@ -84,7 +84,7 @@ public class GroupParameter
         addChildren(_children.size(), parameter);
     }
 
-    public List<Parameter> getChildren()
+    public Iterable<Parameter> getChildren()
     {
         return _children;
     }
@@ -121,12 +121,15 @@ public class GroupParameter
     @Override
     public Component createComponent(final ParameterHolder holder)
     {
-        JPanel panel = new JPanel();
-        panel.setBorder(BorderFactory.createCompoundBorder(
+        ParametersPanel parametersPanel = new ParametersPanel(holder);
+        
+        parametersPanel.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createTitledBorder(getLabel()),
             BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 
-        return panel;
+        parametersPanel.addParameters(this);
+
+        return parametersPanel;
     }
 
     public String getCommandString(boolean includeHidden)

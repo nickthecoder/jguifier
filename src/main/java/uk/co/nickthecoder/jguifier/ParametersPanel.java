@@ -1,8 +1,6 @@
 package uk.co.nickthecoder.jguifier;
 
-import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -13,6 +11,7 @@ import uk.co.nickthecoder.jguifier.guiutil.RowLayoutManager;
 import uk.co.nickthecoder.jguifier.guiutil.TableLayoutManager;
 import uk.co.nickthecoder.jguifier.parameter.BooleanParameter;
 import uk.co.nickthecoder.jguifier.parameter.GroupParameter;
+import uk.co.nickthecoder.jguifier.parameter.MultipleParameter;
 import uk.co.nickthecoder.jguifier.parameter.Parameter;
 
 /**
@@ -33,20 +32,33 @@ public class ParametersPanel extends AbstractParameterPanel
 
     public ParametersPanel()
     {
+        this(null);
+    }
+
+    public ParametersPanel(ParameterHolder parent)
+    {
         super();
-        
-        // A table of all of the task's parameters
-        _tlm = new TableLayoutManager(this, 2);
-        _tlm.getColumn(1).stretchFactor = 1;
+
+        if (parent == null) {
+            _tlm = new TableLayoutManager(this, 2);
+        } else {
+            _tlm = parent.getTableLayoutManager();
+            _tlm.getColumn(1).stretchFactor = 1;
+        }
         setLayout(_tlm);
         setBorder(new EmptyBorder(10, 10, 40, 10));
 
     }
 
+    public TableLayoutManager getTableLayoutManager()
+    {
+        return _tlm;
+    }
+
     public boolean leftAlignBooleans = true;
 
     @Override
-    protected void addParameter(Parameter parameter, Container container, Component component)
+    protected void addParameter(Parameter parameter, AbstractParameterPanel container, Component component)
     {
         JLabel parameterErrorLabel = createErrorLabel();
         _parameterErrorLabels.put(parameter.getName(), parameterErrorLabel);
@@ -54,17 +66,18 @@ public class ParametersPanel extends AbstractParameterPanel
         parameterErrorLabel.setHorizontalAlignment(SwingConstants.LEFT);
 
         if (parameter instanceof GroupParameter) {
-            GroupParameter subGroup = (GroupParameter) parameter;
 
-            Container subContainer = (Container) component;
-            subContainer.setLayout(_tlm);
-            container.add(subContainer);
-
-            addParameters(subGroup, subContainer);
+            container.add(component);
 
         } else {
 
             if ((leftAlignBooleans) && (parameter instanceof BooleanParameter)) {
+
+                container.add(component);
+
+            } else if (parameter instanceof MultipleParameter) {
+                // MultipleParameters don't need a label, as they are in a panel which includes
+                // the label.
 
                 container.add(component);
 
@@ -77,7 +90,6 @@ public class ParametersPanel extends AbstractParameterPanel
                     : new JLabel(parameter.getLabel());
 
                 rlm.add(label);
-                label.setBackground(Color.BLUE);
 
                 rlm.add(component);
                 rlm.setStretchy(parameter.isStretchy());

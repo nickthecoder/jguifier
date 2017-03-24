@@ -2,7 +2,6 @@ package uk.co.nickthecoder.jguifier;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,7 +22,6 @@ public abstract class AbstractParameterPanel extends JPanel implements Parameter
     public AbstractParameterPanel()
     {
         _parameterErrorLabels = new HashMap<String, JLabel>();
-
     }
 
     public void addParameter(Parameter parameter)
@@ -42,7 +40,7 @@ public abstract class AbstractParameterPanel extends JPanel implements Parameter
         addParameters(group, this);
     }
 
-    protected void addParameters(GroupParameter group, Container container)
+    protected void addParameters(GroupParameter group, AbstractParameterPanel container)
     {
         for (Parameter parameter : group.getChildren()) {
             if (!parameter.visible) {
@@ -54,7 +52,7 @@ public abstract class AbstractParameterPanel extends JPanel implements Parameter
         }
     }
 
-    protected abstract void addParameter(Parameter parameter, Container container, Component component);
+    protected abstract void addParameter(Parameter parameter, AbstractParameterPanel container, Component component);
 
     protected JLabel createErrorLabel()
     {
