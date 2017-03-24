@@ -8,6 +8,7 @@ import javax.swing.JComponent;
 
 import uk.co.nickthecoder.jguifier.parameter.MultipleParameter;
 import uk.co.nickthecoder.jguifier.parameter.Parameter;
+import uk.co.nickthecoder.jguifier.util.Util;
 
 /**
  * 
@@ -125,12 +126,13 @@ public abstract class ValueParameter<T> extends Parameter implements Cloneable
      * @param value
      *            The new value
      */
-    public void setValueSafely(T value)
+    public void setValueIgnoreErrors(T value)
     {
-        try {
-            setValue(value);
-        } catch (Exception e) {
-            _value = value;
+        boolean changed = !Util.equals(value, _value);
+        _value = value;
+
+        if (changed) {
+            fireChangeEvent();
         }
     }
 
@@ -148,16 +150,11 @@ public abstract class ValueParameter<T> extends Parameter implements Cloneable
      */
     public void setValue(T value)
     {
-        boolean changed = (value != _value);
-        _value = value;
+        setValueIgnoreErrors(value);
 
         String reason = valid(value);
         if (reason != null) {
             throw new ParameterException(this, reason);
-        }
-
-        if (changed) {
-            fireChangeEvent();
         }
     }
 

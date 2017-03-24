@@ -58,7 +58,7 @@ public class GroupParameter
 
         return all;
     }
-    
+
     public Iterable<Parameter> parameters()
     {
         List<Parameter> all = new ArrayList<>();
@@ -162,7 +162,8 @@ public class GroupParameter
     /**
      * Forwards change events from the Group's children to this Group's listeners.
      * This lets clients listen for events from all of a Task's parameters by listening to
-     * the root parameter like so : <code><pre>
+     * the root parameter like so :
+     * <code><pre>
      * task.getRootParameter().addListener( ... );
      * </pre></code>
      */
