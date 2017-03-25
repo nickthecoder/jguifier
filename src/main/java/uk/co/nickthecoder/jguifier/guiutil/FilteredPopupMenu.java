@@ -17,6 +17,8 @@ public class FilteredPopupMenu extends JScrollPopupMenu
 {
     private static final long serialVersionUID = 1L;
 
+    private static final String TYPE_TO_FILTER = "<type to filter>";
+
     private JMenuItem filterComponent;
 
     private MenuItemFilter filter;
@@ -86,7 +88,7 @@ public class FilteredPopupMenu extends JScrollPopupMenu
     {
         this.filter = filter;
 
-        filterComponent = new JMenuItem("");
+        filterComponent = new JMenuItem(TYPE_TO_FILTER);
         filterComponent.setEnabled(false);
         add(filterComponent);
         addSeparator();
@@ -128,7 +130,7 @@ public class FilteredPopupMenu extends JScrollPopupMenu
             }
         }
         if (filterText.length() == 0) {
-            filterComponent.setText("<type to filter>");
+            filterComponent.setText(TYPE_TO_FILTER);
         } else {
             filterComponent.setText(found ? filterText : filterText + " <no matches>");
         }
