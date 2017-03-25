@@ -41,9 +41,9 @@ public class ParametersPanel extends AbstractParameterPanel
 
         if (parent == null) {
             _tlm = new TableLayoutManager(this, 2);
+            _tlm.getColumn(1).stretchFactor = 1;
         } else {
             _tlm = parent.getTableLayoutManager();
-            _tlm.getColumn(1).stretchFactor = 1;
         }
         setLayout(_tlm);
         setBorder(new EmptyBorder(10, 10, 40, 10));
@@ -56,7 +56,6 @@ public class ParametersPanel extends AbstractParameterPanel
     }
 
     public boolean leftAlignBooleans = true;
-
 
     public void addParameters(GroupParameter group)
     {
@@ -81,42 +80,38 @@ public class ParametersPanel extends AbstractParameterPanel
 
             this.add(component);
 
+        } else if ((leftAlignBooleans) && (parameter instanceof BooleanParameter)) {
+
+            this.add(component);
+
+        } else if (parameter instanceof MultipleParameter) {
+            // MultipleParameters don't need a label, as they are in a panel which includes
+            // the label.
+
+            this.add(component);
+
         } else {
+            JPanel row = new JPanel();
+            
+            RowLayoutManager rlm = new RowLayoutManager(row, _tlm);
+            row.setLayout(rlm);
 
-            if ((leftAlignBooleans) && (parameter instanceof BooleanParameter)) {
+            JLabel label = parameter instanceof BooleanParameter ? new JLabel()
+                : new JLabel(parameter.getLabel());
 
-                this.add(component);
+            rlm.add(label);
+            rlm.add(component);
+            rlm.setStretchy(parameter.isStretchy());
 
-            } else if (parameter instanceof MultipleParameter) {
-                // MultipleParameters don't need a label, as they are in a panel which includes
-                // the label.
-
-                this.add(component);
-
-            } else {
-                JPanel row = new JPanel();
-                RowLayoutManager rlm = new RowLayoutManager(row, _tlm);
-                row.setLayout(rlm);
-
-                JLabel label = parameter instanceof BooleanParameter ? new JLabel()
-                    : new JLabel(parameter.getLabel());
-
-                rlm.add(label);
-
-                rlm.add(component);
-                rlm.setStretchy(parameter.isStretchy());
-
-                String desc = parameter.getDescription();
-                if (desc != null) {
-                    label.setToolTipText(desc);
-                }
-
-                this.add(row);
+            String desc = parameter.getDescription();
+            if (desc != null) {
+                label.setToolTipText(desc);
             }
 
-            this.add(parameterErrorLabel);
-
+            this.add(row);
         }
+
+        this.add(parameterErrorLabel);
 
     }
 
