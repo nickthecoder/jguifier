@@ -3,16 +3,21 @@ package uk.co.nickthecoder.jguifier.guiutil;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -20,6 +25,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import uk.co.nickthecoder.jguifier.Task;
 import uk.co.nickthecoder.jguifier.parameter.FileParameter;
 import uk.co.nickthecoder.jguifier.parameter.TriState;
 import uk.co.nickthecoder.jguifier.util.FileLister;
@@ -40,7 +46,7 @@ import uk.co.nickthecoder.jguifier.util.FileLister;
  * 
  * @priority 4
  */
-public class FileComponent extends JPanel implements DropFileListener
+public class FileComponent extends JPanel implements DropFileListener, DragFileListener
 {
     private static final long serialVersionUID = 1L;
 
@@ -54,12 +60,15 @@ public class FileComponent extends JPanel implements DropFileListener
 
     public FileFilter fileFilter;
 
+    private JLabel _iconLabel;
+
     public FileComponent(FileParameter fileParameter, String text)
     {
         _fileParameter = fileParameter;
         _textField = new JTextField(text);
 
         _completeButton = new JButton("\u2193");
+        _completeButton.setToolTipText("Click (or use the down arrow) for file-completion");
         _completeButton.addActionListener(new ActionListener()
         {
             @Override
@@ -69,7 +78,18 @@ public class FileComponent extends JPanel implements DropFileListener
             }
         });
 
+        try {
+            Image image = ImageIO.read(Task.class.getResource("file.png"));
+            ImageIcon icon = new ImageIcon(image);
+            _iconLabel = new JLabel(icon);
+        } catch (Exception e) {
+            e.printStackTrace();
+            _iconLabel = new JLabel("X");
+        }
+        _iconLabel.setToolTipText("You can drag this!");
+
         JButton pickButton = new JButton(" … ");
+        pickButton.setToolTipText("Click for old-fashioned File Dialog");
         pickButton.addActionListener(new ActionListener()
         {
             @Override
@@ -113,7 +133,8 @@ public class FileComponent extends JPanel implements DropFileListener
         JPanel buttons = new JPanel();
 
         buttons.setLayout(new BorderLayout());
-        buttons.add(_completeButton, BorderLayout.WEST);
+        buttons.add(_iconLabel, BorderLayout.WEST);
+        buttons.add(_completeButton, BorderLayout.CENTER);
         buttons.add(pickButton, BorderLayout.EAST);
 
         this.add(buttons, BorderLayout.EAST);
@@ -124,6 +145,7 @@ public class FileComponent extends JPanel implements DropFileListener
         pickButton.setPreferredSize(preferredSize);
 
         new DropFileHandler(this, this, _textField);
+        new DragFileHandler(this).draggable(_iconLabel).draggable(_completeButton).draggable(pickButton);
     }
 
     public JTextField getTextField()
@@ -251,7 +273,19 @@ public class FileComponent extends JPanel implements DropFileListener
     @Override
     public void droppedFiles(List<File> files)
     {
-        _fileParameter.setValue(files.get(0));
+        if (!files.isEmpty()) {
+            _fileParameter.setValue(files.get(0));
+        }
+    }
+
+    @Override
+    public List<File> getDragFiles()
+    {
+        List<File> list = new ArrayList<>(1);
+        if (_fileParameter.getValue() != null) {
+            list.add(_fileParameter.getValue());
+        }
+        return list;
     }
 
 }

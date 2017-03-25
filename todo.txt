@@ -1,6 +1,8 @@
 Current Task
 ============
 
+File complete, if a file is selected, then DOWN should list all siblings.
+
 BUGS
 ====
 
@@ -20,11 +22,8 @@ OrParameter
                        - | --login |
                        
     In a box, with a label, like GroupParameter
-
-Text editor parameter, for editing chunks of code (such as groovy scripts, xml, json etc)
-	Right click on any multi-line string parameter for "Editor" option.
-    Share the same document between the Parameter's component and the EditorWidget, so changes
-      appear in both.
+    Listen to each child, and when their value is set to not-null, then select that parameter.
+    OrParameter is NOT a ValueParameter.
 
 
 ChoiceParameter as ToggleButtons and/or radio buttons

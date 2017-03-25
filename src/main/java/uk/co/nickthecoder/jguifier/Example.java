@@ -184,9 +184,9 @@ public class Example extends Task
     public Example()
     {
         super();
-        _extras.addChildren(_output, _file, _dateFormat, _special);
-        addParameters(_boolean, _integer, _double, _shortString, _longString, _multiLineString, _greeting,
-            _regex, _extras, manyInts, _files);
+        _extras.addChildren(_output, _file, _files, _dateFormat, _special);
+        addParameters(_boolean, _integer, _double, _shortString, _longString, _greeting,
+            _regex, _extras, manyInts, _multiLineString);
     }
 
     @Override

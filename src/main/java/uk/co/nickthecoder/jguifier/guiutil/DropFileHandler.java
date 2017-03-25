@@ -23,18 +23,16 @@ public class DropFileHandler implements DropTargetListener
 
     private JComponent primaryComponent;
 
-    public DropFileHandler(DropFileListener listener, JComponent... components)
+    public DropFileHandler(DropFileListener listener, JComponent primary, JComponent... others)
     {
         this.listener = listener;
+        primaryComponent = primary;
 
-        for (JComponent component : components) {
+        new DropTarget(primary, this);
+        for (JComponent component : others) {
             new DropTarget(component, this);
         }
 
-        if (components.length <= 0) {
-            throw new RuntimeException("Must have at least one component");
-        }
-        primaryComponent = components[0];
         resetBorder();
     }
 
