@@ -1,26 +1,15 @@
 Current Task
 ============
 
-Allow one parameter to be set without giving its name
-    e.g. fileLister.groovy --depth=2 /home/nick
-        (where /home/nick will get the value for the --directory parameter.
-    Note: -- is the posix standard for aborting parsing flags, and treats the remainder as regular parameters
-    So 
-        fileLister.groovy --depth=2 -- --depth
-    should list the directory called "--depth"
-
 BUGS
 ====
 
 Multiparam
     on change, clear the error, and re-validate
-
-StringChoiceParameters .choice is annoying, as the two parameter version doesn't set the label
-	and the 3 parameter version, you end up repeating the code twice.  
+    Check that individual parameters are validated.
 
 New Features
 ============
-
 
 OrParameter
     (x) Command Line  | bash --login |
@@ -33,8 +22,9 @@ OrParameter
     In a box, with a label, like GroupParameter
 
 Text editor parameter, for editing chunks of code (such as groovy scripts, xml, json etc)
-	http://bobbylight.github.io/RSyntaxTextArea/
-	(or maybe code it in wrkfoo only, because it might not be sensible for jguifier to use it)???
+	Right click on any multi-line string parameter for "Editor" option.
+    Share the same document between the Parameter's component and the EditorWidget, so changes
+      appear in both.
 
 
 ChoiceParameter as ToggleButtons and/or radio buttons
@@ -42,3 +32,6 @@ ChoiceParameter as ToggleButtons and/or radio buttons
 MultipleChoiceParameter - pick many from a list of options.
 
 Finish javadocs
+
+Automated testing
+

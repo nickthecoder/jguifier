@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,8 @@ import uk.co.nickthecoder.jguifier.AbstractParameterPanel;
 import uk.co.nickthecoder.jguifier.ParameterHolder;
 import uk.co.nickthecoder.jguifier.ParameterListener;
 import uk.co.nickthecoder.jguifier.ValueParameter;
+import uk.co.nickthecoder.jguifier.guiutil.DropFileHandler;
+import uk.co.nickthecoder.jguifier.guiutil.DropFileListener;
 import uk.co.nickthecoder.jguifier.guiutil.RowLayoutManager;
 import uk.co.nickthecoder.jguifier.guiutil.TableLayoutManager;
 import uk.co.nickthecoder.jguifier.util.Util;
@@ -122,7 +125,7 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
     public String getStringValue()
     {
         ValueParameter<T> param = prototypeParameter.clone();
-        
+
         StringBuffer buffer = new StringBuffer();
         boolean first = true;
         for (T value : getValue()) {
@@ -164,7 +167,7 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
     {
         StringBuffer buffer = new StringBuffer();
         ValueParameter<T> param = prototypeParameter.clone();
-        
+
         for (T value : getValue()) {
             param.setDefaultValue(value);
             String text = param.getStringValue();
@@ -199,7 +202,7 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
         fireChangeEvent();
     }
 
-    private void insertValue( int index )
+    private void insertValue(int index)
     {
         Util.assertIsEDT();
 
@@ -208,7 +211,7 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
         fireChangeEvent();
     }
 
-    class MultipleParameterComponent extends JPanel
+    class MultipleParameterComponent extends JPanel implements DropFileListener
     {
         public MultiplePanel parametersPanel;
 
@@ -218,18 +221,24 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
         {
             Util.assertIsEDT();
 
-            setBorder(BorderFactory.createCompoundBorder(
+            // When <P> is a FileParameter, the DropFileHandler will set the border, so
+            // for this to ALSO have a border, we need to wrap everything inside ANOTHER panel
+            JPanel whole = new JPanel();
+            whole.setLayout(new BorderLayout());
+            whole.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder(getLabel()),
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+
+            setLayout(new BorderLayout());
+            add(whole);
 
             parametersPanel = new MultiplePanel(holder);
             addComponents();
 
-            setLayout(new BorderLayout());
-            add(parametersPanel, BorderLayout.CENTER);
+            whole.add(parametersPanel, BorderLayout.CENTER);
 
             JButton addButton = new JButton("+");
-            add(addButton, BorderLayout.SOUTH);
+            whole.add(addButton, BorderLayout.SOUTH);
             addButton.addActionListener(new ActionListener()
             {
                 @Override
@@ -261,6 +270,10 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
                 }
 
             });
+
+            if (prototypeParameter instanceof FileParameter) {
+                new DropFileHandler(this, this);
+            }
         }
 
         private void addComponents()
@@ -292,6 +305,17 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
             Component component = parameter.createComponent(parametersPanel);
 
             parametersPanel.addParameter(parameter, component, index);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void droppedFiles(List<File> files)
+        {
+            if (prototypeParameter instanceof FileParameter) {
+                for (File file : files) {
+                    addValue((T) file);
+                }
+            }
         }
     }
 
@@ -356,7 +380,7 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
                 @Override
                 public void actionPerformed(ActionEvent e)
                 {
-                    insertValue( index );
+                    insertValue(index);
                 }
             });
 

@@ -40,7 +40,7 @@ import uk.co.nickthecoder.jguifier.util.FileLister;
  * 
  * @priority 4
  */
-public class FileComponent extends JPanel
+public class FileComponent extends JPanel implements DropFileListener
 {
     private static final long serialVersionUID = 1L;
 
@@ -58,7 +58,7 @@ public class FileComponent extends JPanel
     {
         _fileParameter = fileParameter;
         _textField = new JTextField(text);
-        
+
         _completeButton = new JButton("\u2193");
         _completeButton.addActionListener(new ActionListener()
         {
@@ -122,6 +122,8 @@ public class FileComponent extends JPanel
         Dimension preferredSize = new Dimension(buttonHeight, buttonHeight); // Make it square
         _completeButton.setPreferredSize(preferredSize);
         pickButton.setPreferredSize(preferredSize);
+
+        new DropFileHandler(this, this, _textField);
     }
 
     public JTextField getTextField()
@@ -187,11 +189,11 @@ public class FileComponent extends JPanel
         FileLister fileLister = new FileLister().directoriesFirst().includeDirectories();
         // Never exclude hidden files if we have a prefix (as on *nix, this tells us if it is hidden or not).
         if (prefix.equals("")) {
-            fileLister.setIncludeHidden( _fileParameter.getIncludeHidden() );
+            fileLister.setIncludeHidden(_fileParameter.getIncludeHidden());
         } else {
-            fileLister.setIncludeHidden( true );
+            fileLister.setIncludeHidden(true);
         }
-        
+
         children = fileLister.listFiles(directory);
 
         for (File child : children) {
@@ -244,6 +246,12 @@ public class FileComponent extends JPanel
 
             _textField.setText(fileChooser.getSelectedFile().getPath());
         }
+    }
+
+    @Override
+    public void droppedFiles(List<File> files)
+    {
+        _fileParameter.setValue(files.get(0));
     }
 
 }

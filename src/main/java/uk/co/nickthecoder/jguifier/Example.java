@@ -150,6 +150,9 @@ public class Example extends Task
 
     private FileParameter _file = new FileParameter.Builder("file").file().mustExist().parameter();
 
+    private MultipleParameter<FileParameter, File> _files = new FileParameter.Builder("").file().mustExist()
+        .multipleParameter("files");
+
     // Choose one of the given date formats, or type your own format string
     private SpecialParameter<StringParameter, String> _dateFormat = new SpecialParameter.Builder<StringParameter, String>(
         "dateFormat")
@@ -183,7 +186,7 @@ public class Example extends Task
         super();
         _extras.addChildren(_output, _file, _dateFormat, _special);
         addParameters(_boolean, _integer, _double, _shortString, _longString, _multiLineString, _greeting,
-            _regex, _extras, manyInts);
+            _regex, _extras, manyInts, _files);
     }
 
     @Override
