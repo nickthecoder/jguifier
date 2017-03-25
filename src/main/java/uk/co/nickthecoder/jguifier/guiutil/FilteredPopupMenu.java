@@ -30,9 +30,13 @@ public class FilteredPopupMenu extends JScrollPopupMenu
             @Override
             public boolean accept(JMenuItem menuItem, String filterText)
             {
+                if (!menuItem.isEnabled()) {
+                    return true;
+                }
                 return menuItem.getText().toLowerCase().startsWith(filterText.toLowerCase());
             }
         });
+
     }
 
     public static FilteredPopupMenu createContains()
@@ -50,7 +54,7 @@ public class FilteredPopupMenu extends JScrollPopupMenu
     public static FilteredPopupMenu create(MenuItemFilter filter)
     {
         final FilteredPopupMenu result = new FilteredPopupMenu(filter);
-        
+
         result.addMenuKeyListener(new MenuKeyListener()
         {
 
@@ -74,7 +78,7 @@ public class FilteredPopupMenu extends JScrollPopupMenu
             }
 
         });
-        
+
         return result;
     }
 
@@ -107,7 +111,7 @@ public class FilteredPopupMenu extends JScrollPopupMenu
     }
 
     public void setFilterText(String string)
-    {       
+    {
         filterText = string == null ? "" : string;
 
         boolean found = false;

@@ -157,6 +157,8 @@ public class FileComponent extends JPanel implements DropFileListener, DragFileL
     {
         _popupMenu = FilteredPopupMenu.createStartWith();
 
+        int emptyLength = _popupMenu.getSubElements().length;
+
         File value = _fileParameter.getValue();
         if (value == null) {
             value = new File(".");
@@ -173,12 +175,20 @@ public class FileComponent extends JPanel implements DropFileListener, DragFileL
             addToComboBox(value, "");
         }
 
-        // Add files and directories that match the text currently entered
         if (parent != null) {
-            addToComboBox(parent, value.getName());
+            if (value.exists()) {
+                // Add siblings
+                if ( _popupMenu.getSubElements().length > emptyLength ) {
+                    _popupMenu.addSeparator();
+                }
+                addToComboBox(parent, "");
+            } else {
+                // Add files and directories that start with the currently entered
+                addToComboBox(parent, value.getName());
+            }
         }
-
-        if (_popupMenu.getSubElements().length > 0) {
+    
+        if (_popupMenu.getSubElements().length > emptyLength) {
             _popupMenu.show(_completeButton, 0, 0);
         }
     }
@@ -206,6 +216,10 @@ public class FileComponent extends JPanel implements DropFileListener, DragFileL
 
     private void addToComboBox(File directory, String prefix)
     {
+        JMenuItem siblingsLabel = new JMenuItem( "In Directory : " + directory.getName() );
+        siblingsLabel.setEnabled(false);
+        boolean first = true;
+        
         List<File> children;
 
         FileLister fileLister = new FileLister().directoriesFirst().includeDirectories();
@@ -233,6 +247,10 @@ public class FileComponent extends JPanel implements DropFileListener, DragFileL
                 }
                 if (_fileParameter.autocompleteMatches(child)) {
 
+                    if (first) {
+                        _popupMenu.add(siblingsLabel);
+                        first = false;
+                    }
                     addPopupItem(child.getName(), child);
                 }
             }

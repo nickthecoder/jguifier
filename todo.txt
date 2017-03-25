@@ -1,7 +1,8 @@
 Current Task
 ============
 
-File complete, if a file is selected, then DOWN should list all siblings.
+Hide the "down" and "..." buttons on FileComponent. (Can turn on/off globally though).
+    Access File Selector dialog through a pop-up menu.
 
 BUGS
 ====
