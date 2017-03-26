@@ -1,5 +1,6 @@
 package uk.co.nickthecoder.jguifier.guiutil;
 
+import java.awt.Adjustable;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -14,19 +15,25 @@ import java.awt.event.MouseWheelListener;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollBar;
 
-public class JScrollPopupMenu extends JPopupMenu
+/**
+ * Based on a
+ * <a href="http://stackoverflow.com/questions/9288350/adding-vertical-scroll-to-a-jpopupmenu">Stack Overflow Answer</a>
+ * 
+ * This is a flawed implementation - it has an extra component (the JScrollBar), which screws up all methods that
+ * manipulate the menu items by index.
+ */
+public class ScrollPopupMenu extends JPopupMenu
 {
-
     private static final long serialVersionUID = 1L;
 
     protected int maximumVisibleRows = 30;
 
-    public JScrollPopupMenu()
+    public ScrollPopupMenu()
     {
         this(null);
     }
 
-    public JScrollPopupMenu(String label)
+    public ScrollPopupMenu(String label)
     {
         super(label);
         setLayout(new ScrollPopupMenuLayout());
@@ -53,7 +60,7 @@ public class JScrollPopupMenu extends JPopupMenu
     protected JScrollBar getScrollBar()
     {
         if (popupScrollBar == null) {
-            popupScrollBar = new JScrollBar(JScrollBar.VERTICAL);
+            popupScrollBar = new JScrollBar(Adjustable.VERTICAL);
             popupScrollBar.addAdjustmentListener(new AdjustmentListener()
             {
                 @Override
@@ -80,6 +87,7 @@ public class JScrollPopupMenu extends JPopupMenu
         this.maximumVisibleRows = maximumVisibleRows;
     }
 
+    @Override
     public void paintChildren(Graphics g)
     {
         Insets insets = getInsets();
@@ -87,6 +95,7 @@ public class JScrollPopupMenu extends JPopupMenu
         super.paintChildren(g);
     }
 
+    @Override
     protected void addImpl(Component comp, Object constraints, int index)
     {
         super.addImpl(comp, constraints, index);
@@ -96,11 +105,9 @@ public class JScrollPopupMenu extends JPopupMenu
         }
     }
 
+    @Override
     public void remove(int index)
     {
-        // can't remove the scrollbar
-        ++index;
-
         super.remove(index);
 
         if (maximumVisibleRows >= getComponentCount() - 1) {
@@ -108,6 +115,7 @@ public class JScrollPopupMenu extends JPopupMenu
         }
     }
 
+    @Override
     public void show(Component invoker, int x, int y)
     {
         JScrollBar scrollBar = getScrollBar();
@@ -118,16 +126,18 @@ public class JScrollPopupMenu extends JPopupMenu
             int unit = -1;
             int width = 0;
             for (Component comp : getComponents()) {
-                if (!(comp instanceof JScrollBar)) {
-                    Dimension preferredSize = comp.getPreferredSize();
-                    width = Math.max(width, preferredSize.width);
-                    if (unit < 0) {
-                        unit = preferredSize.height;
+                if (comp.isVisible()) {
+                    if (!(comp instanceof JScrollBar)) {
+                        Dimension preferredSize = comp.getPreferredSize();
+                        width = Math.max(width, preferredSize.width);
+                        if (unit < 0) {
+                            unit = preferredSize.height;
+                        }
+                        if (i++ < maximumVisibleRows) {
+                            extent += preferredSize.height;
+                        }
+                        max += preferredSize.height;
                     }
-                    if (i++ < maximumVisibleRows) {
-                        extent += preferredSize.height;
-                    }
-                    max += preferredSize.height;
                 }
             }
 
@@ -169,8 +179,7 @@ public class JScrollPopupMenu extends JPopupMenu
                     if (comp instanceof JScrollBar) {
                         JScrollBar scrollBar = (JScrollBar) comp;
                         visibleAmount = scrollBar.getVisibleAmount();
-                    }
-                    else {
+                    } else {
                         Dimension pref = comp.getPreferredSize();
                         dim.width = Math.max(dim.width, pref.width);
                         dim.height += pref.height;
@@ -194,8 +203,7 @@ public class JScrollPopupMenu extends JPopupMenu
                     if (comp instanceof JScrollBar) {
                         JScrollBar scrollBar = (JScrollBar) comp;
                         visibleAmount = scrollBar.getVisibleAmount();
-                    }
-                    else {
+                    } else {
                         Dimension min = comp.getMinimumSize();
                         dim.width = Math.max(dim.width, min.width);
                         dim.height += min.height;

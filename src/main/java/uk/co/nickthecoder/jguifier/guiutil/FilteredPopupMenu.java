@@ -8,12 +8,9 @@ import javax.swing.event.MenuKeyEvent;
 import javax.swing.event.MenuKeyListener;
 
 /**
- * A JScrcollPopupMenu, whose contents can be filtered by typing text.
- * By default, menu items are selected when their label start with whatever has been typed.
- * Note, this is done case insensitively, by using toLowerCase on both.
- * You can change this behaviour by overriding {@link #accept(String)}.
+ * A JPopupMenu, whose contents can be filtered by typing text.
  */
-public class FilteredPopupMenu extends JScrollPopupMenu
+public class FilteredPopupMenu extends ScrollPopupMenu
 {
     private static final long serialVersionUID = 1L;
 

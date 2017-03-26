@@ -18,6 +18,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -49,6 +50,8 @@ import uk.co.nickthecoder.jguifier.util.FileLister;
 public class FileComponent extends JPanel implements DropFileListener, DragFileListener
 {
     private static final long serialVersionUID = 1L;
+
+    public static PlacesFactory placesFactory = StandardPlacesFactory.instance;
 
     private FileParameter _fileParameter;
 
@@ -153,9 +156,48 @@ public class FileComponent extends JPanel implements DropFileListener, DragFileL
         return _textField;
     }
 
+    private List<JMenu> createPlacesSubMenus()
+    {
+        List<JMenu> result = new ArrayList<>();
+
+        for (Places places : placesFactory.getPlaces()) {
+            JMenu subMenu = new JMenu(places.getLabel());
+            for (Places.Place place : places.getPlaces()) {
+                subMenu.add(createPopupItem(place.label, place.file));
+                subMenu.setFont(boldFont);
+
+            }
+            result.add(subMenu);
+        }
+        return result;
+    }
+    
     private void createPopupMenu()
     {
         _popupMenu = FilteredPopupMenu.createStartWith();
+
+        Font font = _popupMenu.getFont();
+        boldFont = font.deriveFont(font.getStyle() | Font.BOLD);
+
+        List<JMenu> placesSubMenus = createPlacesSubMenus();
+
+        // If there are lots of sub-menus, create a "More..." sub-menu to put them all in.
+        // Otherwise put them in the top-level menu
+        if (placesSubMenus.size() > 3) {
+
+            JMenu more = new JMenu("Places");
+            more.setFont(boldFont);
+            _popupMenu.add(more);
+
+            for (JMenuItem item : placesSubMenus) {
+                more.add(item);
+            }
+
+        } else {
+            for (JMenuItem item : placesSubMenus) {
+                _popupMenu.add(item);
+            }
+        }
 
         int emptyLength = _popupMenu.getSubElements().length;
 
@@ -178,7 +220,7 @@ public class FileComponent extends JPanel implements DropFileListener, DragFileL
         if (parent != null) {
             if (value.exists()) {
                 // Add siblings
-                if ( _popupMenu.getSubElements().length > emptyLength ) {
+                if (_popupMenu.getSubElements().length > emptyLength) {
                     _popupMenu.addSeparator();
                 }
                 addToComboBox(parent, "");
@@ -187,7 +229,7 @@ public class FileComponent extends JPanel implements DropFileListener, DragFileL
                 addToComboBox(parent, value.getName());
             }
         }
-    
+
         if (_popupMenu.getSubElements().length > emptyLength) {
             _popupMenu.show(_completeButton, 0, 0);
         }
@@ -195,12 +237,17 @@ public class FileComponent extends JPanel implements DropFileListener, DragFileL
 
     private void addPopupItem(final String label, final File file)
     {
+        _popupMenu.add(createPopupItem(label, file));
+    }
+
+    private Font boldFont;
+    
+    private JMenuItem createPopupItem(final String label, final File file)
+    {
         JMenuItem menuItem = new JMenuItem(label);
-        _popupMenu.add(menuItem);
 
         if (file.isDirectory()) {
-            Font font = menuItem.getFont();
-            menuItem.setFont(font.deriveFont(font.getStyle() | Font.BOLD));
+            menuItem.setFont(boldFont);
         }
 
         menuItem.addActionListener(new ActionListener()
@@ -212,14 +259,16 @@ public class FileComponent extends JPanel implements DropFileListener, DragFileL
             }
 
         });
+
+        return menuItem;
     }
 
     private void addToComboBox(File directory, String prefix)
     {
-        JMenuItem siblingsLabel = new JMenuItem( "In Directory : " + directory.getName() );
+        JMenuItem siblingsLabel = new JMenuItem("In Directory : " + directory.getName());
         siblingsLabel.setEnabled(false);
         boolean first = true;
-        
+
         List<File> children;
 
         FileLister fileLister = new FileLister().directoriesFirst().includeDirectories();

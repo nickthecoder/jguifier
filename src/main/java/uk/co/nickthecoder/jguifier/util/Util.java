@@ -86,6 +86,12 @@ public class Util
         return result;
     }
 
+
+    public static File getHomeDirectory()
+    {
+        return new File(System.getProperty("user.home"));
+    }
+    
     public static String removeExtension(File file)
     {
         int lastDot = file.getName().lastIndexOf('.');
