@@ -17,7 +17,7 @@ public class StandardPlacesFactory implements PlacesFactory
         try {
             File bookmarks = Util.createFile(Util.getHomeDirectory(), ".config", "gtk-3.0", "bookmarks");
             if (bookmarks.exists()) {
-                places.add(new BookmarksPlaces(bookmarks, "Bookmarks"));
+                places.add(new BookmarkedPlaces(bookmarks, "Bookmarks"));
             }
         } catch (Exception e) {
         }
