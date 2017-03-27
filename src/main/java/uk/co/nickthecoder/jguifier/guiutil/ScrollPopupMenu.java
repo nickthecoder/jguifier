@@ -4,7 +4,6 @@ import java.awt.Adjustable;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.event.AdjustmentEvent;
@@ -14,6 +13,10 @@ import java.awt.event.MouseWheelListener;
 
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollBar;
+import javax.swing.MenuElement;
+import javax.swing.MenuSelectionManager;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  * Based on a
@@ -22,11 +25,13 @@ import javax.swing.JScrollBar;
  * This is a flawed implementation - it has an extra component (the JScrollBar), which screws up all methods that
  * manipulate the menu items by index.
  */
-public class ScrollPopupMenu extends JPopupMenu
+public class ScrollPopupMenu extends JPopupMenu implements ChangeListener
 {
     private static final long serialVersionUID = 1L;
 
     protected int maximumVisibleRows = 30;
+
+    private JScrollBar popupScrollBar;
 
     public ScrollPopupMenu()
     {
@@ -38,7 +43,7 @@ public class ScrollPopupMenu extends JPopupMenu
         super(label);
         setLayout(new ScrollPopupMenuLayout());
 
-        super.add(getScrollBar());
+        super.add(createScrollBar());
         addMouseWheelListener(new MouseWheelListener()
         {
             @Override
@@ -55,25 +60,25 @@ public class ScrollPopupMenu extends JPopupMenu
         });
     }
 
-    private JScrollBar popupScrollBar;
+    protected final JScrollBar createScrollBar()
+    {
+        popupScrollBar = new JScrollBar(Adjustable.VERTICAL);
+        popupScrollBar.addAdjustmentListener(new AdjustmentListener()
+        {
+            @Override
+            public void adjustmentValueChanged(AdjustmentEvent e)
+            {
+                doLayout();
+                repaint();
+            }
+        });
+
+        popupScrollBar.setVisible(false);
+        return popupScrollBar;
+    }
 
     protected JScrollBar getScrollBar()
     {
-        if (popupScrollBar == null) {
-            popupScrollBar = new JScrollBar(Adjustable.VERTICAL);
-            popupScrollBar.addAdjustmentListener(new AdjustmentListener()
-            {
-                @Override
-                public void adjustmentValueChanged(AdjustmentEvent e)
-                {
-                    doLayout();
-                    repaint();
-                }
-            });
-
-            popupScrollBar.setVisible(false);
-        }
-
         return popupScrollBar;
     }
 
@@ -85,14 +90,6 @@ public class ScrollPopupMenu extends JPopupMenu
     public void setMaximumVisibleRows(int maximumVisibleRows)
     {
         this.maximumVisibleRows = maximumVisibleRows;
-    }
-
-    @Override
-    public void paintChildren(Graphics g)
-    {
-        Insets insets = getInsets();
-        g.clipRect(insets.left, insets.top, getWidth(), getHeight() - insets.top - insets.bottom);
-        super.paintChildren(g);
     }
 
     @Override
@@ -249,4 +246,53 @@ public class ScrollPopupMenu extends JPopupMenu
             }
         }
     }
+
+    /**
+     * Adjusts the scroll bar to ensure that the component is wholly visible
+     * @param comp The component to make visible
+     */
+    protected void ensureVisible(Component comp)
+    {
+        Insets insets = getInsets();
+
+        int y1 = comp.getY() - insets.top;
+        if (y1 < 0) {
+            popupScrollBar.setValue(popupScrollBar.getValue() + y1);
+        }
+
+        int y2 = this.getHeight() - comp.getY() - comp.getHeight() - insets.bottom;
+        if (y2 < 0) {
+            popupScrollBar.setValue(popupScrollBar.getValue() - y2);
+        }
+    }
+
+    /**
+     * (Un)Register a listener when the menu it shown/hidden. The listener is used to ensure the selected menu item
+     * is visible (i.e. the scroll bar is adjusted).
+     */
+    @Override
+    public void setVisible(boolean b)
+    {
+        super.setVisible(b);
+
+        // Despite JPopupMenu having its own change listeners, it doesn't seem to use them (well, not for
+        // menu selection at least). Only by looking at the swing source code, did I see it using
+        // MenuSelectionManager.defaultManager() to keep track of the selected menu item.
+        if (b) {
+            MenuSelectionManager.defaultManager().addChangeListener(this);
+        } else {
+            MenuSelectionManager.defaultManager().removeChangeListener(this);
+        }
+    }
+
+    @Override
+    public void stateChanged(ChangeEvent e)
+    {
+        MenuElement[] me = MenuSelectionManager.defaultManager().getSelectedPath();
+        if (me.length > 1) {
+            Component component = me[1].getComponent();
+            ensureVisible(component);
+        }
+    }
+
 }
