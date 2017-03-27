@@ -1,11 +1,13 @@
 package uk.co.nickthecoder.jguifier.guiutil;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -15,7 +17,6 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -30,6 +31,7 @@ import uk.co.nickthecoder.jguifier.Task;
 import uk.co.nickthecoder.jguifier.parameter.FileParameter;
 import uk.co.nickthecoder.jguifier.parameter.TriState;
 import uk.co.nickthecoder.jguifier.util.FileLister;
+import uk.co.nickthecoder.jguifier.util.Util;
 
 /**
  * A Swing component for {@link FileParameter}s. Contains a TextField, where the files path can be typed, as well as
@@ -57,28 +59,41 @@ public class FileComponent extends JPanel implements DropFileListener, DragFileL
 
     private JTextField _textField;
 
-    private JButton _completeButton;
-
     private JPopupMenu _popupMenu;
 
     public FileFilter fileFilter;
 
     private JLabel _iconLabel;
 
+    private Font folderFont;
+
+    private Font otherFont;
+
     public FileComponent(FileParameter fileParameter, String text)
     {
         _fileParameter = fileParameter;
         _textField = new JTextField(text);
-
-        _completeButton = new JButton("\u2193");
-        _completeButton.setToolTipText("Click (or use the down arrow) for file-completion");
-        _completeButton.addActionListener(new ActionListener()
+        _textField.addMouseListener(new MouseAdapter()
         {
+
             @Override
-            public void actionPerformed(ActionEvent e)
+            public void mousePressed(MouseEvent e)
             {
-                createPopupMenu();
+                if (e.isPopupTrigger()) {
+                    _textField.requestFocusInWindow();
+                    createPopupMenu(e.getX(), e.getY(), false);
+                }
             }
+
+            @Override
+            public void mouseReleased(MouseEvent e)
+            {
+                if (e.isPopupTrigger()) {
+                    _textField.requestFocusInWindow();
+                    createPopupMenu(e.getX(), e.getY(), false);
+                }
+            }
+
         });
 
         try {
@@ -91,17 +106,6 @@ public class FileComponent extends JPanel implements DropFileListener, DragFileL
         }
         _iconLabel.setToolTipText("You can drag this!");
 
-        JButton pickButton = new JButton(" … ");
-        pickButton.setToolTipText("Click for old-fashioned File Dialog");
-        pickButton.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                onFileChooser();
-            }
-        });
-
         _textField.getInputMap().put(KeyStroke.getKeyStroke("UP"), "upDirectory");
         _textField.getActionMap().put("upDirectory", new AbstractAction()
         {
@@ -113,13 +117,26 @@ public class FileComponent extends JPanel implements DropFileListener, DragFileL
                 if (_fileParameter.getValue() != null) {
                     File parent = _fileParameter.getValue().getParentFile();
                     if (parent != null) {
-                        _textField.setText(parent.getPath());
+                        _textField.setText(Util.getPathWithTrailingSlash(parent));
                     }
                 }
             }
         });
 
-        _textField.getInputMap().put(KeyStroke.getKeyStroke("DOWN"), "directoryPopup");
+        _textField.getInputMap().put(KeyStroke.getKeyStroke("DOWN"), "directoryAutocomplete");
+        _textField.getInputMap().put(KeyStroke.getKeyStroke("ctrl SPACE"), "directoryAutocomplete");
+        _textField.getActionMap().put("directoryAutocomplete", new AbstractAction()
+        {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                createPopupMenu(true);
+            }
+        });
+
+        _textField.getInputMap().put(KeyStroke.getKeyStroke("CONTEXT_MENU"), "directoryPopup");
         _textField.getActionMap().put("directoryPopup", new AbstractAction()
         {
             private static final long serialVersionUID = 1L;
@@ -127,28 +144,16 @@ public class FileComponent extends JPanel implements DropFileListener, DragFileL
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                createPopupMenu();
+                createPopupMenu(false);
             }
         });
 
         this.setLayout(new BorderLayout());
         this.add(_textField, BorderLayout.CENTER);
-        JPanel buttons = new JPanel();
-
-        buttons.setLayout(new BorderLayout());
-        buttons.add(_iconLabel, BorderLayout.WEST);
-        buttons.add(_completeButton, BorderLayout.CENTER);
-        buttons.add(pickButton, BorderLayout.EAST);
-
-        this.add(buttons, BorderLayout.EAST);
-
-        int buttonHeight = _textField.getPreferredSize().height;
-        Dimension preferredSize = new Dimension(buttonHeight, buttonHeight); // Make it square
-        _completeButton.setPreferredSize(preferredSize);
-        pickButton.setPreferredSize(preferredSize);
+        this.add(_iconLabel, BorderLayout.EAST);
 
         new DropFileHandler(this, this, _textField);
-        new DragFileHandler(this).draggable(_iconLabel).draggable(_completeButton).draggable(pickButton);
+        new DragFileHandler(this).draggable(_iconLabel);
     }
 
     public JTextField getTextField()
@@ -164,20 +169,29 @@ public class FileComponent extends JPanel implements DropFileListener, DragFileL
             JMenu subMenu = new JMenu(places.getLabel());
             for (Places.Place place : places.getPlaces()) {
                 subMenu.add(createPopupItem(place.label, place.file));
-                subMenu.setFont(boldFont);
+                subMenu.setFont(otherFont);
 
             }
             result.add(subMenu);
         }
         return result;
     }
-    
-    private void createPopupMenu()
+
+    private void createPopupMenu(boolean autoComplete)
     {
+        createPopupMenu(_textField.getWidth(), 0, autoComplete);
+    }
+
+    private int _matchCount;
+
+    private void createPopupMenu(int x, int y, boolean autoComplete)
+    {
+        _matchCount = 0;
         _popupMenu = FilteredPopupMenu.createStartWith();
 
         Font font = _popupMenu.getFont();
-        boldFont = font.deriveFont(font.getStyle() | Font.BOLD);
+        folderFont = font.deriveFont(font.getStyle() | Font.BOLD);
+        otherFont = font.deriveFont(font.getStyle() | Font.BOLD | Font.ITALIC);
 
         List<JMenu> placesSubMenus = createPlacesSubMenus();
 
@@ -186,23 +200,25 @@ public class FileComponent extends JPanel implements DropFileListener, DragFileL
         if (placesSubMenus.size() > 3) {
 
             JMenu more = new JMenu("Places");
-            more.setFont(boldFont);
+            more.setFont(folderFont);
             _popupMenu.add(more);
 
             for (JMenuItem item : placesSubMenus) {
                 more.add(item);
             }
+            more.add(createBrowseMenuItem());
 
         } else {
             for (JMenuItem item : placesSubMenus) {
                 _popupMenu.add(item);
             }
+            _popupMenu.add(createBrowseMenuItem());
         }
 
-        int emptyLength = _popupMenu.getSubElements().length;
+        _matchCount = 0;
 
         File value = _fileParameter.getValue();
-        if (value == null) {
+        if ((value == null) || (value.getPath().equals(""))) {
             value = new File(".");
             try {
                 value = value.getCanonicalFile();
@@ -214,25 +230,82 @@ public class FileComponent extends JPanel implements DropFileListener, DragFileL
 
         if (value.isDirectory()) {
             // Add sub-directories and matching files
-            addToComboBox(value, "");
+            addPopupMenu(value, "");
         }
 
         if (parent != null) {
             if (value.exists()) {
                 // Add siblings
-                if (_popupMenu.getSubElements().length > emptyLength) {
+                if (_matchCount > 0) {
                     _popupMenu.addSeparator();
                 }
-                addToComboBox(parent, "");
+                addPopupMenu(parent, "");
             } else {
                 // Add files and directories that start with the currently entered
-                addToComboBox(parent, value.getName());
+                addPopupMenu(parent, value.getName());
             }
         }
 
-        if (_popupMenu.getSubElements().length > emptyLength) {
-            _popupMenu.show(_completeButton, 0, 0);
+        if (autoComplete && (_matchCount == 1)) {
+            // There's only one possible auto-complete value, so use it without showing the popup menu.
+            JMenuItem item = (JMenuItem) _popupMenu.getComponent(_popupMenu.getComponentCount() - 1);
+            item.doClick();
+            return;
         }
+
+        _popupMenu.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "singleAutocomplete");
+        _popupMenu.getActionMap().put("singleAutocomplete", new AbstractAction()
+        {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                singleAutoComplete();
+            }
+        });
+
+        _popupMenu.show(_textField, x, y);
+
+    }
+
+    /**
+     * If there is one and only one menu item, then click it
+     */
+    protected void singleAutoComplete()
+    {
+        JMenuItem item = null;
+        for (Component c : _popupMenu.getComponents()) {
+            if (c.isVisible() && c.isEnabled()) {
+                if ((c instanceof JMenuItem) && (!(c instanceof JMenu))) {
+                    if (item == null) {
+                        item = (JMenuItem) c;
+                    } else {
+                        // Found more than one, don't autocomplete
+                        return;
+                    }
+                }
+            }
+        }
+        if (item != null) {
+            _popupMenu.setVisible(false);
+            item.doClick();
+        }
+    }
+
+    protected JMenuItem createBrowseMenuItem()
+    {
+        JMenuItem item = new JMenuItem("Browse...");
+        item.setFont(otherFont);
+        item.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                onFileChooser();
+            }
+        });
+        return item;
     }
 
     private void addPopupItem(final String label, final File file)
@@ -240,14 +313,12 @@ public class FileComponent extends JPanel implements DropFileListener, DragFileL
         _popupMenu.add(createPopupItem(label, file));
     }
 
-    private Font boldFont;
-    
     private JMenuItem createPopupItem(final String label, final File file)
     {
         JMenuItem menuItem = new JMenuItem(label);
 
         if (file.isDirectory()) {
-            menuItem.setFont(boldFont);
+            menuItem.setFont(folderFont);
         }
 
         menuItem.addActionListener(new ActionListener()
@@ -255,15 +326,16 @@ public class FileComponent extends JPanel implements DropFileListener, DragFileL
             @Override
             public void actionPerformed(ActionEvent event)
             {
-                _textField.setText(file.getPath());
+                _textField.setText(Util.getPathWithTrailingSlash(file));
             }
 
         });
 
+        _matchCount++;
         return menuItem;
     }
 
-    private void addToComboBox(File directory, String prefix)
+    private void addPopupMenu(File directory, String prefix)
     {
         JMenuItem siblingsLabel = new JMenuItem("In Directory : " + directory.getName());
         siblingsLabel.setEnabled(false);
@@ -306,7 +378,7 @@ public class FileComponent extends JPanel implements DropFileListener, DragFileL
         }
     }
 
-    private void onFileChooser()
+    protected void onFileChooser()
     {
         JFileChooser fileChooser = new JFileChooser(_textField.getText());
 
@@ -341,7 +413,7 @@ public class FileComponent extends JPanel implements DropFileListener, DragFileL
     public void droppedFiles(List<File> files)
     {
         if (!files.isEmpty()) {
-            _fileParameter.setValue(files.get(0));
+            _fileParameter.setValueIgnoreErrors(files.get(0));
         }
     }
 

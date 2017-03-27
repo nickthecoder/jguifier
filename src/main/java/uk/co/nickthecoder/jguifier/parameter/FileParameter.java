@@ -11,6 +11,7 @@ import uk.co.nickthecoder.jguifier.ParameterHolder;
 import uk.co.nickthecoder.jguifier.TaskPrompter;
 import uk.co.nickthecoder.jguifier.ValueParameter;
 import uk.co.nickthecoder.jguifier.guiutil.FileComponent;
+import uk.co.nickthecoder.jguifier.util.Util;
 
 /**
  * A {@link Parameter} for a file or directory.
@@ -331,7 +332,7 @@ public class FileParameter extends TextParameter<File>
     @Override
     public Component createComponent(final ParameterHolder holder)
     {
-        FileComponent fileField = new FileComponent(this, getValue() == null ? "" : getValue().getPath());
+        FileComponent fileField = new FileComponent(this, Util.getPathWithTrailingSlash(getValue()));
         JTextField textField = fileField.getTextField();
 
         textField(textField, holder);

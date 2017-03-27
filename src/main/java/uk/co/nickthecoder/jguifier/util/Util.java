@@ -86,12 +86,35 @@ public class Util
         return result;
     }
 
+    /**
+     * Does the same as {@link File#getPath()}, but appends a trailing slash/backslash if the file is a directoyr.
+     * 
+     * @param file
+     * @return The path of the file
+     */
+    public static String getPathWithTrailingSlash(File file)
+    {
+        if (file == null) {
+            return "";
+        }
+        
+        if (file.isDirectory()) {
+            String path = file.getPath();
+            if (path.endsWith(File.separator)) {
+                return path;
+            } else {
+                return path + File.separator;
+            }
+        } else {
+            return file.getPath();
+        }
+    }
 
     public static File getHomeDirectory()
     {
         return new File(System.getProperty("user.home"));
     }
-    
+
     public static String removeExtension(File file)
     {
         int lastDot = file.getName().lastIndexOf('.');
@@ -159,7 +182,7 @@ public class Util
     {
         if (value.startsWith("\"") && (value.endsWith("\""))) {
             return value.substring(1, value.length() - 1).replaceAll("\\\"", "\"");
-            // Replace all \" slash double-quote  with " double-quote
+            // Replace all \" slash double-quote with " double-quote
         }
         return value;
     }

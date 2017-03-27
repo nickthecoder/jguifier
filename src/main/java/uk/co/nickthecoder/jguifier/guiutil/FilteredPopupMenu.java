@@ -4,6 +4,8 @@ import java.awt.Component;
 import java.awt.event.KeyEvent;
 
 import javax.swing.JMenuItem;
+import javax.swing.MenuElement;
+import javax.swing.MenuSelectionManager;
 import javax.swing.event.MenuKeyEvent;
 import javax.swing.event.MenuKeyListener;
 
@@ -92,10 +94,25 @@ public class FilteredPopupMenu extends ScrollPopupMenu
 
     }
 
-    private void editFilter(KeyEvent e)
+    private void editFilter(KeyEvent ke)
     {
-        char c = e.getKeyChar();
+        char c = ke.getKeyChar();
 
+        // SPACE key should perform the normal action if there is a selected menu item.
+        // Otherwise treat it like any other filter text key.
+        if (c == 32) {
+            MenuElement[] menuElements = MenuSelectionManager.defaultManager().getSelectedPath();
+            if ( (menuElements != null) && (menuElements.length > 1)) {
+                try {
+                    JMenuItem item = (JMenuItem) menuElements[menuElements.length-1];
+                    this.setVisible(false);
+                    item.doClick();
+                    return;
+                } catch (Exception e) {
+                }
+            }
+        }
+        
         if (c >= 32) {
             setFilterText(filterText + c);
         }

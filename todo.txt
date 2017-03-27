@@ -1,13 +1,6 @@
 Current Task
 ============
-
-ScrollPopupMenu
-    setSelected should ensure that the selected item is visible (scrolling if need be).
-
-Option to hide the "down" and "..." buttons on FileComponent.
-    Always access Completion and File Selector dialog through a pop-up menu.
-    Shortcut for File Selector (ctrl+?), make ctrl+SPACE an alternative for DOWN
-
+    
 BUGS
 ====
 
