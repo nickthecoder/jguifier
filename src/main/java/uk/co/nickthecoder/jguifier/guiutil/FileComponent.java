@@ -418,7 +418,7 @@ public class FileComponent extends JPanel implements DropFileListener, DragFileL
     }
 
     @Override
-    public List<File> getDragFiles()
+    public List<File> getDragList()
     {
         List<File> list = new ArrayList<>(1);
         if (_fileParameter.getValue() != null) {
