@@ -1,37 +1,25 @@
 package uk.co.nickthecoder.jguifier.parameter;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.util.regex.Pattern;
-
-import javax.swing.ButtonGroup;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
 import uk.co.nickthecoder.jguifier.ParameterException;
 import uk.co.nickthecoder.jguifier.ParameterHolder;
-import uk.co.nickthecoder.jguifier.ParameterListener;
 import uk.co.nickthecoder.jguifier.util.Util;
 
 /**
  * Holds isRegex Pattern, but you can either use a glob, or a isRegex as the source.
- * From the command line, prefix a isRegex with <code>&quot;/&quot;</code> like so : <code>--myPattern='/.*'</code> <br/>
+ * From the command line, prefix a isRegex with <code>&quot;/&quot;</code> like so : <code>--myPattern='/.*'</code>
+ * <br/>
  * or use a glob, without any prefix : <code>--myPattern='*'</code>.
  * To allow globs beginning with '/', then if the first character is a '\', then it is ignored.
  * So if you want to be safe, then prefix globs by '\', but isn't needed most of the time. Note
  */
 public class PatternParameter extends TextParameter<String>
 {
-    private String globOrRegex;
+    String globOrRegex;
 
-    private boolean isRegex;
+    boolean isRegex = true;
 
     public static String globToRegex(String glob)
     {
@@ -185,120 +173,7 @@ public class PatternParameter extends TextParameter<String>
     @Override
     public Component createComponent(final ParameterHolder holder)
     {
-        return new RegexComponent(holder);
-    }
-
-    public class RegexComponent extends JPanel
-    {
-        private static final long serialVersionUID = 1L;
-
-        private ParameterHolder holder;
-
-        private JTextField textField;
-
-        private JRadioButton regexButton;
-        private JRadioButton globButton;
-
-        public RegexComponent(ParameterHolder holderX)
-        {
-            this.holder = holderX;
-
-            textField = new JTextField(globOrRegex);
-
-            regexButton = new JRadioButton("RegEx");
-            globButton = new JRadioButton("Glob");
-
-            ButtonGroup buttonGroup = new ButtonGroup();
-            buttonGroup.add(regexButton);
-            buttonGroup.add(globButton);
-
-            globButton.setSelected(!isRegex);
-            regexButton.setSelected(isRegex);
-
-            JPanel buttonPanel = new JPanel();
-            buttonPanel.setLayout(new BorderLayout());
-            buttonPanel.add(regexButton, BorderLayout.CENTER);
-            buttonPanel.add(globButton, BorderLayout.SOUTH);
-
-            GridBagConstraints gbc = new GridBagConstraints();
-            gbc.fill = GridBagConstraints.HORIZONTAL;
-            gbc.weightx = 1;
-            gbc.gridx = 0;
-            gbc.gridy = 0;
-            setLayout(new GridBagLayout());
-            add(textField, gbc);
-            gbc.gridx = 1;
-            gbc.weightx = 0;
-            // gbc.fill = GridBagConstraints.NONE;
-            add(buttonPanel, gbc);
-
-            addListener(new ParameterListener()
-            {
-                @Override
-                public void changed(Parameter source)
-                {
-                    if (!inNotification) {
-                        textField.setText(globOrRegex);
-                        regexButton.setSelected(isRegex);
-                        globButton.setSelected(!isRegex);
-                    }
-                }
-            });
-
-            textField.getDocument().addDocumentListener(new DocumentListener()
-            {
-                @Override
-                public void changedUpdate(DocumentEvent e)
-                {
-                    checkValue();
-                }
-
-                @Override
-                public void removeUpdate(DocumentEvent e)
-                {
-                    checkValue();
-                }
-
-                @Override
-                public void insertUpdate(DocumentEvent e)
-                {
-                    checkValue();
-                }
-
-            });
-
-            regexButton.addChangeListener(new ChangeListener()
-            {
-                @Override
-                public void stateChanged(ChangeEvent event)
-                {
-                    inNotification = true;
-                    try {
-                        setValue(textField.getText(), regexButton.isSelected());
-                        textField.requestFocusInWindow();
-                        holder.clearError(PatternParameter.this);
-                    } catch (Exception e) {
-                        holder.setError(PatternParameter.this, e.getMessage());
-                    } finally {
-                        inNotification = false;
-                    }
-                }
-            });
-            textField(textField, holder);
-        }
-
-        private void checkValue()
-        {
-            inNotification = true;
-            try {
-                setValue(textField.getText(), regexButton.isSelected());
-                holder.clearError(PatternParameter.this);
-            } catch (Exception e) {
-                holder.setError(PatternParameter.this, e.getMessage());
-            } finally {
-                inNotification = false;
-            }
-        }
+        return new PatternComponent(this, holder);
     }
 
     public static final class Builder extends TextParameter.Builder<Builder, PatternParameter, String>

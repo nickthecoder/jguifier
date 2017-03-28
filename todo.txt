@@ -1,6 +1,8 @@
 Current Task
 ============
-    
+
+RegexParameter - add popup-menu for oft used constructs, such as quote, whitespace, one or more, zero of more, identifier...
+
 BUGS
 ====
 
@@ -11,8 +13,6 @@ Multiparam
 New Features
 ============
 
-RegexParameter - add popup-menu for oft used constructs, such as quote, whitespace, one or more, zero of more, identifier...
-    Should grep then use RegexParameter?
 
 RegexParameter to have a "Playground" menu option, which allows you to test regex using dummy text.
 
@@ -27,9 +27,6 @@ OrParameter
     In a box, with a label, like GroupParameter
     Listen to each child, and when their value is set to not-null, then select that parameter.
     OrParameter is NOT a ValueParameter.
-
-
-ChoiceParameter as ToggleButtons and/or radio buttons
 
 MultipleChoiceParameter - pick many from a list of options.
 
