@@ -8,7 +8,7 @@ public interface Places
 
     public Iterable<Place> getPlaces();
 
-    public static class Place
+    public static class Place implements WithFile
     {
         public Place(File file)
         {
@@ -21,6 +21,12 @@ public interface Places
             this.label = label;
         }
 
+        @Override
+        public File getFile()
+        {
+            return file;
+        }
+        
         public File file;
 
         public String label;
