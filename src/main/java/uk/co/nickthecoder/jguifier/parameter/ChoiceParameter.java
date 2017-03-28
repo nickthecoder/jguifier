@@ -8,13 +8,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.AbstractButton;
+import javax.swing.ButtonGroup;
 import javax.swing.JComboBox;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.SwingUtilities;
 
 import uk.co.nickthecoder.jguifier.ParameterException;
 import uk.co.nickthecoder.jguifier.ParameterHolder;
 import uk.co.nickthecoder.jguifier.ParameterListener;
 import uk.co.nickthecoder.jguifier.TaskCommand;
 import uk.co.nickthecoder.jguifier.ValueParameter;
+import uk.co.nickthecoder.jguifier.guiutil.WrapLayout;
 import uk.co.nickthecoder.jguifier.util.Util;
 
 /**
@@ -63,6 +69,11 @@ public class ChoiceParameter<T> extends ValueParameter<T>
     protected List<String> _keys;
 
     protected boolean _stretchy = false;
+
+    /**
+     * Use radio buttons instead of a combobox.
+     */
+    protected boolean radioButtons = false;
 
     /**
      * @see ValueParameter#ValueParameter(String)
@@ -185,6 +196,89 @@ public class ChoiceParameter<T> extends ValueParameter<T>
     @Override
     public Component createComponent(final ParameterHolder holder)
     {
+        if (radioButtons) {
+            return createRadioButtons(holder);
+        } else {
+            return createComboBox(holder);
+        }
+    }
+
+    public Component createRadioButtons(final ParameterHolder holder)
+    {
+        final JPanel panel = new JPanel();
+        panel.setLayout(new WrapLayout(WrapLayout.LEFT));
+        final ButtonGroup buttonGroup = new ButtonGroup();
+
+        updateRadioButtons(panel, buttonGroup);
+
+        this.addListener(new ParameterListener()
+        {
+            @Override
+            public void changed(Parameter source)
+            {
+                if (!inNotification) {
+                    SwingUtilities.invokeLater(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            updateRadioButtons(panel, buttonGroup);
+                        }
+                    });
+                }
+            }
+        });
+        return panel;
+    }
+
+    private void updateRadioButtons(JPanel panel, ButtonGroup buttonGroup)
+    {
+        Util.assertIsEDT();
+
+        for (Component c : panel.getComponents()) {
+            buttonGroup.remove((AbstractButton) c);
+        }
+        panel.removeAll();
+
+        String stringValue = getStringValue();
+
+        for (String key : _keys) {
+            JRadioButton button = createRadioButton(key);
+            panel.add(button);
+            buttonGroup.add(button);
+
+            if (key.equals(stringValue)) {
+                button.setSelected(true);
+                button.requestFocusInWindow();
+            }
+        }
+        panel.doLayout();
+    }
+
+    private JRadioButton createRadioButton(final String key)
+    {
+        String label = _labelMapping.get(key);
+
+        JRadioButton button = new JRadioButton(label);
+        button.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                inNotification = true;
+                try {
+                    setStringValue(key);
+                } finally {
+                    inNotification = false;
+                }
+            }
+        });
+
+        return button;
+    }
+
+    public Component createComboBox(final ParameterHolder holder)
+    {
         final JComboBox<String> comboBox = new JComboBox<>();
 
         updateComboBox(comboBox);
@@ -229,16 +323,12 @@ public class ChoiceParameter<T> extends ValueParameter<T>
 
     private void updateComboBox(JComboBox<String> comboBox)
     {
-        if (comboBox == null) {
-            return;
-        }
-
         comboBox.removeAllItems();
         String stringValue = getStringValue();
 
         for (String key : _keys) {
             String label = _labelMapping.get(key);
-            comboBox.addItem( label);
+            comboBox.addItem(label);
             if (key.equals(stringValue)) {
                 comboBox.setSelectedIndex(comboBox.getItemCount() - 1);
             }
@@ -298,6 +388,19 @@ public class ChoiceParameter<T> extends ValueParameter<T>
             making.addChoice(key, value, label);
             return me();
         }
+
+        public B radio()
+        {
+            making.radioButtons = true;
+            making.setStretchy(true);
+            return me();
+        }
+
+        public B stretchy(boolean value)
+        {
+            making.setStretchy(value);
+            return me();
+        }
     }
 
     public static final class Builder<T2> extends ChoiceBuilder<Builder<T2>, ChoiceParameter<T2>, T2>
@@ -307,11 +410,6 @@ public class ChoiceParameter<T> extends ValueParameter<T>
             making = new ChoiceParameter<>(name);
         }
 
-        public Builder<T2> stretchy(boolean value)
-        {
-            making.setStretchy(value);
-            return this;
-        }
     }
 
 }
