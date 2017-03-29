@@ -18,7 +18,6 @@ import uk.co.nickthecoder.jguifier.ParameterListener;
 
 public class PatternComponent extends JPanel
 {
-    
     private PatternParameter patternParameter;
     
     private static final long serialVersionUID = 1L;

@@ -1,7 +1,6 @@
 Current Task
 ============
 
-RegexParameter - add popup-menu for oft used constructs, such as quote, whitespace, one or more, zero of more, identifier...
 
 BUGS
 ====
@@ -13,6 +12,7 @@ Multiparam
 New Features
 ============
 
+RegexParameter - add popup-menu for oft used constructs, such as quote, whitespace, one or more, zero of more, identifier...
 
 RegexParameter to have a "Playground" menu option, which allows you to test regex using dummy text.
 

@@ -2,6 +2,8 @@ package uk.co.nickthecoder.jguifier.util;
 
 import java.awt.Image;
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -87,6 +89,27 @@ public class Util
     }
 
     /**
+     * On Linux, File.toURI() returns in the form : file:/foo, whereas others expect file:///foo
+     * 
+     * @return a URL in the form file:///foo
+     */
+    public static URI toURL(File file)
+    {
+        URI uri = file.toURI();
+        String address = uri.toString();
+        if (!address.startsWith("file:///")) {
+            if (!System.getProperty("os.name").startsWith("Windows")) {
+                address = "file:///" + address.substring(5);
+            }
+        }
+        try {
+            return new URI(address);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
      * Does the same as {@link File#getPath()}, but appends a trailing slash/backslash if the file is a directoyr.
      * 
      * @param file
@@ -97,7 +120,7 @@ public class Util
         if (file == null) {
             return "";
         }
-        
+
         if (file.isDirectory()) {
             String path = file.getPath();
             if (path.endsWith(File.separator)) {
