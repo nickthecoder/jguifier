@@ -7,6 +7,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
+import uk.co.nickthecoder.jguifier.guiutil.FocusNextListener;
 import uk.co.nickthecoder.jguifier.guiutil.RowLayoutManager;
 import uk.co.nickthecoder.jguifier.guiutil.TableLayoutManager;
 import uk.co.nickthecoder.jguifier.parameter.BooleanParameter;
@@ -46,8 +47,9 @@ public class ParametersPanel extends AbstractParameterPanel
             _tlm = parent.getTableLayoutManager();
         }
         setLayout(_tlm);
-        setBorder(new EmptyBorder(10, 10, 40, 10));
+        setBorder(new EmptyBorder(10, 10, 10, 10));
 
+        addFocusListener( new FocusNextListener() );
     }
 
     public TableLayoutManager getTableLayoutManager()

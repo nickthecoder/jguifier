@@ -189,6 +189,7 @@ public class TaskPrompter
 
         // Buttons
         JPanel buttonsPanel = new JPanel();
+        buttonsPanel.setBorder(BorderFactory.createEmptyBorder(30,0,0,0));
         buttonsPanel.setLayout(new BorderLayout());
         contentPane.add(buttonsPanel, BorderLayout.SOUTH);
 
