@@ -39,7 +39,7 @@ public class Util
         if (value == null) {
             return true;
         }
-        return value.equals("");
+        return value.trim().equals("");
     }
 
     public static void assertIsEDT()
