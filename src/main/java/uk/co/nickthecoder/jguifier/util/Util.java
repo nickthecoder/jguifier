@@ -110,6 +110,28 @@ public class Util
     }
 
     /**
+     * Finds the file extension by looking for the last '.' in the file's name.
+     * 
+     * @param file
+     * @return The file's extension, or an empty string if the file is null, or if there is no extension.
+     *         Never returns null.
+     */
+    public static String getExtension(File file)
+    {
+        if (file == null) {
+            return "";
+        }
+
+        String name = file.getName();
+        int dot = name.lastIndexOf(".");
+        if (dot >= 0) {
+            return name.substring(dot + 1);
+        } else {
+            return "";
+        }
+    }
+
+    /**
      * Does the same as {@link File#getPath()}, but appends a trailing slash/backslash if the file is a directoyr.
      * 
      * @param file
