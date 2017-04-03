@@ -107,6 +107,16 @@ public class ChoiceParameter<T> extends ValueParameter<T>
         _mapping.clear();
         fireChangeEvent();
     }
+    
+    public Iterable<String> keys()
+    {
+        return _keys;
+    }
+    
+    public Iterable<T> values()
+    {
+        return _mapping.values();
+    }
 
     /**
      * Add a choice.
