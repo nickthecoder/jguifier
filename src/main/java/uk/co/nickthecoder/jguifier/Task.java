@@ -52,6 +52,8 @@ public abstract class Task implements Runnable
 
     private String _description = "";
 
+    private boolean _canApply = false;
+
     /**
      * The hierarchical list of parameters (groups can have sub-groups).
      */
@@ -129,6 +131,22 @@ public abstract class Task implements Runnable
     public String getTitle()
     {
         return Util.uncamel(getName());
+    }
+
+    public Boolean getCanApply()
+    {
+        return _canApply;
+    }
+
+    public void setCanApply(boolean value)
+    {
+        _canApply = value;
+    }
+
+    public Task canApply(boolean value)
+    {
+        setCanApply(value);
+        return this;
     }
 
     /**

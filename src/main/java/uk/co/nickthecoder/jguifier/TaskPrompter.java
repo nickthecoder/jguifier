@@ -211,6 +211,24 @@ public class TaskPrompter
         buttonsPanel.add(rightButtonsPanel, BorderLayout.EAST);
         buttonsPanel.add(leftButtonsPanel, BorderLayout.WEST);
 
+        // Apply Button
+        if (getTask().getCanApply()) {
+            JButton applyButton = new JButton("Apply");
+            Dimension buttonSize = new Dimension(100, applyButton.getPreferredSize().height);
+            applyButton.setPreferredSize(buttonSize);
+            getRootPane().setDefaultButton(applyButton);
+            rightButtonsPanel.add(applyButton);
+            applyButton.addActionListener(new ActionListener()
+            {
+                @Override
+                public void actionPerformed(ActionEvent event)
+                {
+                    onApply();
+                }
+            });
+
+        }
+
         // Ok Button
         JButton okButton = new JButton("OK");
         Dimension buttonSize = new Dimension(100, okButton.getPreferredSize().height);
@@ -301,6 +319,17 @@ public class TaskPrompter
         }
 
         dispose();
+        getTask().run();
+    }
+
+    /**
+     * Runs the task without closing the dialog box
+     */
+    public void onApply()
+    {
+        if (!_parametersPanel.check(getTask())) {
+            return;
+        }
         getTask().run();
     }
 
