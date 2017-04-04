@@ -2,6 +2,7 @@ package uk.co.nickthecoder.jguifier.guiutil;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -253,6 +254,21 @@ public class FileComponent extends JPanel implements DropFileListener, DragFileL
             return;
         }
 
+        _popupMenu.addSeparator();
+        JMenuItem browseItem = new JMenuItem("Browse...");
+        browseItem.setFont(otherFont);
+        browseItem.addActionListener(new ActionListener()
+        {
+
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                browse();
+            }
+        });
+
+        _popupMenu.add(browseItem);
+
         _popupMenu.getInputMap().put(KeyStroke.getKeyStroke("ENTER"), "singleAutocomplete");
         _popupMenu.getActionMap().put("singleAutocomplete", new AbstractAction()
         {
@@ -267,6 +283,25 @@ public class FileComponent extends JPanel implements DropFileListener, DragFileL
 
         _popupMenu.show(_textField, x, y);
 
+    }
+
+    private void browse()
+    {
+        File file = _fileParameter.getValue();
+
+        if ((file != null) && !file.isDirectory()) {
+            file = file.getParentFile();
+        }
+
+        if (file == null) {
+            file = Util.getHomeDirectory();
+        }
+
+        try {
+            Desktop.getDesktop().open(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
