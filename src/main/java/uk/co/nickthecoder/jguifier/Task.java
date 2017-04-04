@@ -122,6 +122,16 @@ public abstract class Task implements Runnable
     }
 
     /**
+     * The title of the dialog box when prompted.
+     * 
+     * @return The title based on {@link #getName()}.
+     */
+    public String getTitle()
+    {
+        return Util.uncamel(getName());
+    }
+
+    /**
      * A fluent version of {@link #setName(String)}.
      * 
      * @param name
@@ -260,7 +270,7 @@ public abstract class Task implements Runnable
     {
         return null;
     }
-    
+
     /**
      * Every command can have user defined default values. Each command stores these values in a separate file.
      * On Linux, this is <code>~/.local/jguifier/TASK-NAME.defaults</code>, where TASK-NAME is the name returned by

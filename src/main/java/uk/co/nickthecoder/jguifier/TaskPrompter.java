@@ -16,7 +16,9 @@ import java.io.IOException;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -31,7 +33,7 @@ import uk.co.nickthecoder.jguifier.parameter.Parameter;
 import uk.co.nickthecoder.jguifier.util.Util;
 
 /**
- * A JFrame (a window), containing the set of {@link Task}'s parameters.
+ * A JDialog, containing the set of {@link Task}'s parameters.
  *
  * @priority 4
  */
@@ -55,7 +57,7 @@ public class TaskPrompter
 
     public TaskPrompter(Task task)
     {
-        super(null, task.getName(), ModalityType.MODELESS);
+        super(null, task.getTitle(), ModalityType.MODELESS);
         _task = task;
     }
 
@@ -71,6 +73,11 @@ public class TaskPrompter
 
         Container contentPane = this.getContentPane();
         contentPane.setLayout(new BorderLayout());
+
+        JComponent description = createDescription();
+        if (description != null) {
+            contentPane.add(description, BorderLayout.NORTH);
+        }
 
         // Parameters
         _parametersPanel = new ParametersPanel();
@@ -153,7 +160,7 @@ public class TaskPrompter
         scrollablePanel.setScrollableTracksViewportWidth(true);
         scrollablePanel.setLayout(new BoxLayout(scrollablePanel, BoxLayout.Y_AXIS));
         scrollablePanel.add(_parametersPanel);
-        
+
         if (showDetails) {
             scrollablePanel.add(_detailsPanel);
             scrollablePanel.add(_defaultsPanel);
@@ -189,7 +196,7 @@ public class TaskPrompter
 
         // Buttons
         JPanel buttonsPanel = new JPanel();
-        buttonsPanel.setBorder(BorderFactory.createEmptyBorder(30,0,0,0));
+        buttonsPanel.setBorder(BorderFactory.createEmptyBorder(30, 0, 0, 0));
         buttonsPanel.setLayout(new BorderLayout());
         contentPane.add(buttonsPanel, BorderLayout.SOUTH);
 
@@ -255,6 +262,23 @@ public class TaskPrompter
         setLocationRelativeTo(null);
         setVisible(true);
 
+    }
+
+    private JComponent createDescription()
+    {
+        String desc = getTask().getDescription();
+        if (Util.empty(desc)) {
+            return null;
+        }
+
+        JPanel panel = new JPanel();
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        for (String str : desc.split("\n")) {
+            JLabel label = new JLabel(str);
+            panel.add(label);
+        }
+        return panel;
     }
 
     public boolean toggleDetails()
