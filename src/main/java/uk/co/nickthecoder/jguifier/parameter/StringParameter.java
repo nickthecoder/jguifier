@@ -2,6 +2,7 @@ package uk.co.nickthecoder.jguifier.parameter;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -22,6 +23,8 @@ public class StringParameter
     public int maxLength = Integer.MAX_VALUE;
 
     public boolean multiLine;
+    
+    public boolean fixedWidth;
 
     /**
      * Only used for multi-line. See {@link Builder#multiLine()}.
@@ -71,6 +74,10 @@ public class StringParameter
             JTextArea textArea = new JTextArea(getValue() == null ? "" : getValue());
             textField(textArea, holder);
 
+            if ( fixedWidth ) {
+                textArea.setFont(new Font("monospaced", Font.PLAIN, 12));
+            }
+            
             JScrollPane scrollPane = new JScrollPane(textArea);
 
             scrollPane.setPreferredSize(size == null ? new Dimension(300, 100) : size);
@@ -106,6 +113,12 @@ public class StringParameter
         public Builder multiLine()
         {
             making.multiLine = true;
+            return this;
+        }
+
+        public Builder fixedWidth()
+        {
+            making.fixedWidth = true;
             return this;
         }
 
