@@ -11,7 +11,6 @@ import uk.co.nickthecoder.jguifier.ParameterHolder;
 import uk.co.nickthecoder.jguifier.ParameterListener;
 import uk.co.nickthecoder.jguifier.ParametersPanel;
 import uk.co.nickthecoder.jguifier.TaskPrompter;
-import uk.co.nickthecoder.jguifier.ValueParameter;
 import uk.co.nickthecoder.jguifier.util.Util;
 
 /**

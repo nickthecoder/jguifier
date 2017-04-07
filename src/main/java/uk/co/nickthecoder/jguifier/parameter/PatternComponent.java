@@ -68,11 +68,9 @@ public class PatternComponent extends JPanel
             @Override
             public void changed(Parameter source)
             {
-                if (!patternParameter.inNotification) {
-                    textField.setText(patternParameter.globOrRegex);
-                    regexButton.setSelected(patternParameter.isRegex);
-                    globButton.setSelected(!patternParameter.isRegex);
-                }
+                textField.setText(patternParameter.globOrRegex);
+                regexButton.setSelected(patternParameter.isRegex);
+                globButton.setSelected(!patternParameter.isRegex);
             }
         });
 
@@ -103,15 +101,16 @@ public class PatternComponent extends JPanel
             @Override
             public void stateChanged(ChangeEvent event)
             {
-                patternParameter.inNotification = true;
-                try {
-                    patternParameter.setValue(textField.getText(), regexButton.isSelected());
-                    textField.requestFocusInWindow();
-                    holder.clearError(patternParameter);
-                } catch (Exception e) {
-                    holder.setError(patternParameter, e.getMessage());
-                } finally {
-                    patternParameter.inNotification = false;
+                if (!patternParameter.settingValue) {
+                    try {
+                        if (!patternParameter.settingValue) {
+                            patternParameter.setValue(textField.getText(), regexButton.isSelected());
+                            textField.requestFocusInWindow();
+                        }
+                        holder.clearError(patternParameter);
+                    } catch (Exception e) {
+                        holder.setError(patternParameter, e.getMessage());
+                    }
                 }
             }
         });
@@ -120,14 +119,13 @@ public class PatternComponent extends JPanel
 
     private void checkValue()
     {
-        patternParameter.inNotification = true;
         try {
-            patternParameter.setValue(textField.getText(), regexButton.isSelected());
+            if (!patternParameter.settingValue) {
+                patternParameter.setValue(textField.getText(), regexButton.isSelected());
+            }
             holder.clearError(patternParameter);
         } catch (Exception e) {
             holder.setError(patternParameter, e.getMessage());
-        } finally {
-            patternParameter.inNotification = false;
         }
     }
 }

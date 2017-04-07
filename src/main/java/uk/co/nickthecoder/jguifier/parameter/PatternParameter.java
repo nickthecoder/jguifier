@@ -3,6 +3,8 @@ package uk.co.nickthecoder.jguifier.parameter;
 import java.awt.Component;
 import java.util.regex.Pattern;
 
+import javax.swing.text.JTextComponent;
+
 import uk.co.nickthecoder.jguifier.ParameterException;
 import uk.co.nickthecoder.jguifier.ParameterHolder;
 import uk.co.nickthecoder.jguifier.util.Util;
@@ -78,6 +80,10 @@ public class PatternParameter extends TextParameter<String>
 
     public void setValue(String value)
     {
+        if (Util.equals(value, "//")) {
+            Thread.dumpStack();
+        }
+
         if (value == null) {
             isRegex = true;
             globOrRegex = "";
@@ -97,11 +103,11 @@ public class PatternParameter extends TextParameter<String>
         }
 
         super.setValue(value);
-
     }
 
     public void setValue(String globOrRegex, boolean isRegex)
     {
+
         if (isRegex) {
             setValue("/" + globOrRegex);
         } else {
@@ -174,6 +180,11 @@ public class PatternParameter extends TextParameter<String>
     public Component createComponent(final ParameterHolder holder)
     {
         return new PatternComponent(this, holder);
+    }
+
+    protected void setTextField(JTextComponent textField)
+    {
+        textField.setText(globOrRegex);
     }
 
     public static final class Builder extends TextParameter.Builder<Builder, PatternParameter, String>

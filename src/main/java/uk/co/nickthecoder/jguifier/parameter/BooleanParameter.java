@@ -12,7 +12,6 @@ import javax.swing.event.ChangeListener;
 import uk.co.nickthecoder.jguifier.ParameterHolder;
 import uk.co.nickthecoder.jguifier.ParameterListener;
 import uk.co.nickthecoder.jguifier.TaskCommand;
-import uk.co.nickthecoder.jguifier.ValueParameter;
 
 /**
  * A parameter holding values true, false or null (if the parameter is {@link #optional()}).

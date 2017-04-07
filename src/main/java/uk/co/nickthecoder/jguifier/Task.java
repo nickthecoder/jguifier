@@ -19,6 +19,7 @@ import javax.swing.SwingUtilities;
 import uk.co.nickthecoder.jguifier.parameter.BooleanParameter;
 import uk.co.nickthecoder.jguifier.parameter.GroupParameter;
 import uk.co.nickthecoder.jguifier.parameter.Parameter;
+import uk.co.nickthecoder.jguifier.parameter.ValueParameter;
 import uk.co.nickthecoder.jguifier.util.Exec;
 import uk.co.nickthecoder.jguifier.util.FileLister;
 import uk.co.nickthecoder.jguifier.util.NullOutputStream;

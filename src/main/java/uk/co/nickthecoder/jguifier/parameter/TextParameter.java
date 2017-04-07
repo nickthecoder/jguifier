@@ -12,7 +12,6 @@ import javax.swing.text.JTextComponent;
 
 import uk.co.nickthecoder.jguifier.ParameterHolder;
 import uk.co.nickthecoder.jguifier.ParameterListener;
-import uk.co.nickthecoder.jguifier.ValueParameter;
 
 /**
  * Parameters which have a text field (where the user can type the value), such as strings, integers, doubles, files.
@@ -59,7 +58,10 @@ public abstract class TextParameter<T> extends ValueParameter<T>
         _stretchy = value;
     }
 
-    protected boolean inNotification = false;
+    protected void setTextField(JTextComponent textField)
+    {
+        textField.setText(getStringValue());
+    }
 
     protected void textField(final JTextComponent textField, final ParameterHolder holder)
     {
@@ -68,9 +70,7 @@ public abstract class TextParameter<T> extends ValueParameter<T>
             @Override
             public void changed(Parameter source)
             {
-                if (!inNotification) {
-                    textField.setText(getStringValue());
-                }
+                setTextField(textField);
             }
         });
 
@@ -102,14 +102,13 @@ public abstract class TextParameter<T> extends ValueParameter<T>
 
             public void checkValue()
             {
-                inNotification = true;
-                try {
-                    setStringValue(textField.getText());
-                    holder.clearError(TextParameter.this);
-                } catch (Exception e) {
-                    holder.setError(TextParameter.this, e.getMessage());
-                } finally {
-                    inNotification = false;
+                if (!settingValue) {
+                    try {
+                        setStringValue(textField.getText());
+                        holder.clearError(TextParameter.this);
+                    } catch (Exception e) {
+                        holder.setError(TextParameter.this, e.getMessage());
+                    }
                 }
             }
         };

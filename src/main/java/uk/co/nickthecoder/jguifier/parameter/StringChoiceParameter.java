@@ -1,7 +1,5 @@
 package uk.co.nickthecoder.jguifier.parameter;
 
-import uk.co.nickthecoder.jguifier.ValueParameter;
-
 /**
  * A {@link ChoiceParameter}, with Strings for keys.
  */

@@ -1,4 +1,4 @@
-package uk.co.nickthecoder.jguifier;
+package uk.co.nickthecoder.jguifier.parameter;
 
 import java.awt.Color;
 import java.awt.event.FocusEvent;
@@ -6,8 +6,9 @@ import java.awt.event.FocusListener;
 
 import javax.swing.JComponent;
 
-import uk.co.nickthecoder.jguifier.parameter.MultipleParameter;
-import uk.co.nickthecoder.jguifier.parameter.Parameter;
+import uk.co.nickthecoder.jguifier.ParameterException;
+import uk.co.nickthecoder.jguifier.ParameterListener;
+import uk.co.nickthecoder.jguifier.Task;
 import uk.co.nickthecoder.jguifier.util.Util;
 
 /**
@@ -137,6 +138,11 @@ public abstract class ValueParameter<T> extends Parameter implements Cloneable
     }
 
     /**
+     * Prevents the PatternComponent firing ANOTHER event when setting the value.
+     */
+    boolean settingValue;
+
+    /**
      * Set the value of the parameter.
      * The parameter is checked, throwing a ParameterException when invalid.
      * However, the value is set even when an exception is thrown. This allows parameters to be set to
@@ -150,11 +156,17 @@ public abstract class ValueParameter<T> extends Parameter implements Cloneable
      */
     public void setValue(T value)
     {
-        setValueIgnoreErrors(value);
+        settingValue = true;
+        try {
+        } finally {
 
-        String reason = valid(value);
-        if (reason != null) {
-            throw new ParameterException(this, reason);
+            setValueIgnoreErrors(value);
+
+            String reason = valid(value);
+            if (reason != null) {
+                throw new ParameterException(this, reason);
+            }
+            settingValue = false;
         }
     }
 

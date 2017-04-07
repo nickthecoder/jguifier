@@ -8,7 +8,6 @@ import javax.swing.SpinnerNumberModel;
 
 import uk.co.nickthecoder.jguifier.ParameterException;
 import uk.co.nickthecoder.jguifier.ParameterHolder;
-import uk.co.nickthecoder.jguifier.ValueParameter;
 import uk.co.nickthecoder.jguifier.util.Util;
 
 /**

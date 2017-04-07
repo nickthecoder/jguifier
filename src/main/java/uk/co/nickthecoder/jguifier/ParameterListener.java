@@ -1,6 +1,7 @@
 package uk.co.nickthecoder.jguifier;
 
 import uk.co.nickthecoder.jguifier.parameter.Parameter;
+import uk.co.nickthecoder.jguifier.parameter.ValueParameter;
 
 /**
  * A listener, which is notified when a parameter changes its value.

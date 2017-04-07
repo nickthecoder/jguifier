@@ -19,7 +19,6 @@ import javax.swing.border.EmptyBorder;
 import uk.co.nickthecoder.jguifier.AbstractParameterPanel;
 import uk.co.nickthecoder.jguifier.ParameterHolder;
 import uk.co.nickthecoder.jguifier.ParameterListener;
-import uk.co.nickthecoder.jguifier.ValueParameter;
 import uk.co.nickthecoder.jguifier.guiutil.DropFileHandler;
 import uk.co.nickthecoder.jguifier.guiutil.DropFileListener;
 import uk.co.nickthecoder.jguifier.guiutil.RowLayoutManager;
