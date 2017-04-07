@@ -175,7 +175,11 @@ public abstract class Parameter
     {
         if (_listeners != null) {
             for (ParameterListener pl : _listeners) {
-                pl.changed(initiator, this);
+                try {
+                    pl.changed(initiator, this);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
         initiator = null;
