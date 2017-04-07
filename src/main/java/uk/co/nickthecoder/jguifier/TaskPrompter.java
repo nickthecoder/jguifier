@@ -340,7 +340,7 @@ public class TaskPrompter
     }
 
     @Override
-    public void changed(Parameter source)
+    public void changed(Object sender, Parameter source)
     {
         if (_commandLabel != null) {
             _commandLabel.setText(getTask().getCommandString());

@@ -138,11 +138,6 @@ public abstract class ValueParameter<T> extends Parameter implements Cloneable
     }
 
     /**
-     * Prevents the PatternComponent firing ANOTHER event when setting the value.
-     */
-    boolean settingValue;
-
-    /**
      * Set the value of the parameter.
      * The parameter is checked, throwing a ParameterException when invalid.
      * However, the value is set even when an exception is thrown. This allows parameters to be set to
@@ -156,17 +151,11 @@ public abstract class ValueParameter<T> extends Parameter implements Cloneable
      */
     public void setValue(T value)
     {
-        settingValue = true;
-        try {
-        } finally {
+        setValueIgnoreErrors(value);
 
-            setValueIgnoreErrors(value);
-
-            String reason = valid(value);
-            if (reason != null) {
-                throw new ParameterException(this, reason);
-            }
-            settingValue = false;
+        String reason = valid(value);
+        if (reason != null) {
+            throw new ParameterException(this, reason);
         }
     }
 

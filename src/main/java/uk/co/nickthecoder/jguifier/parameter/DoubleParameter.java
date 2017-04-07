@@ -150,8 +150,8 @@ public class DoubleParameter
             JSpinner spinner = new JSpinner(model);
             
             JSpinner.DefaultEditor editor = (JSpinner.DefaultEditor) spinner.getEditor();
-            component = spinner;
             textField = editor.getTextField();
+            component = spinner;
 
         } else {
             // Optional DoubleParameters cannot use a JSpinner, because it doesn't allow the number to be blank.
@@ -161,7 +161,7 @@ public class DoubleParameter
             component = textField;
         }
 
-        textField(textField, holder);
+        textField(component, textField, holder);
 
         return component;
     }

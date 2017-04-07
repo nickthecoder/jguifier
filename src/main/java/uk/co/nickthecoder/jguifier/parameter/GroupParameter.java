@@ -170,7 +170,7 @@ public class GroupParameter
      * </pre></code>
      */
     @Override
-    public void changed(Parameter source)
+    public void changed(Object initiator, Parameter source)
     {
         fireChangeEvent(source);
     }

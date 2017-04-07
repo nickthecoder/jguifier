@@ -175,9 +175,26 @@ public abstract class Parameter
     {
         if (_listeners != null) {
             for (ParameterListener pl : _listeners) {
-                pl.changed(this);
+                pl.changed(initiator, this);
             }
         }
+        initiator = null;
+    }
+
+    /**
+     * See {@link #initiator(Object)}.
+     */
+    private Object initiator;
+
+    /**
+     * When a GUI component makes a change to a Parameter, it will be notified of the change (along with all other
+     * listeners).
+     * However, it does needs to know if it is the cause of the change, so that is does not attempt to change the
+     * Parameter's value AGAIN.
+     */
+    public void initiator(Object initiator)
+    {
+        this.initiator = initiator;
     }
 
     /**

@@ -15,5 +15,5 @@ import uk.co.nickthecoder.jguifier.parameter.ValueParameter;
  */
 public interface ParameterListener
 {
-    public void changed(Parameter source);
+    public void changed(Object initiator, Parameter source);
 }

@@ -138,7 +138,7 @@ public class IntegerParameter
             if (value > getMaximumValue()) {
                 value = getMaximumValue();
             }
-            // If value has been changed, then update the parameter's, to prevent "Required" error message,
+            // If value has been changed, then update the parameter, to prevent "Required" error message,
             // when the default was not set.
             setValue(value);
 
@@ -158,7 +158,7 @@ public class IntegerParameter
             component = textField;
         }
 
-        textField(textField, holder);
+        textField(component, textField, holder);
 
         return component;
     }

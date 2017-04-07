@@ -3,13 +3,13 @@ package uk.co.nickthecoder.jguifier.parameter;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -19,7 +19,7 @@ import uk.co.nickthecoder.jguifier.ParameterListener;
 public class PatternComponent extends JPanel
 {
     private PatternParameter patternParameter;
-    
+
     private static final long serialVersionUID = 1L;
 
     private ParameterHolder holder;
@@ -28,7 +28,7 @@ public class PatternComponent extends JPanel
 
     private JRadioButton regexButton;
     private JRadioButton globButton;
-    
+
     public PatternComponent(final PatternParameter patternParameter, ParameterHolder holderX)
     {
         this.patternParameter = patternParameter;
@@ -66,11 +66,13 @@ public class PatternComponent extends JPanel
         patternParameter.addListener(new ParameterListener()
         {
             @Override
-            public void changed(Parameter source)
+            public void changed(Object initiator, Parameter source)
             {
-                textField.setText(patternParameter.globOrRegex);
-                regexButton.setSelected(patternParameter.isRegex);
-                globButton.setSelected(!patternParameter.isRegex);
+                if (initiator != PatternComponent.this) {
+                    textField.setText(patternParameter.globOrRegex);
+                    regexButton.setSelected(patternParameter.isRegex);
+                    globButton.setSelected(!patternParameter.isRegex);
+                }
             }
         });
 
@@ -96,33 +98,32 @@ public class PatternComponent extends JPanel
 
         });
 
-        regexButton.addChangeListener(new ChangeListener()
+        ActionListener radioListener = new ActionListener()
         {
             @Override
-            public void stateChanged(ChangeEvent event)
+            public void actionPerformed(ActionEvent event)
             {
-                if (!patternParameter.settingValue) {
-                    try {
-                        if (!patternParameter.settingValue) {
-                            patternParameter.setValue(textField.getText(), regexButton.isSelected());
-                            textField.requestFocusInWindow();
-                        }
-                        holder.clearError(patternParameter);
-                    } catch (Exception e) {
-                        holder.setError(patternParameter, e.getMessage());
-                    }
+                try {
+                    patternParameter.initiator(PatternComponent.this);
+                    patternParameter.setValue(textField.getText(), regexButton.isSelected());
+                    textField.requestFocusInWindow();
+                    holder.clearError(patternParameter);
+                } catch (Exception e) {
+                    holder.setError(patternParameter, e.getMessage());
                 }
             }
-        });
-        patternParameter.textField(textField, holder);
+        };
+        regexButton.addActionListener(radioListener);
+        globButton.addActionListener(radioListener);
+
+        patternParameter.textField(this, textField, holder);
     }
 
     private void checkValue()
     {
         try {
-            if (!patternParameter.settingValue) {
-                patternParameter.setValue(textField.getText(), regexButton.isSelected());
-            }
+            patternParameter.initiator(this);
+            patternParameter.setValue(textField.getText(), regexButton.isSelected());
             holder.clearError(patternParameter);
         } catch (Exception e) {
             holder.setError(patternParameter, e.getMessage());

@@ -106,12 +106,12 @@ public class ChoiceParameter<T> extends ValueParameter<T>
         _mapping.clear();
         fireChangeEvent();
     }
-    
+
     public Iterable<String> keys()
     {
         return _keys;
     }
-    
+
     public Iterable<T> values()
     {
         return _mapping.values();
@@ -197,8 +197,6 @@ public class ChoiceParameter<T> extends ValueParameter<T>
         return null;
     }
 
-    protected boolean inNotification = false;
-
     /**
      * {@inheritDoc} Implemented using a JComboBox
      */
@@ -214,46 +212,46 @@ public class ChoiceParameter<T> extends ValueParameter<T>
 
     public Component createRadioButtons(final ParameterHolder holder)
     {
-        final JPanel panel = new JPanel();
-        panel.setLayout(new WrapLayout(WrapLayout.LEFT));
+        final JPanel component = new JPanel();
+        component.setLayout(new WrapLayout(WrapLayout.LEFT));
         final ButtonGroup buttonGroup = new ButtonGroup();
 
-        updateRadioButtons(panel, buttonGroup);
+        updateRadioButtons(component, buttonGroup);
 
         this.addListener(new ParameterListener()
         {
             @Override
-            public void changed(Parameter source)
+            public void changed(Object initiator, Parameter source)
             {
-                if (!inNotification) {
+                if (initiator != component) {
                     SwingUtilities.invokeLater(new Runnable()
                     {
                         @Override
                         public void run()
                         {
-                            updateRadioButtons(panel, buttonGroup);
+                            updateRadioButtons(component, buttonGroup);
                         }
                     });
                 }
             }
         });
-        return panel;
+        return component;
     }
 
-    private void updateRadioButtons(JPanel panel, ButtonGroup buttonGroup)
+    private void updateRadioButtons(JPanel component, ButtonGroup buttonGroup)
     {
         Util.assertIsEDT();
 
-        for (Component c : panel.getComponents()) {
+        for (Component c : component.getComponents()) {
             buttonGroup.remove((AbstractButton) c);
         }
-        panel.removeAll();
+        component.removeAll();
 
         String stringValue = getStringValue();
 
         for (String key : _keys) {
-            JRadioButton button = createRadioButton(key);
-            panel.add(button);
+            JRadioButton button = createRadioButton(component, key);
+            component.add(button);
             buttonGroup.add(button);
 
             if (key.equals(stringValue)) {
@@ -261,10 +259,10 @@ public class ChoiceParameter<T> extends ValueParameter<T>
                 button.requestFocusInWindow();
             }
         }
-        panel.doLayout();
+        component.doLayout();
     }
 
-    private JRadioButton createRadioButton(final String key)
+    private JRadioButton createRadioButton(final Object initiator, final String key)
     {
         String label = _labelMapping.get(key);
 
@@ -274,12 +272,8 @@ public class ChoiceParameter<T> extends ValueParameter<T>
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                inNotification = true;
-                try {
-                    setStringValue(key);
-                } finally {
-                    inNotification = false;
-                }
+                initiator(initiator);
+                setStringValue(key);
             }
         });
 
@@ -297,10 +291,10 @@ public class ChoiceParameter<T> extends ValueParameter<T>
             @Override
             public void actionPerformed(ActionEvent event)
             {
-                inNotification = true;
                 try {
                     int index = comboBox.getSelectedIndex();
                     String key = _keys.get(index);
+                    initiator(comboBox);
                     setStringValue(key);
                     if (isStretchy()) {
                         comboBox.setToolTipText(_labelMapping.get(key));
@@ -309,19 +303,16 @@ public class ChoiceParameter<T> extends ValueParameter<T>
 
                 } catch (Exception e) {
                     holder.setError(ChoiceParameter.this, e.getMessage());
-                } finally {
-                    inNotification = false;
                 }
-
             }
         });
 
         addListener(new ParameterListener()
         {
             @Override
-            public void changed(Parameter source)
+            public void changed(Object initiator, Parameter source)
             {
-                if (!inNotification) {
+                if (initiator != comboBox) {
                     updateComboBox(comboBox);
                 }
             }
@@ -350,6 +341,7 @@ public class ChoiceParameter<T> extends ValueParameter<T>
         if (getValue() == null) {
             if (_keys.size() > 0) {
                 try {
+                    initiator(comboBox);
                     setStringValue(_keys.get(0));
                 } catch (ParameterException e) {
                     // Do nothing

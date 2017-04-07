@@ -327,12 +327,12 @@ public class FileParameter extends TextParameter<File>
     @Override
     public Component createComponent(final ParameterHolder holder)
     {
-        FileComponent fileField = new FileComponent(this, Util.getPathWithTrailingSlash(getValue()));
-        JTextField textField = fileField.getTextField();
+        FileComponent fileComponent = new FileComponent(this, Util.getPathWithTrailingSlash(getValue()));
+        JTextField textField = fileComponent.getTextField();
 
-        textField(textField, holder);
+        textField(fileComponent, textField, holder);
 
-        return fileField;
+        return fileComponent;
     }
 
     public static final class Builder extends ValueParameter.Builder<Builder, FileParameter, File>

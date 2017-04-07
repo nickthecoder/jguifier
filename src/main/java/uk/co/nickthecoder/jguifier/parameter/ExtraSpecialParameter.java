@@ -139,7 +139,7 @@ public class ExtraSpecialParameter<S, P extends ValueParameter<T>, T>
         regularParameter.addListener(new ParameterListener()
         {
             @Override
-            public void changed(Parameter source)
+            public void changed(Object initiator, Parameter source)
             {
                 fireChangeEvent();
             }
@@ -184,8 +184,8 @@ public class ExtraSpecialParameter<S, P extends ValueParameter<T>, T>
     {
         assert (_regularParameter != null);
 
-        final JPanel both = new JPanel();
-        both.setLayout(new BorderLayout());
+        final JPanel component = new JPanel();
+        component.setLayout(new BorderLayout());
 
         // We need to forward the setError and clearError messages to the real holder using THIS parameter, rather than
         // the _regularParameter.
@@ -214,22 +214,24 @@ public class ExtraSpecialParameter<S, P extends ValueParameter<T>, T>
 
         final Component regularComponent = _regularParameter.createComponent(forward);
 
-        both.add(specialComponent, BorderLayout.WEST);
-        both.add(regularComponent, BorderLayout.CENTER);
+        component.add(specialComponent, BorderLayout.WEST);
+        component.add(regularComponent, BorderLayout.CENTER);
 
         regularComponent.setVisible(specialComponent.getSelectedIndex() == 0);
 
         addListener(new ParameterListener()
         {
             @Override
-            public void changed(Parameter source)
+            public void changed(Object initiator, Parameter source)
             {
-                regularComponent.setVisible(specialComponent.getSelectedIndex() == 0);
-                both.doLayout();
+                if ( initiator != component) {
+                    regularComponent.setVisible(specialComponent.getSelectedIndex() == 0);
+                    component.doLayout();
+                }
             }
         });
 
-        return both;
+        return component;
 
     }
 

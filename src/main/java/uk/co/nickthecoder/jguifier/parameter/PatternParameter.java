@@ -80,10 +80,6 @@ public class PatternParameter extends TextParameter<String>
 
     public void setValue(String value)
     {
-        if (Util.equals(value, "//")) {
-            Thread.dumpStack();
-        }
-
         if (value == null) {
             isRegex = true;
             globOrRegex = "";

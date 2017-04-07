@@ -67,7 +67,8 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
     public MultipleParameter(P prototype, String name)
     {
         super(name);
-        this.prototypeParameter = prototype;
+        prototypeParameter = prototype;
+        
         setValue(new ArrayList<T>());
     }
 
@@ -76,6 +77,7 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
         for (T value : values) {
             getValue().add(value);
         }
+        initiator(prototypeParameter);
         fireChangeEvent();
     }
 
@@ -85,12 +87,14 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
         for (T value : values) {
             getValue().add(value);
         }
+        initiator(prototypeParameter);
         fireChangeEvent();
     }
 
     public void addValue(T value)
     {
         getValue().add(value);
+        initiator(prototypeParameter);
         fireChangeEvent();
     }
 
@@ -251,21 +255,23 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
             {
 
                 @Override
-                public void changed(final Parameter source)
+                public void changed(Object initiator, final Parameter source)
                 {
-                    SwingUtilities.invokeLater(new Runnable()
-                    {
-                        public void run()
+                    if (initiator != this) {
+                        SwingUtilities.invokeLater(new Runnable()
                         {
-                            parametersPanel.clear();
-                            addComponents();
+                            public void run()
+                            {
+                                parametersPanel.clear();
+                                addComponents();
 
-                            // I had trouble with redrawing, and this fixed it. Bad, I know...
-                            parametersPanel.setVisible(false);
-                            parametersPanel.setVisible(true);
-                            holder.clearError(source);
-                        }
-                    });
+                                // I had trouble with redrawing, and this fixed it. Bad, I know...
+                                parametersPanel.setVisible(false);
+                                parametersPanel.setVisible(true);
+                                holder.clearError(source);
+                            }
+                        });
+                    }
                 }
 
             });
@@ -295,9 +301,11 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
             parameter.addListener(new ParameterListener()
             {
                 @Override
-                public void changed(Parameter source)
+                public void changed(Object initiator, Parameter source)
                 {
-                    getValue().set(index, parameter.getValue());
+                    if (initiator != this) {
+                        getValue().set(index, parameter.getValue());
+                    }
                 }
             });
 

@@ -78,8 +78,6 @@ public class BooleanParameter
 
     }
 
-    protected boolean inNotification = false;
-
     @Override
     public Component createComponent(final ParameterHolder holder)
     {
@@ -88,7 +86,7 @@ public class BooleanParameter
             component.setToolTipText(super.getDescription());
         }
         enableFocusColorChange(component);
-        
+
         if (Boolean.TRUE == getValue()) {
             component.setSelected(true);
         } else if (getValue() == null) {
@@ -102,14 +100,12 @@ public class BooleanParameter
             @Override
             public void stateChanged(ChangeEvent changeEvent)
             {
-                inNotification = true;
                 try {
+                    initiator(component);
                     setValue(component.getModel().isSelected());
                     holder.clearError(BooleanParameter.this);
                 } catch (Exception e) {
                     holder.setError(BooleanParameter.this, e.getMessage());
-                } finally {
-                    inNotification = false;
                 }
             }
         });
@@ -117,9 +113,9 @@ public class BooleanParameter
         addListener(new ParameterListener()
         {
             @Override
-            public void changed(Parameter source)
+            public void changed(Object initiator, Parameter source)
             {
-                if (!inNotification) {
+                if (initiator != component) {
                     component.setSelected(getValue() == Boolean.TRUE);
                 }
             }

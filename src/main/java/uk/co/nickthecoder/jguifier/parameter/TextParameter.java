@@ -58,19 +58,27 @@ public abstract class TextParameter<T> extends ValueParameter<T>
         _stretchy = value;
     }
 
-    protected void setTextField(JTextComponent textField)
+    protected void setTextField(Object initiator, JTextComponent textField)
     {
         textField.setText(getStringValue());
     }
 
     protected void textField(final JTextComponent textField, final ParameterHolder holder)
     {
+        textField(textField, textField, holder);
+    }
+
+    protected void textField(final Object component, final JTextComponent textField, final ParameterHolder holder)
+    {
         addListener(new ParameterListener()
         {
             @Override
-            public void changed(Parameter source)
+            public void changed(Object initiator, Parameter source)
             {
-                setTextField(textField);
+                if (component != initiator) {
+                    initiator(component);
+                    setTextField(initiator, textField);
+                }
             }
         });
 
@@ -102,13 +110,12 @@ public abstract class TextParameter<T> extends ValueParameter<T>
 
             public void checkValue()
             {
-                if (!settingValue) {
-                    try {
-                        setStringValue(textField.getText());
-                        holder.clearError(TextParameter.this);
-                    } catch (Exception e) {
-                        holder.setError(TextParameter.this, e.getMessage());
-                    }
+                try {
+                    initiator(component);
+                    setStringValue(textField.getText());
+                    holder.clearError(TextParameter.this);
+                } catch (Exception e) {
+                    holder.setError(TextParameter.this, e.getMessage());
                 }
             }
         };
