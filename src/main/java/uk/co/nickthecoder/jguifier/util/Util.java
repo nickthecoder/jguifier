@@ -208,6 +208,16 @@ public class Util
         return str;
     }
 
+    public static String escapeNewLines(String value)
+    {
+        return value.replaceAll("\\", "\\\\").replaceAll("\n", "\\n");
+    }
+
+    public static String unescapeNewLines(String value)
+    {
+        return value.replaceAll("\\n", "\n").replaceAll("\\\\", "\\");
+    }
+
     /**
      * Given a string, which is quoted with double quotes, returns the contents, without the double quotes.
      * 

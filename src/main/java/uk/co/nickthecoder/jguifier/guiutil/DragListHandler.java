@@ -21,7 +21,7 @@ public class DragListHandler<T> extends TransferHandler implements Transferable
 
     private DataFlavor[] flavors;
     
-    public DragListHandler(DragListListener<T> drag, DataFlavor[] flavors )
+    public DragListHandler(DragListListener<T> drag, DataFlavor... flavors )
     {
         this.dragListener = drag;
         this.flavors = flavors;

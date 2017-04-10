@@ -11,8 +11,8 @@ import uk.co.nickthecoder.jguifier.guiutil.FocusNextListener;
 import uk.co.nickthecoder.jguifier.guiutil.RowLayoutManager;
 import uk.co.nickthecoder.jguifier.guiutil.TableLayoutManager;
 import uk.co.nickthecoder.jguifier.parameter.BooleanParameter;
+import uk.co.nickthecoder.jguifier.parameter.Boxed;
 import uk.co.nickthecoder.jguifier.parameter.GroupParameter;
-import uk.co.nickthecoder.jguifier.parameter.MultipleParameter;
 import uk.co.nickthecoder.jguifier.parameter.Parameter;
 
 /**
@@ -86,7 +86,7 @@ public class ParametersPanel extends AbstractParameterPanel
 
             this.add(component);
 
-        } else if (parameter instanceof MultipleParameter) {
+        } else if (parameter instanceof Boxed) {
             // MultipleParameters don't need a label, as they are in a panel which includes
             // the label.
 

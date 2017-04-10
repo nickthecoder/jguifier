@@ -1,7 +1,9 @@
 package uk.co.nickthecoder.jguifier;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.PrintStream;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 
 import javax.swing.SwingUtilities;
@@ -13,6 +15,8 @@ import uk.co.nickthecoder.jguifier.parameter.ExtraSpecialParameter;
 import uk.co.nickthecoder.jguifier.parameter.FileParameter;
 import uk.co.nickthecoder.jguifier.parameter.GroupParameter;
 import uk.co.nickthecoder.jguifier.parameter.IntegerParameter;
+import uk.co.nickthecoder.jguifier.parameter.ListItem;
+import uk.co.nickthecoder.jguifier.parameter.ListParameter;
 import uk.co.nickthecoder.jguifier.parameter.MultipleParameter;
 import uk.co.nickthecoder.jguifier.parameter.PatternParameter;
 import uk.co.nickthecoder.jguifier.parameter.SpecialParameter;
@@ -95,6 +99,16 @@ public class Example extends Task
         .value(1).range(0, 100).description("lots of integers")
         .multipleParameter("manyInts");
 
+    private ListParameter<ExampleItem> _colors = new ListParameter.Builder<ExampleItem>("colors")
+        .add(new ExampleItem("Red", Color.RED))
+        .add(new ExampleItem("Green", Color.GREEN))
+        .add(new ExampleItem("Yellow", Color.YELLOW))
+        .add(new ExampleItem("Blue", Color.BLUE))
+        .add(new ExampleItem("Magenta", Color.MAGENTA))
+        .add(new ExampleItem("Cyan", Color.CYAN))
+        .add(new ExampleItem("White", Color.WHITE))
+        .parameter();
+
     public Example()
     {
         super();
@@ -102,8 +116,10 @@ public class Example extends Task
         setDescription("This is an example Task, to show how to build each type of Parameter\nHave fun!");
 
         _extras.addChildren(_output, _file, _files, _dateFormat, _special);
-        addParameters(_boolean, _integer, _double, _shortString, _longString, _greeting, _fruit,
+        addParameters(_colors, _boolean, _integer, _double, _shortString, _longString, _greeting, _fruit,
             _regex, _extras, manyInts, _multiLineString);
+
+        _colors.add("Green");
     }
 
     @Override
@@ -135,5 +151,48 @@ public class Example extends Task
 
             }
         });
+    }
+
+    static public class ExampleItem implements ListItem<Color>
+    {
+        public String name;
+
+        public Color color;
+        
+        /**
+         * Needed for Serializable
+         */
+        public ExampleItem()
+        {}
+        
+        public ExampleItem(String name, Color color)
+        {
+            this.name = name;
+            this.color = color;
+        }
+
+        @Override
+        public Color getValue()
+        {
+            return color;
+        }
+
+        @Override
+        public String getStringValue()
+        {
+            return name;
+        }
+
+        @Override
+        public Color parse(String stringValue)
+        {
+            throw new RuntimeException("Not implemented");
+        }
+
+        @Override
+        public String toString()
+        {
+            return name;
+        }
     }
 }

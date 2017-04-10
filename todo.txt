@@ -1,6 +1,9 @@
 Current Task
 ============
 
+Implement ListParameter
+
+Body of Example should print each value.
 
 BUGS
 ====

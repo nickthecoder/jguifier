@@ -8,7 +8,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -53,6 +52,7 @@ import uk.co.nickthecoder.jguifier.util.Util;
  *            The type of value for a single value
  */
 public class MultipleParameter<P extends ValueParameter<T>, T> extends ValueParameter<List<T>>
+    implements Boxed
 {
     /**
      * Used to convert a single value to/from its string representation.
@@ -68,7 +68,7 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
     {
         super(name);
         prototypeParameter = prototype;
-        
+
         setValue(new ArrayList<T>());
     }
 
@@ -133,7 +133,8 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
         boolean first = true;
         for (T value : getValue()) {
             param.setDefaultValue(value);
-            buffer.append(param.getStringValue());
+            String strVal = Util.escapeNewLines(param.getStringValue());
+            buffer.append(strVal);
             if (first) {
                 first = false;
             } else {
@@ -149,10 +150,13 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
         List<T> list = new ArrayList<T>();
 
         String[] stringValues = value.split("\n");
-        for (String stringValue : stringValues) {
-            prototypeParameter.setStringValue(stringValue);
+        for (String line : stringValues) {
+            String strVal = Util.unescapeNewLines(line);
+
+            prototypeParameter.setStringValue(strVal);
             list.add(prototypeParameter.getValue());
         }
+        setValue(list);
     }
 
     public void addStringValue(String value)
@@ -214,6 +218,11 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
         fireChangeEvent();
     }
 
+    public boolean isStretchy()
+    {
+        return true;
+    }
+
     class MultipleParameterComponent extends JPanel implements DropFileListener
     {
         public MultiplePanel parametersPanel;
@@ -227,10 +236,8 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
             // When <P> is a FileParameter, the DropFileHandler will set the border, so
             // for this to ALSO have a border, we need to wrap everything inside ANOTHER panel
             JPanel whole = new JPanel();
+            Boxed.box(whole, MultipleParameter.this);
             whole.setLayout(new BorderLayout());
-            whole.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createTitledBorder(getLabel()),
-                BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 
             setLayout(new BorderLayout());
             add(whole);

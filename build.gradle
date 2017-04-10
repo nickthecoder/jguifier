@@ -13,8 +13,8 @@ apply plugin: 'application'
 
 mainClassName = "uk.co.nickthecoder.jguifier.Example"
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 dependencies {
     compile 'junit:junit:4.12'
