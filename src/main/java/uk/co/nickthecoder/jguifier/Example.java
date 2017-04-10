@@ -3,7 +3,6 @@ package uk.co.nickthecoder.jguifier;
 import java.awt.Color;
 import java.io.File;
 import java.io.PrintStream;
-import java.io.Serializable;
 import java.text.SimpleDateFormat;
 
 import javax.swing.SwingUtilities;
@@ -116,8 +115,8 @@ public class Example extends Task
         setDescription("This is an example Task, to show how to build each type of Parameter\nHave fun!");
 
         _extras.addChildren(_output, _file, _files, _dateFormat, _special);
-        addParameters(_colors, _boolean, _integer, _double, _shortString, _longString, _greeting, _fruit,
-            _regex, _extras, manyInts, _multiLineString);
+        addParameters(_boolean, _integer, _double, _shortString, _longString, _greeting, _fruit,
+            _regex, _extras, manyInts, _multiLineString, _colors);
 
         _colors.add("Green");
     }
@@ -158,13 +157,14 @@ public class Example extends Task
         public String name;
 
         public Color color;
-        
+
         /**
          * Needed for Serializable
          */
         public ExampleItem()
-        {}
-        
+        {
+        }
+
         public ExampleItem(String name, Color color)
         {
             this.name = name;
