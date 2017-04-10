@@ -35,7 +35,7 @@ public class ListParameter<T extends ListItem<?>> extends ValueParameter<List<T>
     {
         return true;
     }
-    
+
     public List<T> getPossibleItems()
     {
         return possibleItems;
@@ -45,14 +45,15 @@ public class ListParameter<T extends ListItem<?>> extends ValueParameter<List<T>
     public String getStringValue()
     {
         StringBuffer buffer = new StringBuffer();
-
+        boolean first = true;
         for (T value : getValue()) {
-
+            if (first) {
+                first = false;
+            } else {
+                buffer.append("\n");
+            }
             String str = value.getStringValue();
 
-            buffer.append(" --");
-            buffer.append(getName());
-            buffer.append("=");
             if (str != null) {
                 if (str.matches("[a-zA-Z0-9./]*")) {
                     buffer.append(str);
@@ -152,6 +153,7 @@ public class ListParameter<T extends ListItem<?>> extends ValueParameter<List<T>
             fireChangeEvent();
         }
     }
+
     public void remove(T item)
     {
         if (getValue().contains(item)) {
