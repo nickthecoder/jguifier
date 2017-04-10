@@ -132,14 +132,14 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
         StringBuffer buffer = new StringBuffer();
         boolean first = true;
         for (T value : getValue()) {
-            param.setDefaultValue(value);
-            String strVal = Util.escapeNewLines(param.getStringValue());
-            buffer.append(strVal);
             if (first) {
                 first = false;
             } else {
                 buffer.append("\n");
             }
+            param.setDefaultValue(value);
+            String strVal = Util.escapeNewLines(param.getStringValue());
+            buffer.append(strVal);
         }
         return buffer.toString();
     }
