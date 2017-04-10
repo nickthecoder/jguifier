@@ -398,6 +398,7 @@ public class ListComponent<T extends ListItem<?>> extends JPanel implements Para
                     sourceModel.remove(selected[i]);
                 }
             }
+            parameter.fireChangeEvent();
         }
     }
 
