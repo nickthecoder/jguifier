@@ -263,6 +263,12 @@ public abstract class Task implements Runnable
         addParameterToCollections(parameter);
     }
 
+    public void removeParameter(Parameter parameter)
+    {
+        _root.removeParameter(parameter);
+        removeParameterFromCollections(parameter);
+    }
+
     private void addParameterToCollections(Parameter parameter)
     {
         assert !this._parametersMap.containsKey(parameter.getName()) : "Duplicate parameter name";
@@ -281,6 +287,25 @@ public abstract class Task implements Runnable
             if (bp.getOppositeName() != null) {
                 assert !this._parametersMap.containsKey(bp.getOppositeName()) : "Duplicate parameter opposite name";
                 this._parametersMap.put(bp.getOppositeName(), parameter);
+            }
+        }
+    }
+
+    private void removeParameterFromCollections(Parameter parameter)
+    {
+        if (parameter instanceof GroupParameter) {
+            GroupParameter group = (GroupParameter) parameter;
+            for (Parameter child : group.getChildren()) {
+                removeParameter(child);
+            }
+        } else {
+            this._parametersMap.remove(parameter.getName());
+        }
+
+        if (parameter instanceof BooleanParameter) {
+            BooleanParameter bp = (BooleanParameter) parameter;
+            if (bp.getOppositeName() != null) {
+                this._parametersMap.remove(bp.getOppositeName());
             }
         }
     }

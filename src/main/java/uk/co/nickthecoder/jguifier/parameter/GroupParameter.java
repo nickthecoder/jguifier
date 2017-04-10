@@ -73,6 +73,12 @@ public class GroupParameter
         return all;
     }
 
+    public void removeParameter(Parameter parameter)
+    {
+        _children.remove(parameter);
+        parameter.remvoveListener(this);
+    }
+
     public void addParameter(int position, Parameter parameter)
     {
         addChildren(position, parameter);
@@ -121,7 +127,7 @@ public class GroupParameter
     public Component createComponent(final ParameterHolder holder)
     {
         ParametersPanel parametersPanel = new ParametersPanel(holder);
-        
+
         parametersPanel.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createTitledBorder(getLabel()),
             BorderFactory.createEmptyBorder(5, 5, 5, 5)));
