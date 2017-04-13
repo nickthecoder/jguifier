@@ -34,7 +34,7 @@ public class DragListHandler<T> extends TransferHandler implements Transferable
                 if (!dragListener.getDragList().isEmpty()) {
                     JComponent c = (JComponent) e.getSource();
                     TransferHandler handler = c.getTransferHandler();
-                    handler.exportAsDrag(c, e, TransferHandler.COPY);
+                    handler.exportAsDrag(c, e, TransferHandler.COPY_OR_MOVE);
                 }
             }
         };
@@ -60,7 +60,7 @@ public class DragListHandler<T> extends TransferHandler implements Transferable
     @Override
     public int getSourceActions(JComponent c)
     {
-        return COPY;
+        return COPY_OR_MOVE;
     }
 
     @Override

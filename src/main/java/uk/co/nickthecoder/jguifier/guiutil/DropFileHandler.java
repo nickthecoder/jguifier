@@ -86,8 +86,7 @@ public class DropFileHandler implements DropTargetListener
                 Transferable tr = dtde.getTransferable();
                 @SuppressWarnings("unchecked")
                 List<File> fileList = (List<File>) tr.getTransferData(DataFlavor.javaFileListFlavor);
-
-                listener.droppedFiles(fileList);
+                listener.droppedFiles(fileList, dtde.getDropAction());
 
                 dtde.getDropTargetContext().dropComplete(true);
             }

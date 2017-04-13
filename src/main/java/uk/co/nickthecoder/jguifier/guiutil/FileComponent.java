@@ -445,7 +445,7 @@ public class FileComponent extends JPanel implements DropFileListener, DragFileL
     }
 
     @Override
-    public void droppedFiles(List<File> files)
+    public void droppedFiles(List<File> files, int action)
     {
         if (!files.isEmpty()) {
             _fileParameter.setValueIgnoreErrors(files.get(0));

@@ -323,7 +323,7 @@ public class MultipleParameter<P extends ValueParameter<T>, T> extends ValuePara
 
         @SuppressWarnings("unchecked")
         @Override
-        public void droppedFiles(List<File> files)
+        public void droppedFiles(List<File> files, int action)
         {
             if (prototypeParameter instanceof FileParameter) {
                 for (File file : files) {
